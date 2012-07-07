@@ -1,0 +1,20 @@
+This is a small suite of scripts and patches to build a musl libc
+cross-compiler. For the impatient, ./build.sh should build a cross compiler to
+/opt/cross/<arch>-linux-musl, no muss, no fuss. Otherwise, you can edit
+config.sh to make cross-compilers to other architectures, and even copy
+config.sh to another directory then run build.sh from there to avoid polluting
+the source dir.
+
+Some further notes:
+
+* For ARM, you must set the triple to arm-linux-musleabi (eabi is the important
+  bit here)
+
+* You can set versions of binutils, GCC or musl in config.sh with:
+  BINUTILS_VERSION=<version>
+  GCC_VERSION=<version>
+  MUSL_VERSION=<version>
+
+* You can use a git checkout of musl with:
+  MUSL_VERSION=<git tag or commit>
+  MUSL_GIT=yes
