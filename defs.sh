@@ -27,11 +27,13 @@ fi
 
 # Versions of things (do this before config.sh so they can be config'd)
 BINUTILS_VERSION=2.22
+# later elfutils versions currently nonworking
+ELFUTILS_VERSION=0.152
 GCC_VERSION=4.7.1
-#GMP_VERSION=5.0.5
+GMP_VERSION=5.0.5
 LINUX_HEADERS_VERSION=3.2.21
-#MPC_VERSION=0.9
-#MPFR_VERSION=3.1.1
+MPC_VERSION=0.9
+MPFR_VERSION=3.1.1
 
 # musl can optionally be checked out from GIT, in which case MUSL_VERSION must
 # be set to a git tag and MUSL_GET set to yes in config.sh
@@ -130,11 +132,6 @@ build() {
         patch_source "$BD"
 
         pushd "$BD" || die "Failed to pushd $BD"
-
-        if [ -e config.cache.microcosm ]
-        then
-            cp -f config.cache.microcosm config.cache
-        fi
 
         if [ "$BP" ]
         then
