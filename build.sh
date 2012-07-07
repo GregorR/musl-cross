@@ -23,6 +23,10 @@ fi
 # Fail on any command failing:
 set -e
 
+BINUTILS_CONFFLAGS=
+GCC_BOOTSTRAP_CONFFLAGS=
+MUSL_CONFFLAGS=
+GCC_CONFFLAGS=
 . "$MUSL_CC_BASE"/defs.sh
 
 # Switch to the CC prefix for all of this
@@ -30,14 +34,15 @@ PREFIX="$CC_PREFIX"
 
 # binutils
 fetchextract http://ftp.gnu.org/gnu/binutils/ binutils-$BINUTILS_VERSION .tar.bz2
-buildinstall 1 binutils-$BINUTILS_VERSION --target=$TRIPLE
+buildinstall 1 binutils-$BINUTILS_VERSION --target=$TRIPLE $BINUTILS_CONFFLAGS
 
 # gcc 1
 fetchextract http://ftp.gnu.org/gnu/gcc/gcc-$GCC_VERSION/ gcc-$GCC_VERSION .tar.bz2
 buildinstall 1 gcc-$GCC_VERSION --target=$TRIPLE \
     --enable-languages=c --with-newlib --disable-multilib --disable-libssp \
     --disable-libquadmath --disable-threads --disable-decimal-float \
-    --disable-shared --disable-libmudflap --disable-libgomp
+    --disable-shared --disable-libmudflap --disable-libgomp \
+    $GCC_BOOTSTRAP_CONFFLAGS
 
 # linux headers
 fetchextract http://www.kernel.org/pub/linux/kernel/v3.0/ linux-$LINUX_HEADERS_VERSION .tar.bz2
@@ -60,13 +65,16 @@ fi
 PREFIX="/"
 export PREFIX
 muslfetchextract
-CC="$TRIPLE-gcc" DESTDIR="$CC_PREFIX/$TRIPLE" buildinstall '' musl-$MUSL_VERSION --enable-debug
+CC="$TRIPLE-gcc" AR="$TRIPLE-ar" RANLIB="$TRIPLE-ranlib" \
+    DESTDIR="$CC_PREFIX/$TRIPLE" buildinstall '' musl-$MUSL_VERSION \
+    --enable-debug $MUSL_CONFFLAGS
 unset PREFIX
 PREFIX="$CC_PREFIX"
 
 # gcc 2
 buildinstall 2 gcc-$GCC_VERSION --target=$TRIPLE \
-    --enable-languages=c,c++ --disable-multilib --disable-libmudflap
+    --enable-languages=c,c++ --disable-multilib --disable-libmudflap \
+    $GCC_CONFFLAGS
 
 # un"fix" headers
 rm -rf "$CC_PREFIX/lib/gcc/$TRIPLE"/*/include-fixed/
