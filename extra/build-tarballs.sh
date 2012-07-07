@@ -69,24 +69,31 @@ do
 
     if [ "$ARCH" = "$NATIVE_ARCH" ]
     then
-        # Make the config.sh
-        echo 'ARCH='$ARCH'
+        if [ ! -e "$PREFIX_BASE/bootstrap/bin/$TRIPLE-g++" ]
+        then
+            # Make the config.sh
+            echo 'ARCH='$ARCH'
 TRIPLE='$TRIPLE'
 CC_PREFIX="'"$PREFIX_BASE/bootstrap"'"
 MAKEFLAGS="'"$MAKEFLAGS"'"' > config.sh
 
-        # Build the bootstrap one first
-        "$MUSL_CC_BASE"/build.sh
-        "$MUSL_CC_BASE"/extra/build-gcc-deps.sh
-        cleanup
+            # Build the bootstrap one first
+            "$MUSL_CC_BASE"/build.sh
+            "$MUSL_CC_BASE"/extra/build-gcc-deps.sh
+            rm -f config.sh
+            cleanup
+        fi
+
         NATIVE_CROSS="$PREFIX_BASE/bootstrap/bin/$TRIPLE"
 
         # Get rid of dlfcn.h as a cheap hack to disable building plugins
         rm -f "$PREFIX_BASE/bootstrap/$TRIPLE/include/dlfcn.h"
     fi
 
-    # Make the config.sh
-    echo 'ARCH='$ARCH'
+    if [ ! -e "$PREFIX_BASE/$TRIPLE/bin/$TRIPLE-g++" ]
+    then
+        # Make the config.sh
+        echo 'ARCH='$ARCH'
 TRIPLE='$TRIPLE'
 CC_PREFIX="'"$PREFIX_BASE/$TRIPLE"'"
 MAKEFLAGS="'"$MAKEFLAGS"'"
@@ -96,20 +103,21 @@ export CC CXX
 GCC_BOOTSTRAP_CONFFLAGS=--disable-lto-plugin
 GCC_CONFFLAGS=--disable-lto-plugin' > config.sh
 
-    # And build
-    "$MUSL_CC_BASE"/build.sh
-    sed -E '/^C(C|XX)=/d ; /^export/d' -i config.sh
-    "$MUSL_CC_BASE"/extra/build-gcc-deps.sh
+        # And build
+        "$MUSL_CC_BASE"/build.sh
+        sed -E '/^C(C|XX)=/d ; /^export/d' -i config.sh
+        "$MUSL_CC_BASE"/extra/build-gcc-deps.sh
 
-    # Clean up
-    rm -f config.sh
-    cleanup
+        # Clean up
+        rm -f config.sh
+        cleanup
 
-    # Make the tarball
-    pushd "$PREFIX_BASE"
-    rm -rf "$TRIPLE/share"
-    find "$TRIPLE/bin" "$TRIPLE/libexec/gcc" -type f -exec "$NATIVE_CROSS-strip" --strip-unneeded '{}' ';'
-    echo 'Cross-compiler prefix built by musl-cross '"$HG_ID"': http://www.bitbucket.org/GregorR/musl-cross' > "$TRIPLE/info.txt"
-    tar -cf - "$TRIPLE/" | xz -c > "$T_PRE$TRIPLE$T_SUFF.tar.xz"
-    popd
+        # Make the tarball
+        pushd "$PREFIX_BASE"
+        rm -rf "$TRIPLE/share"
+        find "$TRIPLE/bin" "$TRIPLE/libexec/gcc" -type f -exec "$NATIVE_CROSS-strip" --strip-unneeded '{}' ';'
+        echo 'Cross-compiler prefix built by musl-cross '"$HG_ID"': http://www.bitbucket.org/GregorR/musl-cross' > "$TRIPLE/info.txt"
+        tar -cf - "$TRIPLE/" | xz -c > "$T_PRE$TRIPLE$T_SUFF.tar.xz"
+        popd
+    fi
 done
