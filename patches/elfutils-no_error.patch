@@ -1,0 +1,687 @@
+diff -Naur elfutils-0.152.orig/lib/xmalloc.c elfutils-0.152/lib/xmalloc.c
+--- elfutils-0.152.orig/lib/xmalloc.c	2010-06-29 04:09:31.000000000 +0000
++++ elfutils-0.152/lib/xmalloc.c	2012-05-29 07:20:04.012448966 +0000
+@@ -27,7 +27,7 @@
+ # include <config.h>
+ #endif
+ 
+-#include <error.h>
++#include <err.h>
+ #include <libintl.h>
+ #include <stddef.h>
+ #include <stdlib.h>
+@@ -48,7 +48,7 @@
+ 
+   p = malloc (n);
+   if (p == NULL)
+-    error (EXIT_FAILURE, 0, _("memory exhausted"));
++    err (EXIT_FAILURE, _("memory exhausted"));
+   return p;
+ }
+ 
+@@ -62,7 +62,7 @@
+ 
+   p = calloc (n, s);
+   if (p == NULL)
+-    error (EXIT_FAILURE, 0, _("memory exhausted"));
++    err (EXIT_FAILURE, _("memory exhausted"));
+   return p;
+ }
+ 
+@@ -76,6 +76,6 @@
+ {
+   p = realloc (p, n);
+   if (p == NULL)
+-    error (EXIT_FAILURE, 0, _("memory exhausted"));
++    err (EXIT_FAILURE, _("memory exhausted"));
+   return p;
+ }
+diff -Naur elfutils-0.152.orig/libcpu/i386_gendis.c elfutils-0.152/libcpu/i386_gendis.c
+--- elfutils-0.152.orig/libcpu/i386_gendis.c	2010-06-29 04:09:31.000000000 +0000
++++ elfutils-0.152/libcpu/i386_gendis.c	2012-05-29 07:25:01.733156774 +0000
+@@ -28,7 +28,7 @@
+ # include <config.h>
+ #endif
+ 
+-#include <error.h>
++#include <err.h>
+ #include <errno.h>
+ #include <stdio.h>
+ #include <stdlib.h>
+@@ -48,9 +48,12 @@
+ main (int argc, char *argv[argc])
+ {
+   outfile = stdout;
++  int count = 0;
+ 
+-  if (argc == 1)
+-    error (EXIT_FAILURE, 0, "usage: %s <MNEDEFFILE>", argv[0]);
++  if (argc == 1) {
++    err (EXIT_FAILURE, "usage: %s <MNEDEFFILE>", argv[0]);
++    count++;
++  }
+ 
+   //i386_debug = 1;
+   infname = argv[1];
+@@ -59,11 +62,13 @@
+   else
+     {
+       i386_in = fopen (infname, "r");
+-      if (i386_in == NULL)
+-	error (EXIT_FAILURE, errno, "cannot open %s", argv[1]);
++      if (i386_in == NULL) {
++	err (EXIT_FAILURE, "cannot open %s", argv[1]);
++        count++;
++      }
+     }
+ 
+   i386_parse ();
+ 
+-  return error_message_count != 0;
++  return count != 0;
+ }
+diff -Naur elfutils-0.152.orig/libcpu/i386_lex.c elfutils-0.152/libcpu/i386_lex.c
+--- elfutils-0.152.orig/libcpu/i386_lex.c	2011-02-15 14:28:54.000000000 +0000
++++ elfutils-0.152/libcpu/i386_lex.c	2012-05-29 07:34:45.432057642 +0000
+@@ -567,7 +567,7 @@
+ #endif
+ 
+ #include <ctype.h>
+-#include <error.h>
++#include <err.h>
+ #include <libintl.h>
+ 
+ #include <system.h>
+@@ -1999,7 +1999,7 @@
+ static void
+ invalid_char (int ch)
+ {
+-  error (0, 0, (isascii (ch)
++  err (0, (isascii (ch)
+ 		? gettext ("invalid character '%c' at line %d; ignored")
+ 		: gettext ("invalid character '\\%o' at line %d; ignored")),
+ 	 ch, i386_lineno);
+diff -Naur elfutils-0.152.orig/libcpu/i386_lex.l elfutils-0.152/libcpu/i386_lex.l
+--- elfutils-0.152.orig/libcpu/i386_lex.l	2010-06-29 04:09:31.000000000 +0000
++++ elfutils-0.152/libcpu/i386_lex.l	2012-05-29 07:26:26.040059610 +0000
+@@ -28,7 +28,7 @@
+ #endif
+ 
+ #include <ctype.h>
+-#include <error.h>
++#include <err.h>
+ #include <libintl.h>
+ 
+ #include <system.h>
+@@ -115,7 +115,7 @@
+ static void
+ invalid_char (int ch)
+ {
+-  error (0, 0, (isascii (ch)
++  err (0, (isascii (ch)
+ 		? gettext ("invalid character '%c' at line %d; ignored")
+ 		: gettext ("invalid character '\\%o' at line %d; ignored")),
+ 	 ch, yylineno);
+diff -Naur elfutils-0.152.orig/libcpu/i386_parse.c elfutils-0.152/libcpu/i386_parse.c
+--- elfutils-0.152.orig/libcpu/i386_parse.c	2011-02-15 14:28:54.000000000 +0000
++++ elfutils-0.152/libcpu/i386_parse.c	2012-05-29 07:39:24.822057670 +0000
+@@ -109,7 +109,7 @@
+ #include <assert.h>
+ #include <ctype.h>
+ #include <errno.h>
+-#include <error.h>
++#include <err.h>
+ #include <inttypes.h>
+ #include <libintl.h>
+ #include <math.h>
+@@ -1607,9 +1607,6 @@
+ /* Line 1464 of yacc.c  */
+ #line 245 "i386_parse.y"
+     {
+-		      if (error_message_count != 0)
+-			error (EXIT_FAILURE, 0,
+-			       "terminated due to previous error");
+ 
+ 		      instrtable_out ();
+ 		    }
+@@ -1645,11 +1642,11 @@
+ 		      newp->from = (yyvsp[(2) - (3)].str);
+ 		      newp->to = (yyvsp[(3) - (3)].str);
+ 		      if (tfind (newp, &synonyms, compare_syn) != NULL)
+-			error (0, 0,
++			err (0,
+ 			       "%d: duplicate definition for synonym '%s'",
+ 			       i386_lineno, (yyvsp[(2) - (3)].str));
+ 		      else if (tsearch ( newp, &synonyms, compare_syn) == NULL)
+-			error (EXIT_FAILURE, 0, "tsearch");
++			err (EXIT_FAILURE, "tsearch");
+ 		    }
+     break;
+ 
+@@ -1661,7 +1658,7 @@
+ 		      if ((yyvsp[(3) - (6)].field) != NULL && strcmp ((yyvsp[(3) - (6)].field)->name, "RE") != 0
+ 			  && strcmp ((yyvsp[(3) - (6)].field)->name, "R") != 0)
+ 			{
+-			  error (0, 0, "%d: only 'R' and 'RE' prefix allowed",
++			  err (0, "%d: only 'R' and 'RE' prefix allowed",
+ 				 i386_lineno - 1);
+ 			}
+ 		      if (check_duplicates ((yyvsp[(1) - (6)].bit)) == 0
+@@ -1686,7 +1683,7 @@
+ 			    {
+ 			      if (tsearch ((yyvsp[(4) - (6)].str), &mnemonics,
+ 					   (comparison_fn_t) strcmp) == NULL)
+-				error (EXIT_FAILURE, errno, "tsearch");
++				err (EXIT_FAILURE, "tsearch");
+ 			      ++nmnemonics;
+ 			    }
+ 
+@@ -1707,7 +1704,7 @@
+ 			      else if (strcmp ((yyvsp[(5) - (6)].field)->name, "D") == 0)
+ 				newp->suffix = suffix_D;
+ 			      else
+-				error (EXIT_FAILURE, 0,
++				err (EXIT_FAILURE,
+ 				       "%s: %d: unknown suffix '%s'",
+ 				       infname, i386_lineno - 1, (yyvsp[(5) - (6)].field)->name);
+ 
+@@ -1720,7 +1717,7 @@
+ 				  ns->idx = ++nsuffixes;
+ 				  if (tsearch (ns, &suffixes, compare_suf)
+ 				      == NULL)
+-				    error (EXIT_FAILURE, errno, "tsearch");
++				    err (EXIT_FAILURE, "tsearch");
+ 				}
+ 			    }
+ 
+@@ -1752,7 +1749,7 @@
+ 		      res = tfind (&search, &bitfields, bitfield_compare);
+ 		      if (res == NULL)
+ 			{
+-			  error (0, 0, "%d: unknown bitfield '%s'",
++			  err (0, "%d: unknown bitfield '%s'",
+ 				 i386_lineno, search.name);
+ 			  (yyval.field) = NULL;
+ 			}
+@@ -1849,7 +1846,7 @@
+ 		      res = tfind (&search, &bitfields, bitfield_compare);
+ 		      if (res == NULL)
+ 			{
+-			  error (0, 0, "%d: unknown bitfield '%s'",
++			  err (0, "%d: unknown bitfield '%s'",
+ 				 i386_lineno, search.name);
+ 			  (yyval.bit)->type = failure;
+ 			}
+@@ -1949,7 +1946,7 @@
+ 			    (yyval.name)->field = &bx_reg;
+ 			  else
+ 			    {
+-			      error (0, 0, "%d: unknown bitfield '%s'",
++			      err (0, "%d: unknown bitfield '%s'",
+ 				     i386_lineno, search.name);
+ 			      (yyval.name)->field = NULL;
+ 			    }
+@@ -2220,7 +2217,7 @@
+ static void
+ yyerror (const char *s)
+ {
+-  error (0, 0, gettext ("while reading i386 CPU description: %s at line %d"),
++  err (0, gettext ("while reading i386 CPU description: %s at line %d"),
+          gettext (s), i386_lineno);
+ }
+ 
+@@ -2245,14 +2242,14 @@
+ 
+   if (tfind (newp, &bitfields, bitfield_compare) != NULL)
+     {
+-      error (0, 0, "%d: duplicated definition of bitfield '%s'",
++      err (0, "%d: duplicated definition of bitfield '%s'",
+ 	     i386_lineno, name);
+       free (name);
+       return;
+     }
+ 
+   if (tsearch (newp, &bitfields, bitfield_compare) == NULL)
+-    error (EXIT_FAILURE, errno, "%d: cannot insert new bitfield '%s'",
++    err (EXIT_FAILURE, "%d: cannot insert new bitfield '%s'",
+ 	   i386_lineno, name);
+ }
+ 
+@@ -2292,7 +2289,7 @@
+ 	}
+       obstack_1grow (&os, '\0');
+ 
+-      error (0, 0, "%d: field '%s' not a multiple of 8 bits in size",
++      err (0, "%d: field '%s' not a multiple of 8 bits in size",
+ 	     i386_lineno, (char *) obstack_finish (&os));
+ 
+       obstack_free (&os, NULL);
+@@ -2313,7 +2310,7 @@
+ 	{
+ 	  if (val->field->tmp == testcnt)
+ 	    {
+-	      error (0, 0, "%d: bitfield '%s' used more than once",
++	      err (0, "%d: bitfield '%s' used more than once",
+ 		     i386_lineno - 1, val->field->name);
+ 	      result = 1;
+ 	    }
+@@ -2350,7 +2347,7 @@
+ 
+ 	    if (runp == NULL)
+ 	      {
+-		error (0, 0, "%d: unknown bitfield '%s' used in output format",
++		err (0, "%d: unknown bitfield '%s' used in output format",
+ 		       i386_lineno - 1, name->field->name);
+ 		result = 1;
+ 	      }
+@@ -2394,7 +2391,7 @@
+ #if 0
+ 	  if (runp == NULL)
+ 	    {
+-	      error (0, 0, "%d: bitfield '%s' not used",
++	      err (0, "%d: bitfield '%s' not used",
+ 		     i386_lineno - 1, bitval->field->name);
+ 	      result = 1;
+ 	    }
+@@ -2457,7 +2454,7 @@
+       if (runp->type == string)
+ 	{
+ 	  if (instr->operands[n].str != NULL)
+-	    error (EXIT_FAILURE, 0,
++	    err (EXIT_FAILURE,
+ 		   "%d: cannot have more than one string parameter",
+ 		   i386_lineno - 1);
+ 
+@@ -2511,7 +2508,7 @@
+ 	  else if (instr->operands[n].off3 == 0)
+ 	    instr->operands[n].off3 = bitoff;
+ 	  else
+-	    error (EXIT_FAILURE, 0,
++	    err (EXIT_FAILURE,
+ 		   "%d: cannot have more than three fields in parameter",
+ 		   i386_lineno - 1);
+ 
+@@ -2587,7 +2584,7 @@
+ 		newp->str = runp->operands[i].fct;
+ 		newp->idx = 0;
+ 		if (tsearch (newp, &fct_names[i], compare_argstring) == NULL)
+-		  error (EXIT_FAILURE, errno, "tsearch");
++		  err (EXIT_FAILURE, "tsearch");
+ 		++nfct_names[i];
+ 	      }
+ 
+@@ -2600,7 +2597,7 @@
+ 		    newp->str = runp->operands[i].str;
+ 		    newp->idx = 0;
+ 		    if (tsearch (newp, &strs[i], compare_argstring) == NULL)
+-		      error (EXIT_FAILURE, errno, "tsearch");
++		      err (EXIT_FAILURE, "tsearch");
+ 		    ++nstrs[i];
+ 		  }
+ 	      }
+diff -Naur elfutils-0.152.orig/libcpu/i386_parse.y elfutils-0.152/libcpu/i386_parse.y
+--- elfutils-0.152.orig/libcpu/i386_parse.y	2010-06-29 04:09:31.000000000 +0000
++++ elfutils-0.152/libcpu/i386_parse.y	2012-05-29 07:34:21.204144089 +0000
+@@ -31,7 +31,7 @@
+ #include <assert.h>
+ #include <ctype.h>
+ #include <errno.h>
+-#include <error.h>
++#include <err.h>
+ #include <inttypes.h>
+ #include <libintl.h>
+ #include <math.h>
+@@ -243,10 +243,6 @@
+ 
+ spec:		  masks kPERCPERC '\n' instrs
+ 		    {
+-		      if (error_message_count != 0)
+-			error (EXIT_FAILURE, 0,
+-			       "terminated due to previous error");
+-
+ 		      instrtable_out ();
+ 		    }
+ 		;
+@@ -267,11 +263,11 @@
+ 		      newp->from = $2;
+ 		      newp->to = $3;
+ 		      if (tfind (newp, &synonyms, compare_syn) != NULL)
+-			error (0, 0,
++			err (0, 0,
+ 			       "%d: duplicate definition for synonym '%s'",
+ 			       i386_lineno, $2);
+ 		      else if (tsearch ( newp, &synonyms, compare_syn) == NULL)
+-			error (EXIT_FAILURE, 0, "tsearch");
++			err (EXIT_FAILURE, "tsearch");
+ 		    }
+ 		|
+ 		;
+@@ -285,7 +281,7 @@
+ 		      if ($3 != NULL && strcmp ($3->name, "RE") != 0
+ 			  && strcmp ($3->name, "R") != 0)
+ 			{
+-			  error (0, 0, "%d: only 'R' and 'RE' prefix allowed",
++			  err (0, "%d: only 'R' and 'RE' prefix allowed",
+ 				 i386_lineno - 1);
+ 			}
+ 		      if (check_duplicates ($1) == 0
+@@ -310,7 +306,7 @@
+ 			    {
+ 			      if (tsearch ($4, &mnemonics,
+ 					   (comparison_fn_t) strcmp) == NULL)
+-				error (EXIT_FAILURE, errno, "tsearch");
++				err (EXIT_FAILURE, "tsearch");
+ 			      ++nmnemonics;
+ 			    }
+ 
+@@ -331,7 +327,7 @@
+ 			      else if (strcmp ($5->name, "D") == 0)
+ 				newp->suffix = suffix_D;
+ 			      else
+-				error (EXIT_FAILURE, 0,
++				err (EXIT_FAILURE,
+ 				       "%s: %d: unknown suffix '%s'",
+ 				       infname, i386_lineno - 1, $5->name);
+ 
+@@ -344,7 +340,7 @@
+ 				  ns->idx = ++nsuffixes;
+ 				  if (tsearch (ns, &suffixes, compare_suf)
+ 				      == NULL)
+-				    error (EXIT_FAILURE, errno, "tsearch");
++				    err (EXIT_FAILURE, "tsearch");
+ 				}
+ 			    }
+ 
+@@ -374,7 +370,7 @@
+ 		      res = tfind (&search, &bitfields, bitfield_compare);
+ 		      if (res == NULL)
+ 			{
+-			  error (0, 0, "%d: unknown bitfield '%s'",
++			  err (0, "%d: unknown bitfield '%s'",
+ 				 i386_lineno, search.name);
+ 			  $$ = NULL;
+ 			}
+@@ -437,7 +433,7 @@
+ 		      res = tfind (&search, &bitfields, bitfield_compare);
+ 		      if (res == NULL)
+ 			{
+-			  error (0, 0, "%d: unknown bitfield '%s'",
++			  err (0, "%d: unknown bitfield '%s'",
+ 				 i386_lineno, search.name);
+ 			  $$->type = failure;
+ 			}
+@@ -509,7 +505,7 @@
+ 			    $$->field = &bx_reg;
+ 			  else
+ 			    {
+-			      error (0, 0, "%d: unknown bitfield '%s'",
++			      err (0, "%d: unknown bitfield '%s'",
+ 				     i386_lineno, search.name);
+ 			      $$->field = NULL;
+ 			    }
+@@ -549,7 +545,7 @@
+ static void
+ yyerror (const char *s)
+ {
+-  error (0, 0, gettext ("while reading i386 CPU description: %s at line %d"),
++  err (0, gettext ("while reading i386 CPU description: %s at line %d"),
+          gettext (s), i386_lineno);
+ }
+ 
+@@ -574,14 +570,14 @@
+ 
+   if (tfind (newp, &bitfields, bitfield_compare) != NULL)
+     {
+-      error (0, 0, "%d: duplicated definition of bitfield '%s'",
++      err (0, "%d: duplicated definition of bitfield '%s'",
+ 	     i386_lineno, name);
+       free (name);
+       return;
+     }
+ 
+   if (tsearch (newp, &bitfields, bitfield_compare) == NULL)
+-    error (EXIT_FAILURE, errno, "%d: cannot insert new bitfield '%s'",
++    err (EXIT_FAILURE, "%d: cannot insert new bitfield '%s'",
+ 	   i386_lineno, name);
+ }
+ 
+@@ -621,7 +617,7 @@
+ 	}
+       obstack_1grow (&os, '\0');
+ 
+-      error (0, 0, "%d: field '%s' not a multiple of 8 bits in size",
++      err (0, "%d: field '%s' not a multiple of 8 bits in size",
+ 	     i386_lineno, (char *) obstack_finish (&os));
+ 
+       obstack_free (&os, NULL);
+@@ -642,7 +638,7 @@
+ 	{
+ 	  if (val->field->tmp == testcnt)
+ 	    {
+-	      error (0, 0, "%d: bitfield '%s' used more than once",
++	      err (0, "%d: bitfield '%s' used more than once",
+ 		     i386_lineno - 1, val->field->name);
+ 	      result = 1;
+ 	    }
+@@ -679,7 +675,7 @@
+ 
+ 	    if (runp == NULL)
+ 	      {
+-		error (0, 0, "%d: unknown bitfield '%s' used in output format",
++		err (0, "%d: unknown bitfield '%s' used in output format",
+ 		       i386_lineno - 1, name->field->name);
+ 		result = 1;
+ 	      }
+@@ -723,7 +719,7 @@
+ #if 0
+ 	  if (runp == NULL)
+ 	    {
+-	      error (0, 0, "%d: bitfield '%s' not used",
++	      err (0, "%d: bitfield '%s' not used",
+ 		     i386_lineno - 1, bitval->field->name);
+ 	      result = 1;
+ 	    }
+@@ -786,7 +782,7 @@
+       if (runp->type == string)
+ 	{
+ 	  if (instr->operands[n].str != NULL)
+-	    error (EXIT_FAILURE, 0,
++	    err (EXIT_FAILURE,
+ 		   "%d: cannot have more than one string parameter",
+ 		   i386_lineno - 1);
+ 
+@@ -840,7 +836,7 @@
+ 	  else if (instr->operands[n].off3 == 0)
+ 	    instr->operands[n].off3 = bitoff;
+ 	  else
+-	    error (EXIT_FAILURE, 0,
++	    err (EXIT_FAILURE,
+ 		   "%d: cannot have more than three fields in parameter",
+ 		   i386_lineno - 1);
+ 
+@@ -916,7 +912,7 @@
+ 		newp->str = runp->operands[i].fct;
+ 		newp->idx = 0;
+ 		if (tsearch (newp, &fct_names[i], compare_argstring) == NULL)
+-		  error (EXIT_FAILURE, errno, "tsearch");
++		  err (EXIT_FAILURE, "tsearch");
+ 		++nfct_names[i];
+ 	      }
+ 
+@@ -929,7 +925,7 @@
+ 		    newp->str = runp->operands[i].str;
+ 		    newp->idx = 0;
+ 		    if (tsearch (newp, &strs[i], compare_argstring) == NULL)
+-		      error (EXIT_FAILURE, errno, "tsearch");
++		      err (EXIT_FAILURE, "tsearch");
+ 		    ++nstrs[i];
+ 		  }
+ 	      }
+diff -Naur elfutils-0.152.orig/libdw/libdw_alloc.c elfutils-0.152/libdw/libdw_alloc.c
+--- elfutils-0.152.orig/libdw/libdw_alloc.c	2010-06-29 04:09:31.000000000 +0000
++++ elfutils-0.152/libdw/libdw_alloc.c	2012-05-29 07:20:04.013112718 +0000
+@@ -52,7 +52,7 @@
+ # include <config.h>
+ #endif
+ 
+-#include <error.h>
++#include <err.h>
+ #include <errno.h>
+ #include <stdlib.h>
+ #include <sys/param.h>
+@@ -95,5 +95,5 @@
+ __libdw_oom (void)
+ {
+   while (1)
+-    error (EXIT_FAILURE, ENOMEM, "libdw");
++    err (EXIT_FAILURE, "libdw");
+ }
+diff -Naur elfutils-0.152.orig/libebl/eblopenbackend.c elfutils-0.152/libebl/eblopenbackend.c
+--- elfutils-0.152.orig/libebl/eblopenbackend.c	2010-09-10 13:18:31.000000000 +0000
++++ elfutils-0.152/libebl/eblopenbackend.c	2012-05-29 07:20:04.013112718 +0000
+@@ -53,7 +53,6 @@
+ 
+ #include <assert.h>
+ #include <dlfcn.h>
+-#include <error.h>
+ #include <libelfP.h>
+ #include <dwarf.h>
+ #include <stdlib.h>
+diff -Naur elfutils-0.152.orig/src/findtextrel.c elfutils-0.152/src/findtextrel.c
+--- elfutils-0.152.orig/src/findtextrel.c	2010-11-23 03:02:58.000000000 +0000
++++ elfutils-0.152/src/findtextrel.c	2012-05-29 07:20:04.014110741 +0000
+@@ -31,7 +31,7 @@
+ #include <argp.h>
+ #include <assert.h>
+ #include <errno.h>
+-#include <error.h>
++#include <err.h>
+ #include <fcntl.h>
+ #include <gelf.h>
+ #include <libdw.h>
+@@ -226,14 +226,14 @@
+   int fd = open64 (real_fname, O_RDONLY);
+   if (fd == -1)
+     {
+-      error (0, errno, gettext ("cannot open '%s'"), fname);
++      err (0, gettext ("cannot open '%s'"), fname);
+       return 1;
+     }
+ 
+   Elf *elf = elf_begin (fd, ELF_C_READ_MMAP, NULL);
+   if (elf == NULL)
+     {
+-      error (0, 0, gettext ("cannot create ELF descriptor for '%s': %s"),
++      err (0, gettext ("cannot create ELF descriptor for '%s': %s"),
+ 	     fname, elf_errmsg (-1));
+       goto err_close;
+     }
+@@ -243,7 +243,7 @@
+   GElf_Ehdr *ehdr = gelf_getehdr (elf, &ehdr_mem);
+   if (ehdr == NULL)
+     {
+-      error (0, 0, gettext ("cannot get ELF header '%s': %s"),
++      err (0, gettext ("cannot get ELF header '%s': %s"),
+ 	     fname, elf_errmsg (-1));
+     err_elf_close:
+       elf_end (elf);
+@@ -254,7 +254,7 @@
+ 
+   if (ehdr->e_type != ET_DYN)
+     {
+-      error (0, 0, gettext ("'%s' is not a DSO or PIE"), fname);
++      err (0, gettext ("'%s' is not a DSO or PIE"), fname);
+       goto err_elf_close;
+     }
+ 
+@@ -273,7 +273,7 @@
+ 
+       if (shdr == NULL)
+ 	{
+-	  error (0, 0,
++	  err (0,
+ 		 gettext ("getting get section header of section %zu: %s"),
+ 		 elf_ndxscn (scn), elf_errmsg (-1));
+ 	  goto err_elf_close;
+@@ -297,7 +297,7 @@
+ 		  dyn = gelf_getdyn (data, cnt, &dynmem);
+ 		  if (dyn == NULL)
+ 		    {
+-		      error (0, 0, gettext ("cannot read dynamic section: %s"),
++		      err (0, gettext ("cannot read dynamic section: %s"),
+ 			     elf_errmsg (-1));
+ 		      goto err_elf_close;
+ 		    }
+@@ -318,7 +318,7 @@
+ 
+   if (!have_textrel)
+     {
+-      error (0, 0, gettext ("no text relocations reported in '%s'"), fname);
++      err (0, gettext ("no text relocations reported in '%s'"), fname);
+       return 1;
+     }
+ 
+@@ -330,7 +330,7 @@
+   struct segments *segments
+     = (struct segments *) malloc (nsegments_max * sizeof (segments[0]));
+   if (segments == NULL)
+-    error (1, errno, gettext ("while reading ELF file"));
++    err (1, gettext ("while reading ELF file"));
+ 
+   for (int i = 0; i < ehdr->e_phnum; ++i)
+     {
+@@ -338,7 +338,7 @@
+       GElf_Phdr *phdr = gelf_getphdr (elf, i, &phdr_mem);
+       if (phdr == NULL)
+ 	{
+-	  error (0, 0,
++	  err (0,
+ 		 gettext ("cannot get program header index at offset %d: %s"),
+ 		 i, elf_errmsg (-1));
+ 	  result = 1;
+@@ -356,7 +356,7 @@
+ 					       * sizeof (segments[0]));
+ 	      if (segments == NULL)
+ 		{
+-		  error (0, 0, gettext ("\
++		  err (0, gettext ("\
+ cannot get program header index at offset %d: %s"),
+ 			 i, elf_errmsg (-1));
+ 		  result = 1;
+@@ -407,7 +407,7 @@
+ 
+ 	  if (shdr == NULL)
+ 	    {
+-	      error (0, 0,
++	      err (0,
+ 		     gettext ("cannot get section header of section %Zu: %s"),
+ 		     elf_ndxscn (scn), elf_errmsg (-1));
+ 	      result = 1;
+@@ -420,7 +420,7 @@
+ 	      symscn = elf_getscn (elf, shdr->sh_link);
+ 	      if (symscn == NULL)
+ 		{
+-		  error (0, 0, gettext ("\
++		  err (0, gettext ("\
+ cannot get symbol table section %zu in '%s': %s"),
+ 			 (size_t) shdr->sh_link, fname, elf_errmsg (-1));
+ 		  result = 1;
+@@ -440,7 +440,7 @@
+ 		  GElf_Rel *rel = gelf_getrel (data, cnt, &rel_mem);
+ 		  if (rel == NULL)
+ 		    {
+-		      error (0, 0, gettext ("\
++		      err (0, gettext ("\
+ cannot get relocation at index %d in section %zu in '%s': %s"),
+ 			     cnt, elf_ndxscn (scn), fname, elf_errmsg (-1));
+ 		      result = 1;
+@@ -463,7 +463,7 @@
+ 		  GElf_Rela *rela = gelf_getrela (data, cnt, &rela_mem);
+ 		  if (rela == NULL)
+ 		    {
+-		      error (0, 0, gettext ("\
++		      err (0, gettext ("\
+ cannot get relocation at index %d in section %zu in '%s': %s"),
+ 			     cnt, elf_ndxscn (scn), fname, elf_errmsg (-1));
+ 		      result = 1;
+

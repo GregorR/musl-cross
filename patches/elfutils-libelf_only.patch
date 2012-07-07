@@ -1,0 +1,30 @@
+diff --git a/Makefile.am b/Makefile.am
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -30,8 +30,9 @@
+ pkginclude_HEADERS = version.h
+ 
+ # Add doc back when we have some real content.
+-SUBDIRS = config m4 lib libelf libebl libdwfl libdw libcpu libasm backends \
+-	  src po tests
++#SUBDIRS = config m4 lib libelf libebl libdwfl libdw libcpu libasm backends \
++#	  src po tests
++SUBDIRS = libelf
+ 
+ EXTRA_DIST = elfutils.spec GPG-KEY NOTES EXCEPTION
+ 
+diff --git a/Makefile.in b/Makefile.in
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -248,8 +248,9 @@
+ pkginclude_HEADERS = version.h
+ 
+ # Add doc back when we have some real content.
+-SUBDIRS = config m4 lib libelf libebl libdwfl libdw libcpu libasm backends \
+-	  src po tests
++#SUBDIRS = config m4 lib libelf libebl libdwfl libdw libcpu libasm backends \
++#	  src po tests
++SUBDIRS = libelf
+ 
+ EXTRA_DIST = elfutils.spec GPG-KEY NOTES EXCEPTION
+ 
