@@ -5,7 +5,7 @@ config.sh to make cross-compilers to other architectures, and even copy
 config.sh to another directory then run build.sh from there to avoid polluting
 the source dir.
 
-Some further notes:
+Some notes on building normal cross compilers:
 
 * For ARM, you must set the triple to arm-linux-musleabi (eabi is the important
   bit here)
@@ -18,3 +18,29 @@ Some further notes:
 * You can use a git checkout of musl with:
   MUSL_VERSION=<git tag or commit>
   MUSL_GIT=yes
+
+
+Additionally, some other scripts and helpers are provided:
+
+* config.sh is an example configuration file. In many cases, it will do exactly
+  what you want it to do with no modification, which is why it's simply named
+  "config.sh" instead of, e.g., "config-sample.sh"
+
+* extra/build-gcc-deps.sh will build the dependencies for GCC into the build
+  prefix specified by config.sh, which are just
+  often a nice thing to have. It is of course not necessary.
+
+* extra/build-tarballs.sh builds convenient musl cross-compiler tarballs in a
+  rather inconvenient way. It first builds a musl cross-compiler to the host
+  platform (e.g. i686), then it uses that to build static cross-compilers to
+  various platforms. As a result, building e.g. three cross-compiler tarballs
+  involves eight compiler build phases (read: this is slow). However, the
+  resultant tarballs are cross-compilers statically linked against musl, making
+  them stable and portable.
+
+* config-static.sh is an example configuration file for building a static
+  cross-compiler. You can use this if, e.g., you already have a build of musl
+  (and so have musl-gcc) but would like to make a complete, static
+  cross-compiler based on that, or if you already have a musl cross-compiler
+  (and so have <arch>-linux-musl-gcc) but would like to make a static
+  cross-compiler itself compiled against musl.
