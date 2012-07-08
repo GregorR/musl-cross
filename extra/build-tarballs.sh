@@ -26,14 +26,23 @@ set -ex
 HG_ID=`cd "$MUSL_CC_BASE" ; hg id | sed 's/ .*//'`
 
 cleanup() {
-    rm -rf {binutils,gcc,linux,musl,gmp,mpfr,mpc}-*/{configured,build,built,installed}*
-    for p in {musl,gmp,mpfr,mpc}-*/
+    for pkg in binutils gcc linux musl gmp mpfr mpc
+    do
+        for bf in configured build built installed
+        do
+            rm -rf $pkg-*/$bf*
+        done
+    done
+    unset bf
+
+    for pkg in musl-*/ gmp-*/ mpfr-*/ mpc-*/
     do
         (
-        cd $p
+        cd $pkg &&
         make distclean || true
         )
     done
+    unset pkg
 }
 
 if [ -e config.sh ]
