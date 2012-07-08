@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/sh
 # Build a cross-compiler
 # 
 # Copyright (C) 2012 Gregor Richards
@@ -20,8 +20,8 @@ then
     MUSL_CC_BASE=`dirname "$0"`
 fi
 
-# Fail on any command failing:
-set -e
+# Fail on any command failing, show commands:
+set -ex
 
 BINUTILS_CONFFLAGS=
 GCC_BOOTSTRAP_CONFFLAGS=
@@ -48,17 +48,19 @@ buildinstall 1 gcc-$GCC_VERSION --target=$TRIPLE \
 fetchextract http://www.kernel.org/pub/linux/kernel/v3.0/ linux-$LINUX_HEADERS_VERSION .tar.bz2
 if [ ! -e linux-$LINUX_HEADERS_VERSION/configured ]
 then
-    pushd linux-$LINUX_HEADERS_VERSION
+    (
+    cd linux-$LINUX_HEADERS_VERSION
     make defconfig ARCH=$LINUX_ARCH
     touch configured
-    popd
+    )
 fi
 if [ ! -e linux-$LINUX_HEADERS_VERSION/installedheaders ]
 then
-    pushd linux-$LINUX_HEADERS_VERSION
+    (
+    cd linux-$LINUX_HEADERS_VERSION
     make headers_install ARCH=$LINUX_ARCH INSTALL_HDR_PATH="$CC_PREFIX/$TRIPLE"
     touch installedheaders
-    popd
+    )
 fi
 
 # musl in CC prefix

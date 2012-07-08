@@ -1,6 +1,6 @@
-ARCH=`uname -m`
-TRIPLE=$ARCH-linux-musl
-CC_PREFIX=/opt/cross/$TRIPLE
+# ARCH will be auto-detected as the host if not specified
+#ARCH=i486
+CC_BASE_PREFIX=/opt/cross
 MAKEFLAGS=-j8
 
 GCC_BOOTSTRAP_CONFFLAGS=--disable-lto-plugin

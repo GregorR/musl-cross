@@ -14,10 +14,12 @@
 # OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
 
-pushd "$MUSL_CC_BASE"
+ORIGPWD="$PWD"
+cd "$MUSL_CC_BASE"
 MUSL_CC_BASE="$PWD"
 export MUSL_CC_BASE
-popd
+cd "$ORIGPWD"
+unset ORIGPWD
 
 if [ ! -e config.sh ]
 then
@@ -42,7 +44,38 @@ MUSL_GIT_VERSION=ec820f1262a5d6331ad0fe9b56a8a84365766fd1
 MUSL_VERSION="$MUSL_DEFAULT_VERSION"
 MUSL_GIT=no
 
-. config.sh
+. ./config.sh
+
+# Auto-deteect an ARCH if not specified
+if [ -z "$ARCH" ]
+then
+    for MAYBECC in cc gcc clang
+    do
+        $MAYBECC -dumpmachine > /dev/null 2> /dev/null &&
+        ARCH=`$MAYBECC -dumpmachine | sed 's/-.*//'` &&
+        break
+    done
+    unset MAYBECC
+
+    [ -z "$ARCH" ] && ARCH=`uname -m`
+fi
+
+# Auto-detect a TRIPLE if not specified
+if [ -z "$TRIPLE" ]
+then
+    case "$ARCH" in
+        arm*)
+            TRIPLE="$ARCH-linux-musleabi"
+            ;;
+        *)
+            TRIPLE="$ARCH-linux-musl"
+            ;;
+    esac
+fi
+
+# Generate CC_PREFIX from CC_BASE_PREFIX and TRIPLE if not specified
+[ -n "$CC_BASE_PREFIX" -a -z "$CC_PREFIX" ] && CC_PREFIX="$CC_BASE_PREFIX/$TRIPLE"
+[ -z "$CC_PREFIX" ] && die 'Failed to determine a CC_PREFIX.'
 
 PATH="$CC_PREFIX/bin:$PATH"
 export PATH
@@ -91,10 +124,11 @@ gitfetchextract() {
     if [ ! -e "$3/extracted" ]
     then
         mkdir -p "$3"
-        pushd "$3" || die "Failed to pushd $3"
+        (
+        cd "$3" || die "Failed to cd $3"
         extract "$3".tar.gz extracted
         touch extracted
-        popd
+        )
     fi
 }
 
@@ -110,14 +144,15 @@ muslfetchextract() {
 patch_source() {
     BD="$1"
 
-    pushd "$BD" || die "Failed to pushd $BD"
+    (
+    cd "$BD" || die "Failed to cd $BD"
 
     if [ -e "$MUSL_CC_BASE/patches/$BD"-musl.diff -a ! -e patched ]
     then
         patch -p1 < "$MUSL_CC_BASE/patches/$BD"-musl.diff || die "Failed to patch $BD"
         touch patched
     fi
-    popd
+    )
 }
 
 build() {
@@ -131,7 +166,8 @@ build() {
     then
         patch_source "$BD"
 
-        pushd "$BD" || die "Failed to pushd $BD"
+        (
+        cd "$BD" || die "Failed to cd $BD"
 
         if [ "$BP" ]
         then
@@ -144,7 +180,7 @@ build() {
             touch "$BUILT" ) ||
             die "Failed to build $BD"
 
-        popd
+        )
     fi
 }
 
@@ -155,7 +191,8 @@ buildmake() {
 
     if [ ! -e "$BUILT" ]
     then
-        pushd "$BD" || die "Failed to pushd $BD"
+        (
+        cd "$BD" || die "Failed to cd $BD"
 
         if [ -e "$MUSL_CC_BASE/$BD"-musl.diff -a ! -e patched ]
         then
@@ -167,7 +204,7 @@ buildmake() {
             touch "$BUILT" ) ||
             die "Failed to build $BD"
 
-        popd
+        )
     fi
 }
 
@@ -179,7 +216,8 @@ doinstall() {
 
     if [ ! -e "$INSTALLED" ]
     then
-        pushd "$BD" || die "Failed to pushd $BD"
+        (
+        cd "$BD" || die "Failed to cd $BD"
 
         if [ "$BP" ]
         then
@@ -190,7 +228,7 @@ doinstall() {
             touch "$INSTALLED" ) ||
             die "Failed to install $BP"
 
-        popd
+        )
     fi
 }
 

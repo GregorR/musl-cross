@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/sh
 # Build tarballs of various musl cross-compilers
 # 
 # Copyright (C) 2012 Gregor Richards
@@ -20,21 +20,19 @@ then
     MUSL_CC_BASE=`dirname "$0"`/..
 fi
 
-# Fail on any command failing:
-set -e
+set -ex
 
 # Figure out our id
-pushd "$MUSL_CC_BASE"
-HG_ID=`hg id | sed 's/ .*//'`
-popd
+HG_ID=`cd "$MUSL_CC_BASE" ; hg id | sed 's/ .*//'`
 
 cleanup() {
     rm -rf {binutils,gcc,linux,musl,gmp,mpfr,mpc}-*/{configured,build,built,installed}*
     for p in {musl,gmp,mpfr,mpc}-*/
     do
-        pushd $p
+        (
+        cd $p
         make distclean || true
-        popd
+        )
     done
 }
 
@@ -60,12 +58,14 @@ NATIVE_ARCH="$1"
 
 for ARCH in "$@"
 do
-    if expr "$ARCH" : 'arm' > /dev/null 2> /dev/null
-    then
-        TRIPLE="$ARCH-linux-musleabi"
-    else
-        TRIPLE="$ARCH-linux-musl"
-    fi
+    case "$ARCH" in
+        arm*)
+            TRIPLE="$ARCH-linux-musleabi"
+            ;;
+        *)
+            TRIPLE="$ARCH-linux-musl"
+            ;;
+    esac
 
     if [ "$ARCH" = "$NATIVE_ARCH" ]
     then
@@ -113,11 +113,12 @@ GCC_CONFFLAGS=--disable-lto-plugin' > config.sh
         cleanup
 
         # Make the tarball
-        pushd "$PREFIX_BASE"
+        (
+        cd "$PREFIX_BASE"
         rm -rf "$TRIPLE/share"
         find "$TRIPLE/bin" "$TRIPLE/libexec/gcc" -type f -exec "$NATIVE_CROSS-strip" --strip-unneeded '{}' ';'
         echo 'Cross-compiler prefix built by musl-cross '"$HG_ID"': http://www.bitbucket.org/GregorR/musl-cross' > "$TRIPLE/info.txt"
         tar -cf - "$TRIPLE/" | xz -c > "$T_PRE$TRIPLE$T_SUFF.tar.xz"
-        popd
+        )
     fi
 done

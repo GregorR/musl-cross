@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/sh
 # Build deps for GCC
 # 
 # Copyright (C) 2012 Gregor Richards
@@ -20,8 +20,7 @@ then
     MUSL_CC_BASE=`dirname "$0"`/..
 fi
 
-# Fail on any command failing:
-set -e
+set -ex
 
 . "$MUSL_CC_BASE"/defs.sh
 
