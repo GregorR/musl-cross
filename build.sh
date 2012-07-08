@@ -64,12 +64,10 @@ then
 fi
 
 # musl in CC prefix
-PREFIX="/"
-export PREFIX
+PREFIX="$CC_PREFIX/$TRIPLE"
 muslfetchextract
-CC="$TRIPLE-gcc" AR="$TRIPLE-ar" RANLIB="$TRIPLE-ranlib" \
-    DESTDIR="$CC_PREFIX/$TRIPLE" buildinstall '' musl-$MUSL_VERSION \
-    --enable-debug $MUSL_CONFFLAGS
+buildinstall '' musl-$MUSL_VERSION \
+    --enable-debug CC="$TRIPLE-gcc" $MUSL_CONFFLAGS
 unset PREFIX
 PREFIX="$CC_PREFIX"
 
