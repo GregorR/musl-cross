@@ -1,22 +1,3 @@
-diff --git a/config.sub b/config.sub
---- a/config.sub
-+++ b/config.sub
-@@ -125,6 +125,7 @@
- maybe_os=`echo $1 | sed 's/^\(.*\)-\([^-]*-[^-]*\)$/\2/'`
- case $maybe_os in
-   nto-qnx* | linux-gnu* | linux-android* | linux-dietlibc | linux-newlib* | \
-+  linux-musl* | \
-   linux-uclibc* | uclinux-uclibc* | uclinux-gnu* | kfreebsd*-gnu* | \
-   knetbsd*-gnu* | netbsd*-gnu* | \
-   kopensolaris*-gnu* | \
-@@ -1335,6 +1336,7 @@
- 	      | -cygwin* | -pe* | -psos* | -moss* | -proelf* | -rtems* \
- 	      | -mingw32* | -linux-gnu* | -linux-android* \
- 	      | -linux-newlib* | -linux-uclibc* \
-+	      | -linux-musl* \
- 	      | -uxpv* | -beos* | -mpeix* | -udk* \
- 	      | -interix* | -uwin* | -mks* | -rhapsody* | -darwin* | -opened* \
- 	      | -openstep* | -oskit* | -conix* | -pw32* | -nonstopux* \
 diff -ur binutils-2.22.orig//bfd/elf-bfd.h binutils-2.22//bfd/elf-bfd.h
 --- binutils-2.22.orig//bfd/elf-bfd.h	2012-04-18 01:35:58.138000025 +0000
 +++ binutils-2.22//bfd/elf-bfd.h	2012-04-18 01:38:02.835000025 +0000
