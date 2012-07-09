@@ -50,6 +50,7 @@ then
     echo 'Please use a fresh directory.'
     exit 1
 fi
+touch extraconfig.sh
 
 if [ ! "$4" ]
 then
@@ -84,7 +85,8 @@ do
             echo 'ARCH='$ARCH'
 TRIPLE='$TRIPLE'
 CC_PREFIX="'"$PREFIX_BASE/bootstrap"'"
-MAKEFLAGS="'"$MAKEFLAGS"'"' > config.sh
+MAKEFLAGS="'"$MAKEFLAGS"'"
+. ./extraconfig.sh' > config.sh
 
             # Build the bootstrap one first
             "$MUSL_CC_BASE"/build.sh
@@ -110,7 +112,8 @@ CC="'"$NATIVE_CROSS-gcc"' -Wl,-Bstatic -static-libgcc"
 CXX="'"$NATIVE_CROSS-g++"' -Wl,-Bstatic -static-libgcc"
 export CC CXX
 GCC_BOOTSTRAP_CONFFLAGS=--disable-lto-plugin
-GCC_CONFFLAGS=--disable-lto-plugin' > config.sh
+GCC_CONFFLAGS=--disable-lto-plugin
+. ./extraconfig.sh' > config.sh
 
         # And build
         "$MUSL_CC_BASE"/build.sh

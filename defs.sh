@@ -82,7 +82,7 @@ export PATH
 
 case "$ARCH" in
     i*86) LINUX_ARCH=i386 ;;
-    armeb) LINUX_ARCH=arm ;;
+    arm*) LINUX_ARCH=arm ;;
     *) LINUX_ARCH="$ARCH" ;;
 esac
 export LINUX_ARCH
