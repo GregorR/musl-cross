@@ -224,7 +224,7 @@ doinstall() {
             cd build"$BP" || die "Failed to cd build$BP"
         fi
 
-        ( make install "$@" &&
+        ( make install "$@" $MAKEINSTALLFLAGS &&
             touch "$INSTALLED" ) ||
             die "Failed to install $BP"
 
