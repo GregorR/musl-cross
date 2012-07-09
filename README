@@ -15,9 +15,26 @@ Some notes on building normal cross compilers:
   GCC_VERSION=<version>
   MUSL_VERSION=<version>
 
+* You can set configure flags for each step:
+  BINUTILS_CONFFLAGS=...
+  GCC_BOOTSTRAP_CONFFLAGS=...
+  MUSL_CONFFLAGS=...
+  GCC_CONFFLAGS=...
+
 * You can use a git checkout of musl with:
   MUSL_VERSION=<git tag or commit>
   MUSL_GIT=yes
+
+
+Some recommendations:
+
+* If you would like to target a specific CPU revision, usually this is done by
+  GCC configuration options like so:
+    GCC_BOOTSTRAP_CONFFLAGS="--with-cpu=armv4t"
+    GCC_CONFFLAGS="--with-cpu=armv4t"
+
+  For ix86 however, it is more common to do this by the target name, e.g.
+  i486-linux-musl instead of i686-linux-musl.
 
 
 Additionally, some other scripts and helpers are provided:
