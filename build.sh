@@ -77,4 +77,14 @@ buildinstall 2 gcc-$GCC_VERSION --target=$TRIPLE \
     $GCC_CONFFLAGS
 
 # un"fix" headers
-rm -rf "$CC_PREFIX/lib/gcc/$TRIPLE"/*/include-fixed/
+rm -rf "$CC_PREFIX/lib/gcc/$TRIPLE"/*/include-fixed/ "$CC_PREFIX/lib/gcc/$TRIPLE"/*/include/stddef.h
+
+# make backwards-named compilers for easier cross-compiling
+(
+    cd "$CC_PREFIX/bin"
+    for tool in $TRIPLE-*
+    do
+        btool=`echo "$tool" | sed 's/-linux-musl/-musl-linux/'`
+        [ "$tool" != "$btool" -a ! -e "$btool" ] && ln -s $tool $btool
+    done
+)
