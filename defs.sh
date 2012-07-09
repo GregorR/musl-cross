@@ -95,18 +95,21 @@ die() {
 fetch() {
     if [ ! -e "$MUSL_CC_BASE/tarballs/$2" ]
     then
-        wget "$1""$2" -O "$MUSL_CC_BASE/tarballs/$2" || ( rm -f "$MUSL_CC_BASE/tarballs/$2" && return 1 )
+        wget -c "$1""$2" -O "$MUSL_CC_BASE/tarballs/$2.part"
+        mv "$MUSL_CC_BASE/tarballs/$2.part" "$MUSL_CC_BASE/tarballs/$2"
     fi
     return 0
 }
 
 extract() {
-    if [ ! -e "$2" ]
+    if [ ! -e "$2/extracted" ]
     then
         tar xf "$MUSL_CC_BASE/tarballs/$1" ||
             tar Jxf "$MUSL_CC_BASE/tarballs/$1" ||
             tar jxf "$MUSL_CC_BASE/tarballs/$1" ||
             tar zxf "$MUSL_CC_BASE/tarballs/$1"
+        mkdir -p "$2"
+        touch "$2/extracted"
     fi
 }
 
