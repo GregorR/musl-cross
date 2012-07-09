@@ -33,7 +33,13 @@ GCC_CONFFLAGS=
 PREFIX="$CC_PREFIX"
 
 # binutils
-fetchextract http://ftp.gnu.org/gnu/binutils/ binutils-$BINUTILS_VERSION .tar.bz2
+if [ "$BINUTILS_VERSION" = "2.17" ]
+then
+    # The version of the latest GPLv2 binutils on gnu.org is a lie...
+    fetchextract http://landley.net/aboriginal/mirror/ binutils-$BINUTILS_VERSION .tar.bz2
+else
+    fetchextract http://ftp.gnu.org/gnu/binutils/ binutils-$BINUTILS_VERSION .tar.bz2
+fi
 buildinstall 1 binutils-$BINUTILS_VERSION --target=$TRIPLE $BINUTILS_CONFFLAGS
 
 # gcc 1
@@ -70,6 +76,12 @@ buildinstall '' musl-$MUSL_VERSION \
     --enable-debug CC="$TRIPLE-gcc" $MUSL_CONFFLAGS
 unset PREFIX
 PREFIX="$CC_PREFIX"
+
+# if it didn't build libc.so, disable dynamic linking
+if [ ! -e "$CC_PREFIX/$TRIPLE/lib/libc.so" ]
+then
+    GCC_CONFFLAGS="--disable-shared $GCC_CONFFLAGS"
+fi
 
 # gcc 2
 buildinstall 2 gcc-$GCC_VERSION --target=$TRIPLE \
