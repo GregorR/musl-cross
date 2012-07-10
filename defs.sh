@@ -32,10 +32,10 @@ BINUTILS_VERSION=2.22
 # later elfutils versions currently nonworking
 ELFUTILS_VERSION=0.152
 GCC_VERSION=4.7.1
-GMP_VERSION=5.0.5
+GMP_VERSION=4.3.2
 LINUX_HEADERS_VERSION=3.2.21
-MPC_VERSION=0.9
-MPFR_VERSION=3.1.1
+MPC_VERSION=0.8.1
+MPFR_VERSION=2.4.2
 
 # musl can optionally be checked out from GIT, in which case MUSL_VERSION must
 # be set to a git tag and MUSL_GET set to yes in config.sh
@@ -153,7 +153,7 @@ gccprereqs() {
 
     if [ ! -e gcc-$GCC_VERSION/mpfr ]
     then
-        fetchextract http://www.mpfr.org/mpfr-current/ mpfr-$MPFR_VERSION .tar.bz2
+        fetchextract http://ftp.gnu.org/gnu/mpfr/ mpfr-$MPFR_VERSION .tar.bz2
         mv mpfr-$MPFR_VERSION gcc-$GCC_VERSION/mpfr
     fi
 

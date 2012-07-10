@@ -33,7 +33,7 @@ cp -f "$MUSL_CC_BASE/extra/config.sub" gmp-$GMP_VERSION/configfsf.sub
 buildinstall '' gmp-$GMP_VERSION --host="$TRIPLE" --enable-static --disable-shared
 
 # MPFR
-fetchextract http://www.mpfr.org/mpfr-current/ mpfr-$MPFR_VERSION .tar.bz2
+fetchextract http://ftp.gnu.org/gnu/mpfr/ mpfr-$MPFR_VERSION .tar.bz2
 cp -f "$MUSL_CC_BASE/extra/config.sub" mpfr-$MPFR_VERSION/config.sub
 buildinstall '' mpfr-$MPFR_VERSION --host="$TRIPLE" --enable-static --disable-shared CC="$TRIPLE-gcc"
 
