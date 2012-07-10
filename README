@@ -25,6 +25,10 @@ Some notes on building normal cross compilers:
   MUSL_VERSION=<git tag or commit>
   MUSL_GIT=yes
 
+* If you do not have the GMP, MPFR and/or MPC development libraries on your
+  host, you can build them along with GCC with a config.sh line:
+  GCC_BUILTIN_PREREQS=yes
+
 
 Some recommendations:
 

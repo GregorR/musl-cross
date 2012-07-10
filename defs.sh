@@ -144,6 +144,26 @@ muslfetchextract() {
     fi
 }
 
+gccprereqs() {
+    if [ ! -e gcc-$GCC_VERSION/gmp ]
+    then
+        fetchextract ftp://ftp.gmplib.org/pub/gmp-$GMP_VERSION/ gmp-$GMP_VERSION .tar.bz2
+        mv gmp-$GMP_VERSION gcc-$GCC_VERSION/gmp
+    fi
+
+    if [ ! -e gcc-$GCC_VERSION/mpfr ]
+    then
+        fetchextract http://www.mpfr.org/mpfr-current/ mpfr-$MPFR_VERSION .tar.bz2
+        mv mpfr-$MPFR_VERSION gcc-$GCC_VERSION/mpfr
+    fi
+
+    if [ ! -e gcc-$GCC_VERSION/mpc ]
+    then
+        fetchextract http://www.multiprecision.org/mpc/download/ mpc-$MPC_VERSION .tar.gz
+        mv mpc-$MPC_VERSION gcc-$GCC_VERSION/mpc
+    fi
+}
+
 patch_source() {
     BD="$1"
 

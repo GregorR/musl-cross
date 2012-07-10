@@ -44,6 +44,7 @@ buildinstall 1 binutils-$BINUTILS_VERSION --target=$TRIPLE $BINUTILS_CONFFLAGS
 
 # gcc 1
 fetchextract http://ftp.gnu.org/gnu/gcc/gcc-$GCC_VERSION/ gcc-$GCC_VERSION .tar.bz2
+[ "$GCC_BUILTIN_PREREQS" = "yes" ] && gccprereqs
 buildinstall 1 gcc-$GCC_VERSION --target=$TRIPLE \
     --enable-languages=c --with-newlib --disable-multilib --disable-libssp \
     --disable-libquadmath --disable-threads --disable-decimal-float \
