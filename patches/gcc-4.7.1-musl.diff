@@ -150,6 +150,15 @@ diff --git a/gcc/config/linux.opt b/gcc/config/linux.opt
 +mmusl
 +Target Report RejectNegative Var(linux_libc,LIBC_MUSL) Negative(mglibc)
 +Use musl C library
+diff --git a/gcc/config/mips/linux.h b/gcc/config/mips/linux.h
+--- a/gcc/config/mips/linux.h
++++ b/gcc/config/mips/linux.h
+@@ -19,3 +19,5 @@
+ <http://www.gnu.org/licenses/>.  */
+ 
+ #define GLIBC_DYNAMIC_LINKER "/lib/ld.so.1"
++
++#define MUSL_DYNAMIC_LINKER "/lib/ld-musl-mips.so.1"
 diff --git a/gcc/ginclude/stddef.h b/gcc/ginclude/stddef.h
 --- a/gcc/ginclude/stddef.h
 +++ b/gcc/ginclude/stddef.h

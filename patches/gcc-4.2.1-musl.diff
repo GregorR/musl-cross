@@ -122,6 +122,18 @@ diff --git a/gcc/config/linux.opt b/gcc/config/linux.opt
 +mmusl
 +Target RejectNegative Report Mask(MUSL) Var(linux_musl) Init(MUSL_DEFAULT ? OPTION_MASK_MUSL : 0)
 +Use musl C library
+diff --git a/gcc/config/mips/linux.h b/gcc/config/mips/linux.h
+--- a/gcc/config/mips/linux.h
++++ b/gcc/config/mips/linux.h
+@@ -106,6 +106,8 @@
+ 
+ #define GLIBC_DYNAMIC_LINKER "/lib/ld.so.1"
+ 
++#define MUSL_DYNAMIC_LINKER "/lib/ld-musl-mips.so.1"
++
+ /* Borrowed from sparc/linux.h */
+ #undef LINK_SPEC
+ #define LINK_SPEC \
 diff --git a/gcc/ginclude/stddef.h b/gcc/ginclude/stddef.h
 --- a/gcc/ginclude/stddef.h
 +++ b/gcc/ginclude/stddef.h
