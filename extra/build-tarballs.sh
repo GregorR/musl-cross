@@ -125,6 +125,7 @@ GCC_CONFFLAGS=--disable-lto-plugin
         cleanup
 
         # Make the tarball
+        cp -f extraconfig.sh "$PREFIX_BASE/$TRIPLE/extraconfig.sh"
         (
         cd "$PREFIX_BASE"
         rm -rf "$TRIPLE/share"
