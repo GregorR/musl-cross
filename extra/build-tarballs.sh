@@ -118,7 +118,7 @@ GCC_CONFFLAGS=--disable-lto-plugin
         # And build
         "$MUSL_CC_BASE"/build.sh
         sed -E '/^C(C|XX)=/d ; /^export/d' -i config.sh
-        "$MUSL_CC_BASE"/extra/build-gcc-deps.sh
+        [ "$NO_GCC_DEPS" != "yes"] && "$MUSL_CC_BASE"/extra/build-gcc-deps.sh
 
         # Clean up
         rm -f config.sh
