@@ -11,3 +11,10 @@ case "$ARCH" in
         GCC_CONFFLAGS="$GCC_CONFFLAGS --with-arch=mips2"
         ;;
 esac
+
+case "$ARCH" in
+    *-sf*)
+        GCC_BOOTSTRAP_CONFFLAGS="$GCC_BOOTSTRAP_CONFFLAGS --with-float=soft"
+        GCC_CONFFLAGS="$GCC_CONFFLAGS --with-float=soft"
+        ;;
+esac

@@ -81,10 +81,11 @@ fi
 PATH="$CC_PREFIX/bin:$PATH"
 export PATH
 
-case "$ARCH" in
+LINUX_ARCH=`echo "$ARCH" | sed 's/-.*//'`
+case "$LINUX_ARCH" in
     i*86) LINUX_ARCH=i386 ;;
     arm*) LINUX_ARCH=arm ;;
-    *) LINUX_ARCH="$ARCH" ;;
+    mips*) LINUX_ARCH=mips ;;
 esac
 export LINUX_ARCH
 
