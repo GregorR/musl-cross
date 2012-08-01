@@ -5,43 +5,52 @@ config.sh to make cross-compilers to other architectures, and even copy
 config.sh to another directory then run build.sh from there to avoid polluting
 the source dir.
 
-Some notes on building normal cross compilers:
+
+Notes on building normal cross compilers
+========================================
 
 * For ARM, you must set the triple to arm-linux-musleabi (eabi is the important
   bit here)
 
 * You can set versions of binutils, GCC or musl in config.sh with:
-  BINUTILS_VERSION=<version>
-  GCC_VERSION=<version>
-  MUSL_VERSION=<version>
+
+        BINUTILS_VERSION=<version>
+        GCC_VERSION=<version>
+        MUSL_VERSION=<version>
 
 * You can set configure flags for each step:
-  BINUTILS_CONFFLAGS=...
-  GCC_BOOTSTRAP_CONFFLAGS=...
-  MUSL_CONFFLAGS=...
-  GCC_CONFFLAGS=...
+
+        BINUTILS_CONFFLAGS=...
+        GCC_BOOTSTRAP_CONFFLAGS=...
+        MUSL_CONFFLAGS=...
+        GCC_CONFFLAGS=...
 
 * You can use a git checkout of musl with:
-  MUSL_VERSION=<git tag or commit>
-  MUSL_GIT=yes
+
+        MUSL_VERSION=<git tag or commit>
+        MUSL_GIT=yes
 
 * If you do not have the GMP, MPFR and/or MPC development libraries on your
   host, you can build them along with GCC with a config.sh line:
-  GCC_BUILTIN_PREREQS=yes
+
+        GCC_BUILTIN_PREREQS=yes
 
 
-Some recommendations:
+Recommendations
+===============
 
 * If you would like to target a specific CPU revision, usually this is done by
   GCC configuration options like so:
-    GCC_BOOTSTRAP_CONFFLAGS="--with-cpu=armv4t"
-    GCC_CONFFLAGS="--with-cpu=armv4t"
+
+        GCC_BOOTSTRAP_CONFFLAGS="--with-cpu=armv4t"
+        GCC_CONFFLAGS="--with-cpu=armv4t"
 
   For ix86 however, it is more common to do this by the target name, e.g.
   i486-linux-musl instead of i686-linux-musl.
 
 
-Additionally, some other scripts and helpers are provided:
+Other scripts and helpers
+=========================
 
 * config.sh is an example configuration file. In many cases, it will do exactly
   what you want it to do with no modification, which is why it's simply named
@@ -65,3 +74,24 @@ Additionally, some other scripts and helpers are provided:
   cross-compiler based on that, or if you already have a musl cross-compiler
   (and so have <arch>-linux-musl-gcc) but would like to make a static
   cross-compiler itself compiled against musl.
+
+
+Requirements
+============
+
+musl-cross depends on:
+
+* shell and core utils (busybox is fine)
+* mercurial or git (for checkout only)
+* wget (GNU, not busybox)
+* patch
+* gcc
+* make
+* gawk
+
+The following are GCC dependencies, which can be installed on the host system,
+or installed automatically using `GCC_BUILTIN_PREREQS=yes`:
+
+* gmp
+* mpfr
+* mpc
