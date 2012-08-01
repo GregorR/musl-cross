@@ -95,3 +95,5 @@ or installed automatically using `GCC_BUILTIN_PREREQS=yes`:
 * gmp
 * mpfr
 * mpc
+
+Building GMP additionally requires m4.
