@@ -2,8 +2,8 @@
 
 case "$ARCH" in
     arm*)
-        GCC_BOOTSTRAP_CONFFLAGS="$GCC_BOOTSTRAP_CONFFLAGS --with-arch=armv5t"
-        GCC_CONFFLAGS="$GCC_CONFFLAGS --with-arch=armv5t"
+        GCC_BOOTSTRAP_CONFFLAGS="$GCC_BOOTSTRAP_CONFFLAGS --with-arch=armv4t"
+        GCC_CONFFLAGS="$GCC_CONFFLAGS --with-arch=armv4t"
         ;;
 
     mips*)
