@@ -43,9 +43,9 @@ cp -f "$MUSL_CC_BASE/extra/config.sub" mpc-$MPC_VERSION/config.sub
 buildinstall '' mpc-$MPC_VERSION --host="$TRIPLE" --enable-static --disable-shared
 
 # elfutils
-fetchextract https://fedorahosted.org/releases/e/l/elfutils/$ELFUTILS_VERSION/ elfutils-$ELFUTILS_VERSION .tar.bz2
-cp -f "$MUSL_CC_BASE/extra/config.sub" elfutils-$ELFUTILS_VERSION/config/config.sub
-buildinstall '' \
-    elfutils-$ELFUTILS_VERSION --host="$TRIPLE" --disable-shared --disable-nls \
-    ac_cv_tls=no
-rm -f "$CC_PREFIX/$TRIPLE/lib"/libelf*.so*
+#fetchextract https://fedorahosted.org/releases/e/l/elfutils/$ELFUTILS_VERSION/ elfutils-$ELFUTILS_VERSION .tar.bz2
+#cp -f "$MUSL_CC_BASE/extra/config.sub" elfutils-$ELFUTILS_VERSION/config/config.sub
+#buildinstall '' \
+#    elfutils-$ELFUTILS_VERSION --host="$TRIPLE" --disable-shared --disable-nls \
+#    ac_cv_tls=no
+#rm -f "$CC_PREFIX/$TRIPLE/lib"/libelf*.so*
