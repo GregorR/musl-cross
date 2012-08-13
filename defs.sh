@@ -74,6 +74,18 @@ then
     esac
 fi
 
+# Use gmake if it exists
+if [ -z "$MAKE" ]
+then
+    gmake --help > /dev/null 2>&1
+    if [ "$?" = "0" ]
+    then
+        MAKE=gmake
+    else
+        MAKE=make
+    fi
+fi
+
 # Generate CC_PREFIX from CC_BASE_PREFIX and TRIPLE if not specified
 [ -n "$CC_BASE_PREFIX" -a -z "$CC_PREFIX" ] && CC_PREFIX="$CC_BASE_PREFIX/$TRIPLE"
 [ -z "$CC_PREFIX" ] && die 'Failed to determine a CC_PREFIX.'
@@ -201,7 +213,7 @@ build() {
             CF="../configure"
         fi
         ( $CF --prefix="$PREFIX" "$@" &&
-            make $MAKEFLAGS &&
+            $MAKE $MAKEFLAGS &&
             touch "$BUILT" ) ||
             die "Failed to build $BD"
 
@@ -225,7 +237,7 @@ buildmake() {
             touch patched
         fi
 
-        ( make "$@" $MAKEFLAGS &&
+        ( $MAKE "$@" $MAKEFLAGS &&
             touch "$BUILT" ) ||
             die "Failed to build $BD"
 
@@ -249,7 +261,7 @@ doinstall() {
             cd build"$BP" || die "Failed to cd build$BP"
         fi
 
-        ( make install "$@" $MAKEINSTALLFLAGS &&
+        ( $MAKE install "$@" $MAKEINSTALLFLAGS &&
             touch "$INSTALLED" ) ||
             die "Failed to install $BP"
 
