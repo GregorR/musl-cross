@@ -77,13 +77,8 @@ fi
 # Use gmake if it exists
 if [ -z "$MAKE" ]
 then
-    gmake --help > /dev/null 2>&1
-    if [ "$?" = "0" ]
-    then
-        MAKE=gmake
-    else
-        MAKE=make
-    fi
+    MAKE=make
+    gmake --help && MAKE=gmake
 fi
 
 # Generate CC_PREFIX from CC_BASE_PREFIX and TRIPLE if not specified
