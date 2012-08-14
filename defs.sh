@@ -78,7 +78,7 @@ fi
 if [ -z "$MAKE" ]
 then
     MAKE=make
-    gmake --help && MAKE=gmake
+    gmake --help > /dev/null 2>&1 && MAKE=gmake
 fi
 
 # Generate CC_PREFIX from CC_BASE_PREFIX and TRIPLE if not specified
