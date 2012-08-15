@@ -29,11 +29,10 @@ fi
 
 # Versions of things (do this before config.sh so they can be config'd)
 BINUTILS_VERSION=2.22
-# later elfutils versions currently nonworking
-ELFUTILS_VERSION=0.152
 GCC_VERSION=4.7.1
 GDB_VERSION=7.4.1
 GMP_VERSION=4.3.2
+LIBELF_VERSION=71bf774909fd654d8167a475333fa8f37fbbcb5d
 LINUX_HEADERS_VERSION=3.2.23
 MPC_VERSION=0.8.1
 MPFR_VERSION=2.4.2
