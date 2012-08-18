@@ -59,7 +59,7 @@ download and extract the new version of musl, then configure it like so:
     ./configure --prefix="<prefix>/<triple>" CC="<triple>-gcc"
 
 Where "<prefix>" is the prefix the cross compiler root was installed/extracted
-to, and <triple> is the GNU-style target triple (e.g. i486-linux-microcosm).
+to, and <triple> is the GNU-style target triple (e.g. i486-linux-musl).
 
 
 Other scripts and helpers
