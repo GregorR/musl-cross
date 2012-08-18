@@ -49,6 +49,19 @@ Recommendations
   i486-linux-musl instead of i686-linux-musl.
 
 
+Upgrading cross compilers
+=========================
+
+It is possible to upgrade the musl version in a musl-cross cross compiler
+without rebuilding the entire cross compiler prefix from scratch. Simply
+download and extract the new version of musl, then configure it like so:
+
+    ./configure --prefix="<prefix>/<triple>" CC="<triple>-gcc"
+
+Where "<prefix>" is the prefix the cross compiler root was installed/extracted
+to, and <triple> is the GNU-style target triple (e.g. i486-linux-microcosm).
+
+
 Other scripts and helpers
 =========================
 
