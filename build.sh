@@ -87,7 +87,7 @@ fi
 
 # gcc 2
 buildinstall 2 gcc-$GCC_VERSION --target=$TRIPLE \
-    --enable-languages=c,c++ --disable-multilib --disable-libmudflap \
+    --enable-languages=$LANGUAGES --disable-multilib --disable-libmudflap \
     --disable-tls \
     $GCC_CONFFLAGS
 

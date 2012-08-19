@@ -44,6 +44,11 @@ MUSL_GIT_VERSION=53de960d6f12480a041b7b8cbf65cd1d3f3f9b23
 MUSL_VERSION="$MUSL_DEFAULT_VERSION"
 MUSL_GIT=no
 
+# You can choose languages
+LANG_CXX=yes
+LANG_OBJC=no
+LANG_FORTRAN=no
+
 . ./config.sh
 
 # Auto-deteect an ARCH if not specified
@@ -72,6 +77,13 @@ then
             ;;
     esac
 fi
+
+# Choose our languages
+LANGUAGES=c
+[ "$LANG_CXX" = "yes" ] && LANGUAGES="$LANGUAGES,c++"
+[ "$LANG_OBJC" = "yes" ] && LANGUAGES="$LANGUAGES,objc"
+[ "$LANG_CXX" = "yes" -a "$LANG_OBJC" = "yes" ] && LANGUAGES="$LANGUAGES,obj-c++"
+[ "$LANG_FORTRAN" = "yes" ] && LANGUAGES="$LANGUAGES,fortran"
 
 # Use gmake if it exists
 if [ -z "$MAKE" ]
