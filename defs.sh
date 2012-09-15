@@ -39,8 +39,8 @@ MPFR_VERSION=2.4.2
 
 # musl can optionally be checked out from GIT, in which case MUSL_VERSION must
 # be set to a git tag and MUSL_GET set to yes in config.sh
-MUSL_DEFAULT_VERSION=0.9.4
-MUSL_GIT_VERSION=53de960d6f12480a041b7b8cbf65cd1d3f3f9b23
+MUSL_DEFAULT_VERSION=0.9.5
+MUSL_GIT_VERSION=7ad42b949665428e6f02c543bbc16172af5bbdeb
 MUSL_VERSION="$MUSL_DEFAULT_VERSION"
 MUSL_GIT=no
 
@@ -160,7 +160,7 @@ muslfetchextract() {
     then
         gitfetchextract 'git://repo.or.cz/musl.git' $MUSL_VERSION musl-$MUSL_VERSION
     else
-        fetchextract http://www.etalabs.net/musl/releases/ musl-$MUSL_VERSION .tar.gz
+        fetchextract http://www.musl-libc.org/releases/ musl-$MUSL_VERSION .tar.gz
     fi
 }
 
