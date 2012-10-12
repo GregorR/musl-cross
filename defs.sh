@@ -29,7 +29,7 @@ fi
 
 # Versions of things (do this before config.sh so they can be config'd)
 BINUTILS_VERSION=2.22
-GCC_VERSION=4.7.1
+GCC_VERSION=4.7.2
 GDB_VERSION=7.4.1
 GMP_VERSION=4.3.2
 LIBELF_VERSION=71bf774909fd654d8167a475333fa8f37fbbcb5d
