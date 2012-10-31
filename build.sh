@@ -49,7 +49,6 @@ buildinstall 1 gcc-$GCC_VERSION --target=$TRIPLE \
     --enable-languages=c --with-newlib --disable-multilib --disable-libssp \
     --disable-libquadmath --disable-threads --disable-decimal-float \
     --disable-shared --disable-libmudflap --disable-libgomp \
-    --disable-tls \
     $GCC_BOOTSTRAP_CONFFLAGS
 
 # linux headers
@@ -88,7 +87,6 @@ fi
 # gcc 2
 buildinstall 2 gcc-$GCC_VERSION --target=$TRIPLE \
     --enable-languages=$LANGUAGES --disable-multilib --disable-libmudflap \
-    --disable-tls \
     $GCC_CONFFLAGS
 
 # un"fix" headers
