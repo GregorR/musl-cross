@@ -33,38 +33,33 @@ GCC_CONFFLAGS=
 PREFIX="$CC_PREFIX"
 
 # binutils
-if [ "$BINUTILS_VERSION" = "2.17" ]
-then
-    # The version of the latest GPLv2 binutils on gnu.org is a lie...
-    fetchextract http://landley.net/aboriginal/mirror/ binutils-$BINUTILS_VERSION .tar.bz2
-else
-    fetchextract http://ftp.gnu.org/gnu/binutils/ binutils-$BINUTILS_VERSION .tar.bz2
-fi
-buildinstall 1 binutils-$BINUTILS_VERSION --target=$TRIPLE $BINUTILS_CONFFLAGS
+fetchextract manual:// binutils-microblaze-$XILINX_VERSION .tar.xz
+buildinstall 1 binutils-microblaze-$XILINX_VERSION --target=$TRIPLE $BINUTILS_CONFFLAGS
 
 # gcc 1
-fetchextract http://ftp.gnu.org/gnu/gcc/gcc-$GCC_VERSION/ gcc-$GCC_VERSION .tar.bz2
+fetchextract manual:// gcc-microblaze-$XILINX_VERSION .tar.xz
 [ "$GCC_BUILTIN_PREREQS" = "yes" ] && gccprereqs
-buildinstall 1 gcc-$GCC_VERSION --target=$TRIPLE \
+buildinstall 1 gcc-microblaze-$XILINX_VERSION --target=$TRIPLE \
     --enable-languages=c --with-newlib --disable-multilib --disable-libssp \
     --disable-libquadmath --disable-threads --disable-decimal-float \
     --disable-shared --disable-libmudflap --disable-libgomp \
     $GCC_BOOTSTRAP_CONFFLAGS
 
 # linux headers
-fetchextract http://www.kernel.org/pub/linux/kernel/v3.0/ linux-$LINUX_HEADERS_VERSION .tar.bz2
-if [ ! -e linux-$LINUX_HEADERS_VERSION/configured ]
+fetchextract manual:// linux-microblaze-$XILINX_VERSION .tar.xz
+if [ ! -e linux-microblaze-$XILINX_VERSION/configured ]
 then
     (
-    cd linux-$LINUX_HEADERS_VERSION
+    cd linux-microblaze-$XILINX_VERSION
+    touch arch/microblaze/defconfig
     make defconfig ARCH=$LINUX_ARCH
     touch configured
     )
 fi
-if [ ! -e linux-$LINUX_HEADERS_VERSION/installedheaders ]
+if [ ! -e linux-microblaze-$XILINX_VERSION/installedheaders ]
 then
     (
-    cd linux-$LINUX_HEADERS_VERSION
+    cd linux-microblaze-$XILINX_VERSION
     make headers_install ARCH=$LINUX_ARCH INSTALL_HDR_PATH="$CC_PREFIX/$TRIPLE"
     touch installedheaders
     )
@@ -85,8 +80,9 @@ then
 fi
 
 # gcc 2
-buildinstall 2 gcc-$GCC_VERSION --target=$TRIPLE \
+buildinstall 2 gcc-microblaze-$XILINX_VERSION --target=$TRIPLE \
     --enable-languages=$LANGUAGES --disable-multilib --disable-libmudflap \
+    --disable-libquadmath \
     $GCC_CONFFLAGS
 
 # un"fix" headers

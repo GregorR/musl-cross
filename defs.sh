@@ -36,6 +36,7 @@ LIBELF_VERSION=71bf774909fd654d8167a475333fa8f37fbbcb5d
 LINUX_HEADERS_VERSION=3.2.23
 MPC_VERSION=0.8.1
 MPFR_VERSION=2.4.2
+XILINX_VERSION=72cfecff58e8463ef8852954913ea8b3a40f2e8a
 
 # musl can optionally be checked out from GIT, in which case MUSL_VERSION must
 # be set to a git tag and MUSL_GET set to yes in config.sh
