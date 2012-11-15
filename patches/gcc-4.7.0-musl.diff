@@ -1,7 +1,7 @@
 diff --git a/config.sub b/config.sub
 --- a/config.sub
 +++ b/config.sub
-@@ -125,6 +125,7 @@
+@@ -125,6 +125,7 @@ esac
  maybe_os=`echo $1 | sed 's/^\(.*\)-\([^-]*-[^-]*\)$/\2/'`
  case $maybe_os in
    nto-qnx* | linux-gnu* | linux-android* | linux-dietlibc | linux-newlib* | \
@@ -9,7 +9,7 @@ diff --git a/config.sub b/config.sub
    linux-uclibc* | uclinux-uclibc* | uclinux-gnu* | kfreebsd*-gnu* | \
    knetbsd*-gnu* | netbsd*-gnu* | \
    kopensolaris*-gnu* | \
-@@ -1346,6 +1347,7 @@
+@@ -1346,6 +1347,7 @@ case $os in
  	      | -cygwin* | -pe* | -psos* | -moss* | -proelf* | -rtems* \
  	      | -mingw32* | -linux-gnu* | -linux-android* \
  	      | -linux-newlib* | -linux-uclibc* \
@@ -20,7 +20,7 @@ diff --git a/config.sub b/config.sub
 diff --git a/gcc/config.gcc b/gcc/config.gcc
 --- a/gcc/config.gcc
 +++ b/gcc/config.gcc
-@@ -514,7 +514,7 @@
+@@ -514,7 +514,7 @@ case ${target} in
  esac
  
  # Common C libraries.
@@ -29,7 +29,7 @@ diff --git a/gcc/config.gcc b/gcc/config.gcc
  
  # Common parts for widely ported systems.
  case ${target} in
-@@ -617,6 +617,9 @@
+@@ -617,6 +617,9 @@ case ${target} in
      *-*-*uclibc*)
        tm_defines="$tm_defines DEFAULT_LIBC=LIBC_UCLIBC"
        ;;
@@ -56,7 +56,7 @@ diff --git a/gcc/config/arm/linux-eabi.h b/gcc/config/arm/linux-eabi.h
 diff --git a/gcc/config/i386/linux.h b/gcc/config/i386/linux.h
 --- a/gcc/config/i386/linux.h
 +++ b/gcc/config/i386/linux.h
-@@ -22,3 +22,4 @@
+@@ -22,3 +22,4 @@ along with GCC; see the file COPYING3.  If not see
  
  #define GNU_USER_LINK_EMULATION "elf_i386"
  #define GLIBC_DYNAMIC_LINKER "/lib/ld-linux.so.2"
@@ -64,7 +64,7 @@ diff --git a/gcc/config/i386/linux.h b/gcc/config/i386/linux.h
 diff --git a/gcc/config/i386/linux64.h b/gcc/config/i386/linux64.h
 --- a/gcc/config/i386/linux64.h
 +++ b/gcc/config/i386/linux64.h
-@@ -31,3 +31,7 @@
+@@ -31,3 +31,7 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
  #define GLIBC_DYNAMIC_LINKER32 "/lib/ld-linux.so.2"
  #define GLIBC_DYNAMIC_LINKER64 "/lib64/ld-linux-x86-64.so.2"
  #define GLIBC_DYNAMIC_LINKERX32 "/libx32/ld-linux-x32.so.2"
@@ -75,7 +75,7 @@ diff --git a/gcc/config/i386/linux64.h b/gcc/config/i386/linux64.h
 diff --git a/gcc/config/linux.h b/gcc/config/linux.h
 --- a/gcc/config/linux.h
 +++ b/gcc/config/linux.h
-@@ -33,10 +33,12 @@
+@@ -33,10 +33,12 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
  #define OPTION_GLIBC  (DEFAULT_LIBC == LIBC_GLIBC)
  #define OPTION_UCLIBC (DEFAULT_LIBC == LIBC_UCLIBC)
  #define OPTION_BIONIC (DEFAULT_LIBC == LIBC_BIONIC)
@@ -88,7 +88,7 @@ diff --git a/gcc/config/linux.h b/gcc/config/linux.h
  #endif
  
  #define GNU_USER_TARGET_OS_CPP_BUILTINS()			\
-@@ -54,18 +56,21 @@
+@@ -54,18 +56,21 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
     uClibc or Bionic is the default C library and whether
     -muclibc or -mglibc or -mbionic has been passed to change the default.  */
  
@@ -118,7 +118,7 @@ diff --git a/gcc/config/linux.h b/gcc/config/linux.h
  #else
  #error "Unsupported DEFAULT_LIBC"
  #endif /* DEFAULT_LIBC */
-@@ -85,16 +90,16 @@
+@@ -85,16 +90,16 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
  
  #define GNU_USER_DYNAMIC_LINKER						\
    CHOOSE_DYNAMIC_LINKER (GLIBC_DYNAMIC_LINKER, UCLIBC_DYNAMIC_LINKER,	\
@@ -142,7 +142,7 @@ diff --git a/gcc/config/linux.h b/gcc/config/linux.h
 diff --git a/gcc/config/linux.opt b/gcc/config/linux.opt
 --- a/gcc/config/linux.opt
 +++ b/gcc/config/linux.opt
-@@ -30,3 +30,7 @@
+@@ -30,3 +30,7 @@ Use GNU C library
  muclibc
  Target Report RejectNegative Var(linux_libc,LIBC_UCLIBC) Negative(mbionic)
  Use uClibc C library
@@ -150,10 +150,19 @@ diff --git a/gcc/config/linux.opt b/gcc/config/linux.opt
 +mmusl
 +Target Report RejectNegative Var(linux_libc,LIBC_MUSL) Negative(mglibc)
 +Use musl C library
+diff --git a/gcc/config/mips/linux.h b/gcc/config/mips/linux.h
+--- a/gcc/config/mips/linux.h
++++ b/gcc/config/mips/linux.h
+@@ -19,3 +19,5 @@ along with GCC; see the file COPYING3.  If not see
+ <http://www.gnu.org/licenses/>.  */
+ 
+ #define GLIBC_DYNAMIC_LINKER "/lib/ld.so.1"
++
++#define MUSL_DYNAMIC_LINKER "/lib/ld-musl-mips.so.1"
 diff --git a/gcc/ginclude/stddef.h b/gcc/ginclude/stddef.h
 --- a/gcc/ginclude/stddef.h
 +++ b/gcc/ginclude/stddef.h
-@@ -184,6 +184,7 @@
+@@ -184,6 +184,7 @@ typedef __PTRDIFF_TYPE__ ptrdiff_t;
  #ifndef _GCC_SIZE_T
  #ifndef _SIZET_
  #ifndef __size_t
@@ -161,7 +170,7 @@ diff --git a/gcc/ginclude/stddef.h b/gcc/ginclude/stddef.h
  #define __size_t__	/* BeOS */
  #define __SIZE_T__	/* Cray Unicos/Mk */
  #define _SIZE_T
-@@ -200,6 +201,7 @@
+@@ -200,6 +201,7 @@ typedef __PTRDIFF_TYPE__ ptrdiff_t;
  #define ___int_size_t_h
  #define _GCC_SIZE_T
  #define _SIZET_
@@ -169,7 +178,7 @@ diff --git a/gcc/ginclude/stddef.h b/gcc/ginclude/stddef.h
  #if (defined (__FreeBSD__) && (__FreeBSD__ >= 5)) \
    || defined(__FreeBSD_kernel__)
  /* __size_t is a typedef on FreeBSD 5, must not trash it. */
-@@ -215,6 +217,7 @@
+@@ -215,6 +217,7 @@ typedef __SIZE_TYPE__ size_t;
  typedef long ssize_t;
  #endif /* __BEOS__ */
  #endif /* !(defined (__GNUG__) && defined (size_t)) */
@@ -192,7 +201,7 @@ diff --git a/libgomp/config/posix/time.c b/libgomp/config/posix/time.c
 diff --git a/libitm/config/arm/hwcap.cc b/libitm/config/arm/hwcap.cc
 --- a/libitm/config/arm/hwcap.cc
 +++ b/libitm/config/arm/hwcap.cc
-@@ -40,7 +40,11 @@
+@@ -40,7 +40,11 @@ int GTM_hwcap HIDDEN = 0
  
  #ifdef __linux__
  #include <unistd.h>
@@ -229,7 +238,7 @@ diff --git a/libitm/config/linux/x86/tls.h b/libitm/config/linux/x86/tls.h
  namespace GTM HIDDEN {
  
  #ifdef __x86_64__
-@@ -101,5 +104,6 @@
+@@ -101,5 +104,6 @@ static inline void set_abi_disp(struct abi_dispatch *x)
  
  } // namespace GTM
  #endif /* >= GLIBC 2.10 */
@@ -239,7 +248,7 @@ diff --git a/libitm/config/linux/x86/tls.h b/libitm/config/linux/x86/tls.h
 diff --git a/libstdc++-v3/configure.host b/libstdc++-v3/configure.host
 --- a/libstdc++-v3/configure.host
 +++ b/libstdc++-v3/configure.host
-@@ -243,6 +243,13 @@
+@@ -243,6 +243,13 @@ case "${host_os}" in
      os_include_dir="os/bsd/freebsd"
      ;;
    gnu* | linux* | kfreebsd*-gnu | knetbsd*-gnu)
@@ -253,7 +262,7 @@ diff --git a/libstdc++-v3/configure.host b/libstdc++-v3/configure.host
      if [ "$uclibc" = "yes" ]; then
        os_include_dir="os/uclibc"
      elif [ "$bionic" = "yes" ]; then
-@@ -251,6 +258,9 @@
+@@ -251,6 +258,9 @@ case "${host_os}" in
        os_include_dir="os/gnu-linux"
      fi
      ;;
