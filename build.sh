@@ -57,7 +57,7 @@ if [ ! -e linux-$LINUX_HEADERS_VERSION/configured ]
 then
     (
     cd linux-$LINUX_HEADERS_VERSION
-    make defconfig ARCH=$LINUX_ARCH
+    make $LINUX_DEFCONFIG ARCH=$LINUX_ARCH
     touch configured
     )
 fi
@@ -70,24 +70,27 @@ then
     )
 fi
 
-# musl in CC prefix
-PREFIX="$CC_PREFIX/$TRIPLE"
-muslfetchextract
-buildinstall '' musl-$MUSL_VERSION \
-    --enable-debug CC="$TRIPLE-gcc" $MUSL_CONFFLAGS
-unset PREFIX
-PREFIX="$CC_PREFIX"
-
-# if it didn't build libc.so, disable dynamic linking
-if [ ! -e "$CC_PREFIX/$TRIPLE/lib/libc.so" ]
+if [ "$MUSL_VERSION" != "no" ]
 then
-    GCC_CONFFLAGS="--disable-shared $GCC_CONFFLAGS"
-fi
+    # musl in CC prefix
+    PREFIX="$CC_PREFIX/$TRIPLE"
+    muslfetchextract
+    buildinstall '' musl-$MUSL_VERSION \
+        --enable-debug CC="$TRIPLE-gcc" $MUSL_CONFFLAGS
+    unset PREFIX
+    PREFIX="$CC_PREFIX"
 
-# gcc 2
-buildinstall 2 gcc-$GCC_VERSION --target=$TRIPLE \
-    --enable-languages=$LANGUAGES --disable-multilib --disable-libmudflap \
-    $GCC_CONFFLAGS
+    # if it didn't build libc.so, disable dynamic linking
+    if [ ! -e "$CC_PREFIX/$TRIPLE/lib/libc.so" ]
+    then
+        GCC_CONFFLAGS="--disable-shared $GCC_CONFFLAGS"
+    fi
+
+    # gcc 2
+    buildinstall 2 gcc-$GCC_VERSION --target=$TRIPLE \
+        --enable-languages=$LANGUAGES --disable-multilib --disable-libmudflap \
+        $GCC_CONFFLAGS
+fi
 
 # un"fix" headers
 rm -rf "$CC_PREFIX/lib/gcc/$TRIPLE"/*/include-fixed/ "$CC_PREFIX/lib/gcc/$TRIPLE"/*/include/stddef.h

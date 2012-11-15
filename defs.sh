@@ -100,10 +100,16 @@ PATH="$CC_PREFIX/bin:$PATH"
 export PATH
 
 LINUX_ARCH=`echo "$ARCH" | sed 's/-.*//'`
+LINUX_DEFCONFIG=defconfig
 case "$LINUX_ARCH" in
     i*86) LINUX_ARCH=i386 ;;
     arm*) LINUX_ARCH=arm ;;
     mips*) LINUX_ARCH=mips ;;
+
+    powerpc* | ppc*)
+        LINUX_ARCH=powerpc
+        LINUX_DEFCONFIG=g5_defconfig
+        ;;
 esac
 export LINUX_ARCH
 
