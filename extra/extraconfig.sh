@@ -5,6 +5,11 @@ case "$ARCH" in
         GCC_BOOTSTRAP_CONFFLAGS="$GCC_BOOTSTRAP_CONFFLAGS --with-arch=armv4t"
         GCC_CONFFLAGS="$GCC_CONFFLAGS --with-arch=armv4t"
         ;;
+
+    powerpc* | ppc*)
+        GCC_BOOTSTRAP_CONFFLAGS="$GCC_BOOTSTRAP_CONFFLAGS --with-long-double-64"
+        GCC_CONFFLAGS="$GCC_CONFFLAGS --with-long-double-64"
+        ;;
 esac
 
 case "$ARCH" in
