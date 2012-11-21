@@ -7,8 +7,8 @@ case "$ARCH" in
         ;;
 
     powerpc* | ppc*)
-        GCC_BOOTSTRAP_CONFFLAGS="$GCC_BOOTSTRAP_CONFFLAGS --with-long-double-64"
-        GCC_CONFFLAGS="$GCC_CONFFLAGS --with-long-double-64"
+        GCC_BOOTSTRAP_CONFFLAGS="$GCC_BOOTSTRAP_CONFFLAGS --with-long-double-64 --enable-secureplt"
+        GCC_CONFFLAGS="$GCC_CONFFLAGS --with-long-double-64 --enable-secureplt"
         ;;
 esac
 
