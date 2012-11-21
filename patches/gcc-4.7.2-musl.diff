@@ -1,6 +1,6 @@
-diff --git a/config.sub b/config.sub
---- a/config.sub
-+++ b/config.sub
+diff -r d2c79bfd49ca config.sub
+--- a/config.sub	Wed Nov 21 12:25:22 2012 -0500
++++ b/config.sub	Wed Nov 21 12:27:50 2012 -0500
 @@ -125,6 +125,7 @@
  maybe_os=`echo $1 | sed 's/^\(.*\)-\([^-]*-[^-]*\)$/\2/'`
  case $maybe_os in
@@ -17,9 +17,9 @@ diff --git a/config.sub b/config.sub
  	      | -uxpv* | -beos* | -mpeix* | -udk* \
  	      | -interix* | -uwin* | -mks* | -rhapsody* | -darwin* | -opened* \
  	      | -openstep* | -oskit* | -conix* | -pw32* | -nonstopux* \
-diff --git a/gcc/config.gcc b/gcc/config.gcc
---- a/gcc/config.gcc
-+++ b/gcc/config.gcc
+diff -r d2c79bfd49ca gcc/config.gcc
+--- a/gcc/config.gcc	Wed Nov 21 12:25:22 2012 -0500
++++ b/gcc/config.gcc	Wed Nov 21 12:27:50 2012 -0500
 @@ -522,7 +522,7 @@
  esac
  
@@ -47,9 +47,9 @@ diff --git a/gcc/config.gcc b/gcc/config.gcc
  	;;
  microblaze*-*-*)
          tm_file="${tm_file} dbxelf.h"
-diff --git a/gcc/config/arm/linux-eabi.h b/gcc/config/arm/linux-eabi.h
---- a/gcc/config/arm/linux-eabi.h
-+++ b/gcc/config/arm/linux-eabi.h
+diff -r d2c79bfd49ca gcc/config/arm/linux-eabi.h
+--- a/gcc/config/arm/linux-eabi.h	Wed Nov 21 12:25:22 2012 -0500
++++ b/gcc/config/arm/linux-eabi.h	Wed Nov 21 12:27:50 2012 -0500
 @@ -64,6 +64,10 @@
  #undef  GLIBC_DYNAMIC_LINKER
  #define GLIBC_DYNAMIC_LINKER "/lib/ld-linux.so.3"
@@ -61,17 +61,17 @@ diff --git a/gcc/config/arm/linux-eabi.h b/gcc/config/arm/linux-eabi.h
  /* At this point, bpabi.h will have clobbered LINK_SPEC.  We want to
     use the GNU/Linux version, not the generic BPABI version.  */
  #undef  LINK_SPEC
-diff --git a/gcc/config/i386/linux.h b/gcc/config/i386/linux.h
---- a/gcc/config/i386/linux.h
-+++ b/gcc/config/i386/linux.h
+diff -r d2c79bfd49ca gcc/config/i386/linux.h
+--- a/gcc/config/i386/linux.h	Wed Nov 21 12:25:22 2012 -0500
++++ b/gcc/config/i386/linux.h	Wed Nov 21 12:27:50 2012 -0500
 @@ -22,3 +22,4 @@
  
  #define GNU_USER_LINK_EMULATION "elf_i386"
  #define GLIBC_DYNAMIC_LINKER "/lib/ld-linux.so.2"
 +#define MUSL_DYNAMIC_LINKER "/lib/ld-musl-i386.so.1"
-diff --git a/gcc/config/i386/linux64.h b/gcc/config/i386/linux64.h
---- a/gcc/config/i386/linux64.h
-+++ b/gcc/config/i386/linux64.h
+diff -r d2c79bfd49ca gcc/config/i386/linux64.h
+--- a/gcc/config/i386/linux64.h	Wed Nov 21 12:25:22 2012 -0500
++++ b/gcc/config/i386/linux64.h	Wed Nov 21 12:27:50 2012 -0500
 @@ -31,3 +31,7 @@
  #define GLIBC_DYNAMIC_LINKER32 "/lib/ld-linux.so.2"
  #define GLIBC_DYNAMIC_LINKER64 "/lib64/ld-linux-x86-64.so.2"
@@ -80,9 +80,9 @@ diff --git a/gcc/config/i386/linux64.h b/gcc/config/i386/linux64.h
 +#define MUSL_DYNAMIC_LINKER32 "/lib/ld-musl-i386.so.1"
 +#define MUSL_DYNAMIC_LINKER64 "/lib/ld-musl-x86_64.so.1"
 +#define MUSL_DYNAMIC_LINKERX32 "/lib/ld-musl-x32.so.1"
-diff --git a/gcc/config/linux.h b/gcc/config/linux.h
---- a/gcc/config/linux.h
-+++ b/gcc/config/linux.h
+diff -r d2c79bfd49ca gcc/config/linux.h
+--- a/gcc/config/linux.h	Wed Nov 21 12:25:22 2012 -0500
++++ b/gcc/config/linux.h	Wed Nov 21 12:27:50 2012 -0500
 @@ -33,10 +33,12 @@
  #define OPTION_GLIBC  (DEFAULT_LIBC == LIBC_GLIBC)
  #define OPTION_UCLIBC (DEFAULT_LIBC == LIBC_UCLIBC)
@@ -147,9 +147,9 @@ diff --git a/gcc/config/linux.h b/gcc/config/linux.h
  
  /* Determine whether the entire c99 runtime
     is present in the runtime library.  */
-diff --git a/gcc/config/linux.opt b/gcc/config/linux.opt
---- a/gcc/config/linux.opt
-+++ b/gcc/config/linux.opt
+diff -r d2c79bfd49ca gcc/config/linux.opt
+--- a/gcc/config/linux.opt	Wed Nov 21 12:25:22 2012 -0500
++++ b/gcc/config/linux.opt	Wed Nov 21 12:27:50 2012 -0500
 @@ -30,3 +30,7 @@
  muclibc
  Target Report RejectNegative Var(linux_libc,LIBC_UCLIBC) Negative(mbionic)
@@ -158,18 +158,18 @@ diff --git a/gcc/config/linux.opt b/gcc/config/linux.opt
 +mmusl
 +Target Report RejectNegative Var(linux_libc,LIBC_MUSL) Negative(mglibc)
 +Use musl C library
-diff --git a/gcc/config/mips/linux.h b/gcc/config/mips/linux.h
---- a/gcc/config/mips/linux.h
-+++ b/gcc/config/mips/linux.h
+diff -r d2c79bfd49ca gcc/config/mips/linux.h
+--- a/gcc/config/mips/linux.h	Wed Nov 21 12:25:22 2012 -0500
++++ b/gcc/config/mips/linux.h	Wed Nov 21 12:27:50 2012 -0500
 @@ -19,3 +19,5 @@
  <http://www.gnu.org/licenses/>.  */
  
  #define GLIBC_DYNAMIC_LINKER "/lib/ld.so.1"
 +
 +#define MUSL_DYNAMIC_LINKER "/lib/ld-musl-mips.so.1"
-diff --git a/gcc/config/rs6000/linux64.h b/gcc/config/rs6000/linux64.h
---- a/gcc/config/rs6000/linux64.h
-+++ b/gcc/config/rs6000/linux64.h
+diff -r d2c79bfd49ca gcc/config/rs6000/linux64.h
+--- a/gcc/config/rs6000/linux64.h	Wed Nov 21 12:25:22 2012 -0500
++++ b/gcc/config/rs6000/linux64.h	Wed Nov 21 12:27:50 2012 -0500
 @@ -362,17 +362,21 @@
  #define GLIBC_DYNAMIC_LINKER64 "/lib64/ld64.so.1"
  #define UCLIBC_DYNAMIC_LINKER32 "/lib/ld-uClibc.so.0"
@@ -196,9 +196,9 @@ diff --git a/gcc/config/rs6000/linux64.h b/gcc/config/rs6000/linux64.h
  
  
  #define LINK_OS_LINUX_SPEC32 "-m elf32ppclinux %{!shared: %{!static: \
-diff --git a/gcc/config/rs6000/sysv4.h b/gcc/config/rs6000/sysv4.h
---- a/gcc/config/rs6000/sysv4.h
-+++ b/gcc/config/rs6000/sysv4.h
+diff -r d2c79bfd49ca gcc/config/rs6000/sysv4.h
+--- a/gcc/config/rs6000/sysv4.h	Wed Nov 21 12:25:22 2012 -0500
++++ b/gcc/config/rs6000/sysv4.h	Wed Nov 21 12:27:50 2012 -0500
 @@ -804,15 +804,18 @@
  
  #define GLIBC_DYNAMIC_LINKER "/lib/ld.so.1"
@@ -221,9 +221,9 @@ diff --git a/gcc/config/rs6000/sysv4.h b/gcc/config/rs6000/sysv4.h
  
  #define LINK_OS_LINUX_SPEC "-m elf32ppclinux %{!shared: %{!static: \
    %{rdynamic:-export-dynamic} \
-diff --git a/gcc/ginclude/stddef.h b/gcc/ginclude/stddef.h
---- a/gcc/ginclude/stddef.h
-+++ b/gcc/ginclude/stddef.h
+diff -r d2c79bfd49ca gcc/ginclude/stddef.h
+--- a/gcc/ginclude/stddef.h	Wed Nov 21 12:25:22 2012 -0500
++++ b/gcc/ginclude/stddef.h	Wed Nov 21 12:27:50 2012 -0500
 @@ -184,6 +184,7 @@
  #ifndef _GCC_SIZE_T
  #ifndef _SIZET_
@@ -248,9 +248,40 @@ diff --git a/gcc/ginclude/stddef.h b/gcc/ginclude/stddef.h
  #endif /* __size_t */
  #endif /* _SIZET_ */
  #endif /* _GCC_SIZE_T */
-diff --git a/libgomp/config/posix/time.c b/libgomp/config/posix/time.c
---- a/libgomp/config/posix/time.c
-+++ b/libgomp/config/posix/time.c
+diff -r d2c79bfd49ca libgcc/config/rs6000/linux-unwind.h
+--- a/libgcc/config/rs6000/linux-unwind.h	Wed Nov 21 12:25:22 2012 -0500
++++ b/libgcc/config/rs6000/linux-unwind.h	Wed Nov 21 12:27:50 2012 -0500
+@@ -176,6 +176,7 @@
+ }
+ #endif
+ 
++#ifdef __GLIBC__
+ /* Find an entry in the process auxiliary vector.  The canonical way to
+    test for VMX is to look at AT_HWCAP.  */
+ 
+@@ -207,6 +208,7 @@
+       return auxp->a_val;
+   return 0;
+ }
++#endif
+ 
+ /* Do code reading to identify a signal frame, and set the frame
+    state data appropriately.  See unwind-dw2.c for the structs.  */
+@@ -253,7 +255,11 @@
+ 
+   if (hwcap == 0)
+     {
++#ifdef __GLIBC__
+       hwcap = ppc_linux_aux_vector (16);
++#else
++      hwcap = -1;
++#endif
+       /* These will already be set if we found AT_HWCAP.  A nonzero
+ 	 value stops us looking again if for some reason we couldn't
+ 	 find AT_HWCAP.  */
+diff -r d2c79bfd49ca libgomp/config/posix/time.c
+--- a/libgomp/config/posix/time.c	Wed Nov 21 12:25:22 2012 -0500
++++ b/libgomp/config/posix/time.c	Wed Nov 21 12:27:50 2012 -0500
 @@ -28,6 +28,8 @@
     The following implementation uses the most simple POSIX routines.
     If present, POSIX 4 clocks should be used instead.  */
@@ -260,9 +291,9 @@ diff --git a/libgomp/config/posix/time.c b/libgomp/config/posix/time.c
  #include "libgomp.h"
  #include <unistd.h>
  #if TIME_WITH_SYS_TIME
-diff --git a/libitm/config/arm/hwcap.cc b/libitm/config/arm/hwcap.cc
---- a/libitm/config/arm/hwcap.cc
-+++ b/libitm/config/arm/hwcap.cc
+diff -r d2c79bfd49ca libitm/config/arm/hwcap.cc
+--- a/libitm/config/arm/hwcap.cc	Wed Nov 21 12:25:22 2012 -0500
++++ b/libitm/config/arm/hwcap.cc	Wed Nov 21 12:27:50 2012 -0500
 @@ -40,7 +40,11 @@
  
  #ifdef __linux__
@@ -275,9 +306,9 @@ diff --git a/libitm/config/arm/hwcap.cc b/libitm/config/arm/hwcap.cc
  #include <elf.h>
  
  static void __attribute__((constructor))
-diff --git a/libitm/config/linux/x86/tls.h b/libitm/config/linux/x86/tls.h
---- a/libitm/config/linux/x86/tls.h
-+++ b/libitm/config/linux/x86/tls.h
+diff -r d2c79bfd49ca libitm/config/linux/x86/tls.h
+--- a/libitm/config/linux/x86/tls.h	Wed Nov 21 12:25:22 2012 -0500
++++ b/libitm/config/linux/x86/tls.h	Wed Nov 21 12:27:50 2012 -0500
 @@ -25,16 +25,19 @@
  #ifndef LIBITM_X86_TLS_H
  #define LIBITM_X86_TLS_H 1
@@ -307,9 +338,9 @@ diff --git a/libitm/config/linux/x86/tls.h b/libitm/config/linux/x86/tls.h
 +#endif
  
  #endif // LIBITM_X86_TLS_H
-diff --git a/libstdc++-v3/configure.host b/libstdc++-v3/configure.host
---- a/libstdc++-v3/configure.host
-+++ b/libstdc++-v3/configure.host
+diff -r d2c79bfd49ca libstdc++-v3/configure.host
+--- a/libstdc++-v3/configure.host	Wed Nov 21 12:25:22 2012 -0500
++++ b/libstdc++-v3/configure.host	Wed Nov 21 12:27:50 2012 -0500
 @@ -243,6 +243,13 @@
      os_include_dir="os/bsd/freebsd"
      ;;
