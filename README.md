@@ -110,3 +110,11 @@ or installed automatically using `GCC_BUILTIN_PREREQS=yes`:
 * mpc
 
 Building GMP additionally requires m4.
+
+
+Other sources
+=============
+
+The patches for GCC are maintained in a separate repository,
+http://bitbucket.org/GregorR/musl-gcc-patches/ (mirrored to git at
+http://github.com/GregorR/musl-gcc-patches ).
