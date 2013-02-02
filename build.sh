@@ -40,7 +40,8 @@ then
 else
     fetchextract http://ftp.gnu.org/gnu/binutils/ binutils-$BINUTILS_VERSION .tar.bz2
 fi
-buildinstall 1 binutils-$BINUTILS_VERSION --target=$TRIPLE $BINUTILS_CONFFLAGS
+buildinstall 1 binutils-$BINUTILS_VERSION --target=$TRIPLE --disable-werror \
+    $BINUTILS_CONFFLAGS
 
 # gcc 1
 fetchextract http://ftp.gnu.org/gnu/gcc/gcc-$GCC_VERSION/ gcc-$GCC_VERSION .tar.bz2
