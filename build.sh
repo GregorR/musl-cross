@@ -49,7 +49,7 @@ fetchextract http://ftp.gnu.org/gnu/gcc/gcc-$GCC_VERSION/ gcc-$GCC_VERSION .tar.
 buildinstall 1 gcc-$GCC_VERSION --target=$TRIPLE \
     --enable-languages=c --with-newlib --disable-multilib --disable-libssp \
     --disable-libquadmath --disable-threads --disable-decimal-float \
-    --disable-shared --disable-libmudflap --disable-libgomp \
+    --disable-shared --disable-libmudflap --disable-libgomp --disable-libatomic \
     $GCC_BOOTSTRAP_CONFFLAGS
 
 # linux headers
@@ -90,6 +90,7 @@ then
     # gcc 2
     buildinstall 2 gcc-$GCC_VERSION --target=$TRIPLE \
         --enable-languages=$LANGUAGES --disable-multilib --disable-libmudflap \
+        --disable-libsanitizer \
         $GCC_CONFFLAGS
 fi
 
