@@ -108,8 +108,8 @@ MAKEFLAGS="'"$MAKEFLAGS"'"
 TRIPLE='$TRIPLE'
 CC_PREFIX="'"$PREFIX_BASE/$TRIPLE"'"
 MAKEFLAGS="'"$MAKEFLAGS"'"
-CC="'"$NATIVE_CROSS-gcc"' -Wl,-Bstatic -static-libgcc"
-CXX="'"$NATIVE_CROSS-g++"' -Wl,-Bstatic -static-libgcc"
+CC="'"$NATIVE_CROSS-gcc"' -static -Wl,-Bstatic -static-libgcc"
+CXX="'"$NATIVE_CROSS-g++"' -static -Wl,-Bstatic -static-libgcc"
 export CC CXX
 GCC_BOOTSTRAP_CONFFLAGS=--disable-lto-plugin
 GCC_CONFFLAGS=--disable-lto-plugin
