@@ -29,7 +29,7 @@ fi
 
 # Versions of things (do this before config.sh so they can be config'd)
 BINUTILS_VERSION=2.23.2
-GCC_VERSION=4.7.2 # 4.8.0 is unreliable, segfaults compiling Firefox
+GCC_VERSION=4.7.3 # 4.8.0 is unreliable, segfaults compiling Firefox
 GDB_VERSION=7.4.1
 GMP_VERSION=4.3.2
 LIBELF_VERSION=71bf774909fd654d8167a475333fa8f37fbbcb5d
