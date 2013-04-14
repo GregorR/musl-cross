@@ -39,8 +39,8 @@ MPFR_VERSION=2.4.2
 
 # musl can optionally be checked out from GIT, in which case MUSL_VERSION must
 # be set to a git tag and MUSL_GET set to yes in config.sh
-MUSL_DEFAULT_VERSION=0.9.9
-MUSL_GIT_VERSION=a57ac9bf64ba202bd94d1b81bddd93b850c7b9d6
+MUSL_DEFAULT_VERSION=0.9.10
+MUSL_GIT_VERSION=7bec92e793d4b8a349796848cf43c7329b0f2ed0
 MUSL_VERSION="$MUSL_DEFAULT_VERSION"
 MUSL_GIT=no
 
