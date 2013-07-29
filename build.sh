@@ -95,7 +95,7 @@ then
 fi
 
 # un"fix" headers
-rm -rf "$CC_PREFIX/lib/gcc/$TRIPLE"/*/include/stddef.h
+rm -rf "$CC_PREFIX/lib/gcc/$TRIPLE"/*/include-fixed/ "$CC_PREFIX/lib/gcc/$TRIPLE"/*/include/stddef.h
 
 # make backwards-named compilers for easier cross-compiling
 (
