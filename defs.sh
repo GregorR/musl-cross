@@ -69,6 +69,11 @@ fi
 if [ -z "$TRIPLE" ]
 then
     case "$ARCH" in
+        armhf)
+            ARCH="arm"
+            TRIPLE="$ARCH-linux-musleabihf"
+            ;;
+
         arm*)
             TRIPLE="$ARCH-linux-musleabi"
             ;;

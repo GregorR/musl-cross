@@ -5,13 +5,26 @@ Support for arm-linux-musl.
 diff -r 8801a3f6d050 gcc/config/arm/linux-eabi.h
 --- a/gcc/config/arm/linux-eabi.h	Tue Aug 27 15:47:31 2013 -0400
 +++ b/gcc/config/arm/linux-eabi.h	Tue Aug 27 15:47:37 2013 -0400
-@@ -64,6 +64,10 @@
+@@ -64,6 +64,23 @@
  #undef  GLIBC_DYNAMIC_LINKER
  #define GLIBC_DYNAMIC_LINKER "/lib/ld-linux.so.3"
  
-+/* musl has no "classic" (i.e. broken) mode */
++/* For ARM musl currently supports two dynamic linkers:
++   - ld-musl-arm.so.1 - for the EABI-derived soft-float ABI
++   - ld-musl-armhf.so.1 - for the EABI-derived hard-float ABI.
++   musl does not support the legacy OABI (i.e. broken) mode.
++   All the dynamic linkers live in /lib.
++   We default to soft-float, but this can be overridden by changing both
++   MUSL_DYNAMIC_LINKER_DEFAULT and TARGET_DEFAULT_FLOAT_ABI.  */
 +#undef  MUSL_DYNAMIC_LINKER
-+#define MUSL_DYNAMIC_LINKER "/lib/ld-musl-arm.so.1"
++#define MUSL_DYNAMIC_LINKER_SOFT_FLOAT "/lib/ld-musl-arm.so.1"
++#define MUSL_DYNAMIC_LINKER_HARD_FLOAT "/lib/ld-musl-armhf.so.1"
++#define MUSL_DYNAMIC_LINKER_DEFAULT MUSL_DYNAMIC_LINKER_SOFT_FLOAT
++
++#define MUSL_DYNAMIC_LINKER \
++  "%{mfloat-abi=hard:" MUSL_DYNAMIC_LINKER_HARD_FLOAT "} \
++   %{mfloat-abi=soft*:" MUSL_DYNAMIC_LINKER_SOFT_FLOAT "} \
++   %{!mfloat-abi=*:" MUSL_DYNAMIC_LINKER_DEFAULT "}"
 +
  /* At this point, bpabi.h will have clobbered LINK_SPEC.  We want to
     use the GNU/Linux version, not the generic BPABI version.  */

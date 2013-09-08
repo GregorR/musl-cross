@@ -13,6 +13,13 @@ case "$ARCH" in
 esac
 
 case "$ARCH" in
+    *hf | \
+    *-hf*)
+        GCC_BOOTSTRAP_CONFFLAGS="$GCC_BOOTSTRAP_CONFFLAGS --with-float=hard"
+        GCC_CONFFLAGS="$GCC_CONFFLAGS --with-float=hard"
+        ;;
+
+    *sf | \
     *-sf*)
         GCC_BOOTSTRAP_CONFFLAGS="$GCC_BOOTSTRAP_CONFFLAGS --with-float=soft"
         GCC_CONFFLAGS="$GCC_CONFFLAGS --with-float=soft"
