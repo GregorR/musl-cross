@@ -195,13 +195,13 @@ diff -r 65cd23493c45 -r 355cec477536 config.sub
  if test x$gcc_cv_target_dl_iterate_phdr = xyes; then
 
 # HG changeset patch
-# Parent 2b29df135cf04fe23c38301f6d0fc5796366aecf
+# Parent 0a997bf8f28fc5a22008f562b9c26c4988666f32
 Adding -mmusl as a musl libc specifier, and the necessary hacks for it to know how to find musl's dynamic linker.
 
-diff -r 2b29df135cf0 gcc/config.gcc
---- a/gcc/config.gcc	Fri Mar 29 16:41:11 2013 -0400
-+++ b/gcc/config.gcc	Fri Mar 29 16:41:14 2013 -0400
-@@ -549,7 +549,7 @@
+diff -r 0a997bf8f28f gcc/config.gcc
+--- a/gcc/config.gcc	Sun Sep 08 22:34:28 2013 -0400
++++ b/gcc/config.gcc	Sun Sep 08 22:46:21 2013 -0400
+@@ -522,7 +522,7 @@
  esac
  
  # Common C libraries.
@@ -210,7 +210,7 @@ diff -r 2b29df135cf0 gcc/config.gcc
  
  # Common parts for widely ported systems.
  case ${target} in
-@@ -652,6 +652,9 @@
+@@ -625,6 +625,9 @@
      *-*-*uclibc*)
        tm_defines="$tm_defines DEFAULT_LIBC=LIBC_UCLIBC"
        ;;
@@ -220,10 +220,10 @@ diff -r 2b29df135cf0 gcc/config.gcc
      *)
        tm_defines="$tm_defines DEFAULT_LIBC=LIBC_GLIBC"
        ;;
-diff -r 2b29df135cf0 gcc/config/linux.h
---- a/gcc/config/linux.h	Fri Mar 29 16:41:11 2013 -0400
-+++ b/gcc/config/linux.h	Fri Mar 29 16:41:14 2013 -0400
-@@ -32,10 +32,12 @@
+diff -r 0a997bf8f28f gcc/config/linux.h
+--- a/gcc/config/linux.h	Sun Sep 08 22:34:28 2013 -0400
++++ b/gcc/config/linux.h	Sun Sep 08 22:46:21 2013 -0400
+@@ -33,10 +33,12 @@
  #define OPTION_GLIBC  (DEFAULT_LIBC == LIBC_GLIBC)
  #define OPTION_UCLIBC (DEFAULT_LIBC == LIBC_UCLIBC)
  #define OPTION_BIONIC (DEFAULT_LIBC == LIBC_BIONIC)
@@ -236,7 +236,7 @@ diff -r 2b29df135cf0 gcc/config/linux.h
  #endif
  
  #define GNU_USER_TARGET_OS_CPP_BUILTINS()			\
-@@ -53,18 +55,21 @@
+@@ -54,18 +56,21 @@
     uClibc or Bionic is the default C library and whether
     -muclibc or -mglibc or -mbionic has been passed to change the default.  */
  
@@ -266,7 +266,7 @@ diff -r 2b29df135cf0 gcc/config/linux.h
  #else
  #error "Unsupported DEFAULT_LIBC"
  #endif /* DEFAULT_LIBC */
-@@ -84,16 +89,16 @@
+@@ -85,16 +90,16 @@
  
  #define GNU_USER_DYNAMIC_LINKER						\
    CHOOSE_DYNAMIC_LINKER (GLIBC_DYNAMIC_LINKER, UCLIBC_DYNAMIC_LINKER,	\
@@ -287,9 +287,84 @@ diff -r 2b29df135cf0 gcc/config/linux.h
  
  /* Determine whether the entire c99 runtime
     is present in the runtime library.  */
-diff -r 2b29df135cf0 gcc/config/linux.opt
---- a/gcc/config/linux.opt	Fri Mar 29 16:41:11 2013 -0400
-+++ b/gcc/config/linux.opt	Fri Mar 29 16:41:14 2013 -0400
+@@ -108,3 +113,74 @@
+ /* Whether we have Bionic libc runtime */
+ #undef TARGET_HAS_BIONIC
+ #define TARGET_HAS_BIONIC (OPTION_BIONIC)
++
++/* musl avoids problematic includes by rearranging the include directories.
++ * Unfortunately, this is mostly duplicated from cppdefault.c */
++#if DEFAULT_LIBC == LIBC_MUSL
++#define INCLUDE_DEFAULTS_MUSL_GPP			\
++    { GPLUSPLUS_INCLUDE_DIR, "G++", 1, 1,		\
++      GPLUSPLUS_INCLUDE_DIR_ADD_SYSROOT, 0 },		\
++    { GPLUSPLUS_TOOL_INCLUDE_DIR, "G++", 1, 1,		\
++      GPLUSPLUS_INCLUDE_DIR_ADD_SYSROOT, 1 },		\
++    { GPLUSPLUS_BACKWARD_INCLUDE_DIR, "G++", 1, 1,	\
++      GPLUSPLUS_INCLUDE_DIR_ADD_SYSROOT, 0 },
++
++#ifdef LOCAL_INCLUDE_DIR
++#define INCLUDE_DEFAULTS_MUSL_LOCAL			\
++    { LOCAL_INCLUDE_DIR, 0, 0, 1, 1, 2 },		\
++    { LOCAL_INCLUDE_DIR, 0, 0, 1, 1, 0 },
++#else
++#define INCLUDE_DEFAULTS_MUSL_LOCAL
++#endif
++
++#ifdef PREFIX_INCLUDE_DIR
++#define INCLUDE_DEFAULTS_MUSL_PREFIX			\
++    { PREFIX_INCLUDE_DIR, 0, 0, 1, 0, 0},
++#else
++#define INCLUDE_DEFAULTS_MUSL_PREFIX
++#endif
++
++#ifdef CROSS_INCLUDE_DIR
++#define INCLUDE_DEFAULTS_MUSL_CROSS			\
++    { CROSS_INCLUDE_DIR, "GCC", 0, 0, 0, 0},
++#else
++#define INCLUDE_DEFAULTS_MUSL_CROSS
++#endif
++
++#ifdef TOOL_INCLUDE_DIR
++#define INCLUDE_DEFAULTS_MUSL_TOOL			\
++    { TOOL_INCLUDE_DIR, "BINUTILS", 0, 1, 0, 0},
++#else
++#define INCLUDE_DEFAULTS_MUSL_TOOL
++#endif
++
++#ifdef NATIVE_SYSTEM_HEADER_DIR
++#define INCLUDE_DEFAULTS_MUSL_NATIVE			\
++    { NATIVE_SYSTEM_HEADER_DIR, 0, 0, 0, 1, 2 },	\
++    { NATIVE_SYSTEM_HEADER_DIR, 0, 0, 0, 1, 0 },
++#else
++#define INCLUDE_DEFAULTS_MUSL_NATIVE
++#endif
++
++#if defined (CROSS_DIRECTORY_STRUCTURE) && !defined (TARGET_SYSTEM_ROOT)
++# undef INCLUDE_DEFAULTS_MUSL_LOCAL
++# define INCLUDE_DEFAULTS_MUSL_LOCAL
++# undef INCLUDE_DEFAULTS_MUSL_NATIVE
++# define INCLUDE_DEFAULTS_MUSL_NATIVE
++#else
++# undef INCLUDE_DEFAULTS_MUSL_CROSS
++# define INCLUDE_DEFAULTS_MUSL_CROSS
++#endif
++
++#undef INCLUDE_DEFAULTS
++#define INCLUDE_DEFAULTS				\
++  {							\
++    INCLUDE_DEFAULTS_MUSL_GPP				\
++    INCLUDE_DEFAULTS_MUSL_PREFIX			\
++    INCLUDE_DEFAULTS_MUSL_CROSS				\
++    INCLUDE_DEFAULTS_MUSL_TOOL				\
++    INCLUDE_DEFAULTS_MUSL_NATIVE			\
++    { GCC_INCLUDE_DIR, "GCC", 0, 1, 0, 0 },		\
++    { 0, 0, 0, 0, 0, 0 }				\
++  }
++#endif
+diff -r 0a997bf8f28f gcc/config/linux.opt
+--- a/gcc/config/linux.opt	Sun Sep 08 22:34:28 2013 -0400
++++ b/gcc/config/linux.opt	Sun Sep 08 22:46:21 2013 -0400
 @@ -30,3 +30,7 @@
  muclibc
  Target Report RejectNegative Var(linux_libc,LIBC_UCLIBC) Negative(mbionic)
@@ -298,10 +373,10 @@ diff -r 2b29df135cf0 gcc/config/linux.opt
 +mmusl
 +Target Report RejectNegative Var(linux_libc,LIBC_MUSL) Negative(mglibc)
 +Use musl C library
-diff -r 2b29df135cf0 gcc/ginclude/stddef.h
---- a/gcc/ginclude/stddef.h	Fri Mar 29 16:41:11 2013 -0400
-+++ b/gcc/ginclude/stddef.h	Fri Mar 29 16:41:14 2013 -0400
-@@ -181,6 +181,7 @@
+diff -r 0a997bf8f28f gcc/ginclude/stddef.h
+--- a/gcc/ginclude/stddef.h	Sun Sep 08 22:34:28 2013 -0400
++++ b/gcc/ginclude/stddef.h	Sun Sep 08 22:46:21 2013 -0400
+@@ -184,6 +184,7 @@
  #ifndef _GCC_SIZE_T
  #ifndef _SIZET_
  #ifndef __size_t
@@ -309,7 +384,7 @@ diff -r 2b29df135cf0 gcc/ginclude/stddef.h
  #define __size_t__	/* BeOS */
  #define __SIZE_T__	/* Cray Unicos/Mk */
  #define _SIZE_T
-@@ -197,6 +198,7 @@
+@@ -200,6 +201,7 @@
  #define ___int_size_t_h
  #define _GCC_SIZE_T
  #define _SIZET_
@@ -317,7 +392,7 @@ diff -r 2b29df135cf0 gcc/ginclude/stddef.h
  #if (defined (__FreeBSD__) && (__FreeBSD__ >= 5)) \
    || defined(__FreeBSD_kernel__)
  /* __size_t is a typedef on FreeBSD 5, must not trash it. */
-@@ -214,6 +216,7 @@
+@@ -215,6 +217,7 @@
  typedef long ssize_t;
  #endif /* __BEOS__ */
  #endif /* !(defined (__GNUG__) && defined (size_t)) */
