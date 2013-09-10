@@ -195,12 +195,12 @@ diff -r 65cd23493c45 -r 355cec477536 config.sub
  if test x$gcc_cv_target_dl_iterate_phdr = xyes; then
 
 # HG changeset patch
-# Parent 0a997bf8f28fc5a22008f562b9c26c4988666f32
+# Parent 8cd76d5f6674f04c31523971d1dfc81c91388c38
 Adding -mmusl as a musl libc specifier, and the necessary hacks for it to know how to find musl's dynamic linker.
 
-diff -r 0a997bf8f28f gcc/config.gcc
---- a/gcc/config.gcc	Sun Sep 08 22:34:28 2013 -0400
-+++ b/gcc/config.gcc	Sun Sep 08 22:46:21 2013 -0400
+diff -r 8cd76d5f6674 gcc/config.gcc
+--- a/gcc/config.gcc	Mon Sep 09 12:54:21 2013 -0400
++++ b/gcc/config.gcc	Mon Sep 09 12:54:37 2013 -0400
 @@ -522,7 +522,7 @@
  esac
  
@@ -220,9 +220,9 @@ diff -r 0a997bf8f28f gcc/config.gcc
      *)
        tm_defines="$tm_defines DEFAULT_LIBC=LIBC_GLIBC"
        ;;
-diff -r 0a997bf8f28f gcc/config/linux.h
---- a/gcc/config/linux.h	Sun Sep 08 22:34:28 2013 -0400
-+++ b/gcc/config/linux.h	Sun Sep 08 22:46:21 2013 -0400
+diff -r 8cd76d5f6674 gcc/config/linux.h
+--- a/gcc/config/linux.h	Mon Sep 09 12:54:21 2013 -0400
++++ b/gcc/config/linux.h	Mon Sep 09 12:54:37 2013 -0400
 @@ -33,10 +33,12 @@
  #define OPTION_GLIBC  (DEFAULT_LIBC == LIBC_GLIBC)
  #define OPTION_UCLIBC (DEFAULT_LIBC == LIBC_UCLIBC)
@@ -266,7 +266,7 @@ diff -r 0a997bf8f28f gcc/config/linux.h
  #else
  #error "Unsupported DEFAULT_LIBC"
  #endif /* DEFAULT_LIBC */
-@@ -85,16 +90,16 @@
+@@ -85,21 +90,21 @@
  
  #define GNU_USER_DYNAMIC_LINKER						\
    CHOOSE_DYNAMIC_LINKER (GLIBC_DYNAMIC_LINKER, UCLIBC_DYNAMIC_LINKER,	\
@@ -287,6 +287,12 @@ diff -r 0a997bf8f28f gcc/config/linux.h
  
  /* Determine whether the entire c99 runtime
     is present in the runtime library.  */
+ #undef TARGET_C99_FUNCTIONS
+-#define TARGET_C99_FUNCTIONS (OPTION_GLIBC)
++#define TARGET_C99_FUNCTIONS (OPTION_GLIBC || OPTION_MUSL)
+ 
+ /* Whether we have sincos that follows the GNU extension.  */
+ #undef TARGET_HAS_SINCOS
 @@ -108,3 +113,74 @@
  /* Whether we have Bionic libc runtime */
  #undef TARGET_HAS_BIONIC
@@ -362,9 +368,9 @@ diff -r 0a997bf8f28f gcc/config/linux.h
 +    { 0, 0, 0, 0, 0, 0 }				\
 +  }
 +#endif
-diff -r 0a997bf8f28f gcc/config/linux.opt
---- a/gcc/config/linux.opt	Sun Sep 08 22:34:28 2013 -0400
-+++ b/gcc/config/linux.opt	Sun Sep 08 22:46:21 2013 -0400
+diff -r 8cd76d5f6674 gcc/config/linux.opt
+--- a/gcc/config/linux.opt	Mon Sep 09 12:54:21 2013 -0400
++++ b/gcc/config/linux.opt	Mon Sep 09 12:54:37 2013 -0400
 @@ -30,3 +30,7 @@
  muclibc
  Target Report RejectNegative Var(linux_libc,LIBC_UCLIBC) Negative(mbionic)
@@ -373,9 +379,9 @@ diff -r 0a997bf8f28f gcc/config/linux.opt
 +mmusl
 +Target Report RejectNegative Var(linux_libc,LIBC_MUSL) Negative(mglibc)
 +Use musl C library
-diff -r 0a997bf8f28f gcc/ginclude/stddef.h
---- a/gcc/ginclude/stddef.h	Sun Sep 08 22:34:28 2013 -0400
-+++ b/gcc/ginclude/stddef.h	Sun Sep 08 22:46:21 2013 -0400
+diff -r 8cd76d5f6674 gcc/ginclude/stddef.h
+--- a/gcc/ginclude/stddef.h	Mon Sep 09 12:54:21 2013 -0400
++++ b/gcc/ginclude/stddef.h	Mon Sep 09 12:54:37 2013 -0400
 @@ -184,6 +184,7 @@
  #ifndef _GCC_SIZE_T
  #ifndef _SIZET_

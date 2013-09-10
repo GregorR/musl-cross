@@ -58,13 +58,13 @@ diff -r e87035576969 libitm/config/arm/hwcap.cc
  if test x$gcc_cv_target_dl_iterate_phdr = xyes; then
 
 # HG changeset patch
-# Parent 0a997bf8f28fc5a22008f562b9c26c4988666f32
+# Parent 572f7b4d1c50cefde3aa2c43d06040fc308ad989
 Adding -mmusl as a musl libc specifier, and the necessary hacks for it to know how to find musl's dynamic linker.
 
-diff -r 0a997bf8f28f gcc/config.gcc
---- a/gcc/config.gcc	Sun Sep 08 22:34:28 2013 -0400
-+++ b/gcc/config.gcc	Sun Sep 08 22:46:21 2013 -0400
-@@ -522,7 +522,7 @@
+diff -r 572f7b4d1c50 gcc/config.gcc
+--- a/gcc/config.gcc	Sun Sep 08 22:58:18 2013 -0400
++++ b/gcc/config.gcc	Mon Sep 09 12:48:34 2013 -0400
+@@ -549,7 +549,7 @@
  esac
  
  # Common C libraries.
@@ -73,7 +73,7 @@ diff -r 0a997bf8f28f gcc/config.gcc
  
  # Common parts for widely ported systems.
  case ${target} in
-@@ -625,6 +625,9 @@
+@@ -652,6 +652,9 @@
      *-*-*uclibc*)
        tm_defines="$tm_defines DEFAULT_LIBC=LIBC_UCLIBC"
        ;;
@@ -83,10 +83,10 @@ diff -r 0a997bf8f28f gcc/config.gcc
      *)
        tm_defines="$tm_defines DEFAULT_LIBC=LIBC_GLIBC"
        ;;
-diff -r 0a997bf8f28f gcc/config/linux.h
---- a/gcc/config/linux.h	Sun Sep 08 22:34:28 2013 -0400
-+++ b/gcc/config/linux.h	Sun Sep 08 22:46:21 2013 -0400
-@@ -33,10 +33,12 @@
+diff -r 572f7b4d1c50 gcc/config/linux.h
+--- a/gcc/config/linux.h	Sun Sep 08 22:58:18 2013 -0400
++++ b/gcc/config/linux.h	Mon Sep 09 12:48:34 2013 -0400
+@@ -32,10 +32,12 @@
  #define OPTION_GLIBC  (DEFAULT_LIBC == LIBC_GLIBC)
  #define OPTION_UCLIBC (DEFAULT_LIBC == LIBC_UCLIBC)
  #define OPTION_BIONIC (DEFAULT_LIBC == LIBC_BIONIC)
@@ -99,7 +99,7 @@ diff -r 0a997bf8f28f gcc/config/linux.h
  #endif
  
  #define GNU_USER_TARGET_OS_CPP_BUILTINS()			\
-@@ -54,18 +56,21 @@
+@@ -53,18 +55,21 @@
     uClibc or Bionic is the default C library and whether
     -muclibc or -mglibc or -mbionic has been passed to change the default.  */
  
@@ -129,7 +129,7 @@ diff -r 0a997bf8f28f gcc/config/linux.h
  #else
  #error "Unsupported DEFAULT_LIBC"
  #endif /* DEFAULT_LIBC */
-@@ -85,16 +90,16 @@
+@@ -84,21 +89,21 @@
  
  #define GNU_USER_DYNAMIC_LINKER						\
    CHOOSE_DYNAMIC_LINKER (GLIBC_DYNAMIC_LINKER, UCLIBC_DYNAMIC_LINKER,	\
@@ -150,7 +150,13 @@ diff -r 0a997bf8f28f gcc/config/linux.h
  
  /* Determine whether the entire c99 runtime
     is present in the runtime library.  */
-@@ -108,3 +113,74 @@
+ #undef TARGET_C99_FUNCTIONS
+-#define TARGET_C99_FUNCTIONS (OPTION_GLIBC)
++#define TARGET_C99_FUNCTIONS (OPTION_GLIBC || OPTION_MUSL)
+ 
+ /* Whether we have sincos that follows the GNU extension.  */
+ #undef TARGET_HAS_SINCOS
+@@ -107,3 +112,74 @@
  /* Whether we have Bionic libc runtime */
  #undef TARGET_HAS_BIONIC
  #define TARGET_HAS_BIONIC (OPTION_BIONIC)
@@ -225,9 +231,9 @@ diff -r 0a997bf8f28f gcc/config/linux.h
 +    { 0, 0, 0, 0, 0, 0 }				\
 +  }
 +#endif
-diff -r 0a997bf8f28f gcc/config/linux.opt
---- a/gcc/config/linux.opt	Sun Sep 08 22:34:28 2013 -0400
-+++ b/gcc/config/linux.opt	Sun Sep 08 22:46:21 2013 -0400
+diff -r 572f7b4d1c50 gcc/config/linux.opt
+--- a/gcc/config/linux.opt	Sun Sep 08 22:58:18 2013 -0400
++++ b/gcc/config/linux.opt	Mon Sep 09 12:48:34 2013 -0400
 @@ -30,3 +30,7 @@
  muclibc
  Target Report RejectNegative Var(linux_libc,LIBC_UCLIBC) Negative(mbionic)
@@ -236,10 +242,10 @@ diff -r 0a997bf8f28f gcc/config/linux.opt
 +mmusl
 +Target Report RejectNegative Var(linux_libc,LIBC_MUSL) Negative(mglibc)
 +Use musl C library
-diff -r 0a997bf8f28f gcc/ginclude/stddef.h
---- a/gcc/ginclude/stddef.h	Sun Sep 08 22:34:28 2013 -0400
-+++ b/gcc/ginclude/stddef.h	Sun Sep 08 22:46:21 2013 -0400
-@@ -184,6 +184,7 @@
+diff -r 572f7b4d1c50 gcc/ginclude/stddef.h
+--- a/gcc/ginclude/stddef.h	Sun Sep 08 22:58:18 2013 -0400
++++ b/gcc/ginclude/stddef.h	Mon Sep 09 12:48:34 2013 -0400
+@@ -181,6 +181,7 @@
  #ifndef _GCC_SIZE_T
  #ifndef _SIZET_
  #ifndef __size_t
@@ -247,7 +253,7 @@ diff -r 0a997bf8f28f gcc/ginclude/stddef.h
  #define __size_t__	/* BeOS */
  #define __SIZE_T__	/* Cray Unicos/Mk */
  #define _SIZE_T
-@@ -200,6 +201,7 @@
+@@ -197,6 +198,7 @@
  #define ___int_size_t_h
  #define _GCC_SIZE_T
  #define _SIZET_
@@ -255,7 +261,7 @@ diff -r 0a997bf8f28f gcc/ginclude/stddef.h
  #if (defined (__FreeBSD__) && (__FreeBSD__ >= 5)) \
    || defined(__FreeBSD_kernel__)
  /* __size_t is a typedef on FreeBSD 5, must not trash it. */
-@@ -215,6 +217,7 @@
+@@ -214,6 +216,7 @@
  typedef long ssize_t;
  #endif /* __BEOS__ */
  #endif /* !(defined (__GNUG__) && defined (size_t)) */
