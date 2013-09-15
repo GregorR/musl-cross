@@ -677,17 +677,6 @@ diff -r 2ffe76b215fd gcc/config/rs6000/sysv4.h
    { "cpp_os_ads",		CPP_OS_ADS_SPEC },			\
    { "cpp_os_yellowknife",	CPP_OS_YELLOWKNIFE_SPEC },		\
    { "cpp_os_mvme",		CPP_OS_MVME_SPEC },			\
-diff -r 2ffe76b215fd libgcc/config/rs6000/linux-unwind.h
---- a/libgcc/config/rs6000/linux-unwind.h	Fri Mar 29 16:41:26 2013 -0400
-+++ b/libgcc/config/rs6000/linux-unwind.h	Fri Mar 29 16:41:28 2013 -0400
-@@ -258,6 +258,7 @@
- 
-   return _URC_NO_REASON;
- }
-+#endif
- 
- #define MD_FROB_UPDATE_CONTEXT frob_update_context
- 
 diff -r 7cba4201a2ae libgcc/unwind-dw2-fde-dip.c
 --- a/libgcc/unwind-dw2-fde-dip.c	Sat Jul 27 22:53:05 2013 -0400
 +++ b/libgcc/unwind-dw2-fde-dip.c	Sat Jul 27 22:57:08 2013 -0400
