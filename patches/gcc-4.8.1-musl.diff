@@ -1,3 +1,17 @@
+--- a/gcc/config/aarch64/aarch64-linux.h	2013-01-10 21:38:27.000000000 +0100
++++ b/gcc/config/aarch64/aarch64-linux.h	2013-09-12 21:39:34.004829498 +0200
+@@ -21,7 +21,11 @@
+ #ifndef GCC_AARCH64_LINUX_H
+ #define GCC_AARCH64_LINUX_H
+ 
++/* The AArch64 port currently supports two dynamic linkers:
++   - ld-linux-aarch64.so.1 - GLIBC dynamic linker
++   - ld-musl-aarch64.so.1 - musl libc dynamic linker  */
+ #define GLIBC_DYNAMIC_LINKER "/lib/ld-linux-aarch64.so.1"
++#define MUSL_DYNAMIC_LINKER "/lib/ld-musl-aarch64.so.1"
+ 
+ #define LINUX_TARGET_LINK_SPEC  "%{h*}		\
+    %{static:-Bstatic}				\
 # HG changeset patch
 # Parent e87035576969de2cc4d03decf5f81d682addf305
 Support for arm-linux-musl.
