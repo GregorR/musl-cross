@@ -13,13 +13,13 @@
  #define LINUX_TARGET_LINK_SPEC  "%{h*}		\
     %{static:-Bstatic}				\
 # HG changeset patch
-# Parent e87035576969de2cc4d03decf5f81d682addf305
+# Parent ed5df7a8910d0149d720efa8734d1dcadc02a620
 Support for arm-linux-musl.
 
-diff -r e87035576969 gcc/config/arm/linux-eabi.h
---- a/gcc/config/arm/linux-eabi.h	Sun Sep 08 16:10:51 2013 -0400
-+++ b/gcc/config/arm/linux-eabi.h	Sun Sep 08 16:12:57 2013 -0400
-@@ -77,6 +77,23 @@
+diff -r ed5df7a8910d gcc/config/arm/linux-eabi.h
+--- a/gcc/config/arm/linux-eabi.h	Tue Sep 17 14:41:53 2013 -0400
++++ b/gcc/config/arm/linux-eabi.h	Tue Sep 17 14:44:27 2013 -0400
+@@ -77,6 +77,28 @@
      %{mfloat-abi=soft*:" GLIBC_DYNAMIC_LINKER_SOFT_FLOAT "} \
      %{!mfloat-abi=*:" GLIBC_DYNAMIC_LINKER_DEFAULT "}"
  
@@ -31,8 +31,13 @@ diff -r e87035576969 gcc/config/arm/linux-eabi.h
 +   We default to soft-float, but this can be overridden by changing both
 +   MUSL_DYNAMIC_LINKER_DEFAULT and TARGET_DEFAULT_FLOAT_ABI.  */
 +#undef  MUSL_DYNAMIC_LINKER
++#if TARGET_ENDIAN_DEFAULT == 0 /* LE */
 +#define MUSL_DYNAMIC_LINKER_SOFT_FLOAT "/lib/ld-musl-arm.so.1"
 +#define MUSL_DYNAMIC_LINKER_HARD_FLOAT "/lib/ld-musl-armhf.so.1"
++#else /* BE */
++#define MUSL_DYNAMIC_LINKER_SOFT_FLOAT "/lib/ld-musl-armeb.so.1"
++#define MUSL_DYNAMIC_LINKER_HARD_FLOAT "/lib/ld-musl-armebhf.so.1"
++#endif
 +#define MUSL_DYNAMIC_LINKER_DEFAULT MUSL_DYNAMIC_LINKER_SOFT_FLOAT
 +
 +#define MUSL_DYNAMIC_LINKER \
@@ -43,9 +48,9 @@ diff -r e87035576969 gcc/config/arm/linux-eabi.h
  /* At this point, bpabi.h will have clobbered LINK_SPEC.  We want to
     use the GNU/Linux version, not the generic BPABI version.  */
  #undef  LINK_SPEC
-diff -r e87035576969 libitm/config/arm/hwcap.cc
---- a/libitm/config/arm/hwcap.cc	Sun Sep 08 16:10:51 2013 -0400
-+++ b/libitm/config/arm/hwcap.cc	Sun Sep 08 16:12:57 2013 -0400
+diff -r ed5df7a8910d libitm/config/arm/hwcap.cc
+--- a/libitm/config/arm/hwcap.cc	Tue Sep 17 14:41:53 2013 -0400
++++ b/libitm/config/arm/hwcap.cc	Tue Sep 17 14:44:27 2013 -0400
 @@ -40,7 +40,11 @@
  
  #ifdef __linux__

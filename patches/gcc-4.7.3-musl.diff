@@ -5,7 +5,7 @@ Support for arm-linux-musl.
 diff -r 8801a3f6d050 gcc/config/arm/linux-eabi.h
 --- a/gcc/config/arm/linux-eabi.h	Tue Aug 27 15:47:31 2013 -0400
 +++ b/gcc/config/arm/linux-eabi.h	Tue Aug 27 15:47:37 2013 -0400
-@@ -64,6 +64,23 @@
+@@ -64,6 +64,28 @@
  #undef  GLIBC_DYNAMIC_LINKER
  #define GLIBC_DYNAMIC_LINKER "/lib/ld-linux.so.3"
  
@@ -17,8 +17,13 @@ diff -r 8801a3f6d050 gcc/config/arm/linux-eabi.h
 +   We default to soft-float, but this can be overridden by changing both
 +   MUSL_DYNAMIC_LINKER_DEFAULT and TARGET_DEFAULT_FLOAT_ABI.  */
 +#undef  MUSL_DYNAMIC_LINKER
++#if TARGET_ENDIAN_DEFAULT == 0 /* LE */
 +#define MUSL_DYNAMIC_LINKER_SOFT_FLOAT "/lib/ld-musl-arm.so.1"
 +#define MUSL_DYNAMIC_LINKER_HARD_FLOAT "/lib/ld-musl-armhf.so.1"
++#else /* BE */
++#define MUSL_DYNAMIC_LINKER_SOFT_FLOAT "/lib/ld-musl-armeb.so.1"
++#define MUSL_DYNAMIC_LINKER_HARD_FLOAT "/lib/ld-musl-armebhf.so.1"
++#endif
 +#define MUSL_DYNAMIC_LINKER_DEFAULT MUSL_DYNAMIC_LINKER_SOFT_FLOAT
 +
 +#define MUSL_DYNAMIC_LINKER \
