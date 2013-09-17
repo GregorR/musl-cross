@@ -69,6 +69,10 @@ NATIVE_ARCH="$1"
 for ARCH in "$@"
 do
     case "$ARCH" in
+        armhf)
+            ARCH="arm"
+            TRIPLE="arm-linux-musleabihf"
+            ;;
         arm*)
             TRIPLE="$ARCH-linux-musleabi"
             ;;
