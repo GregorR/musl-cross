@@ -571,18 +571,22 @@ diff -r f50bb54f331f libstdc++-v3/configure.host
      os_include_dir="os/hpux"
      ;;
 # HG changeset patch
-# Parent 62831d7bf931658019ba16092c48375177d014b1
+# Parent 8b5753437eda65fea42d3f0ec03b0e3a66fd0b79
 Support for mips-linux-musl.
 
-diff -r 62831d7bf931 gcc/config/mips/linux.h
---- a/gcc/config/mips/linux.h	Fri Mar 29 16:41:23 2013 -0400
-+++ b/gcc/config/mips/linux.h	Fri Mar 29 16:41:25 2013 -0400
-@@ -18,3 +18,5 @@
+diff -r 8b5753437eda gcc/config/mips/linux.h
+--- a/gcc/config/mips/linux.h	Tue Sep 17 13:33:34 2013 -0400
++++ b/gcc/config/mips/linux.h	Tue Sep 17 13:35:13 2013 -0400
+@@ -18,3 +18,9 @@
  <http://www.gnu.org/licenses/>.  */
  
  #define GLIBC_DYNAMIC_LINKER "/lib/ld.so.1"
 +
++#if TARGET_ENDIAN_DEFAULT == 0 /* LE */
++#define MUSL_DYNAMIC_LINKER "/lib/ld-musl-mipsel.so.1"
++#else /* BE */
 +#define MUSL_DYNAMIC_LINKER "/lib/ld-musl-mips.so.1"
++#endif
 # HG changeset patch
 # Parent 2ffe76b215fdb082cbbc262536077627757fa9bf
 Support for powerpc-linux-musl.
