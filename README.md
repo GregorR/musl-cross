@@ -1,5 +1,8 @@
 This is a small suite of scripts and patches to build a musl libc
-cross-compiler. For the impatient, ./build.sh should build a cross compiler to
+cross-compiler. Prebuilt cross and native compilers are available at
+http://musl.codu.org/
+
+For the impatient, ./build.sh should build a cross compiler to
 /opt/cross/<arch>-linux-musl, no muss, no fuss. Otherwise, you can edit
 config.sh to make cross-compilers to other architectures, and even copy
 config.sh to another directory then run build.sh from there to avoid polluting
