@@ -41,12 +41,14 @@ else
     fetchextract http://ftp.gnu.org/gnu/binutils/ binutils-$BINUTILS_VERSION .tar.bz2
 fi
 buildinstall 1 binutils-$BINUTILS_VERSION --target=$TRIPLE --disable-werror \
+    --with-sysroot= \
     $BINUTILS_CONFFLAGS
 
 # gcc 1
 fetchextract http://ftp.gnu.org/gnu/gcc/gcc-$GCC_VERSION/ gcc-$GCC_VERSION .tar.bz2
 [ "$GCC_BUILTIN_PREREQS" = "yes" ] && gccprereqs
 buildinstall 1 gcc-$GCC_VERSION --target=$TRIPLE \
+    --with-sysroot= \
     --enable-languages=c --with-newlib --disable-multilib --disable-libssp \
     --disable-libquadmath --disable-threads --disable-decimal-float \
     --disable-shared --disable-libmudflap --disable-libgomp --disable-libatomic \
@@ -89,6 +91,7 @@ then
 
     # gcc 2
     buildinstall 2 gcc-$GCC_VERSION --target=$TRIPLE \
+        --with-sysroot= \
         --enable-languages=$LANGUAGES --disable-multilib --disable-libmudflap \
         --disable-libsanitizer \
         $GCC_CONFFLAGS
