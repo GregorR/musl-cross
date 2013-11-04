@@ -47,6 +47,9 @@ then
 else
     fetchextract http://ftp.gnu.org/gnu/binutils/ binutils-$BINUTILS_VERSION .tar.bz2
 fi
+
+sed -i 's,MAKEINFO="$MISSING makeinfo",MAKEINFO=true,g' \
+    binutils-$BINUTILS_VERSION/configure
 buildinstall 1 binutils-$BINUTILS_VERSION --target=$TRIPLE --disable-werror \
     --with-sysroot="$PREFIX"/"$TRIPLE" \
     $BINUTILS_CONFFLAGS
