@@ -245,14 +245,10 @@ buildmake() {
 
     if [ ! -e "$BUILT" ]
     then
+        patch_source "$BD"
+
         (
         cd "$BD" || die "Failed to cd $BD"
-
-        if [ -e "$MUSL_CC_BASE/$BD"-musl.diff -a ! -e patched ]
-        then
-            patch -p1 < "$MUSL_CC_BASE/$BD"-musl.diff || die "Failed to patch $BD"
-            touch patched
-        fi
 
         ( $MAKE "$@" $MAKEFLAGS &&
             touch "$BUILT" ) ||
