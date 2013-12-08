@@ -1,0 +1,8 @@
+--- musl-0.9.14.org/arch/microblaze/bits/alltypes.h.in
++++ musl-0.9.14/arch/microblaze/bits/alltypes.h.in
+@@ -1,4 +1,4 @@
+-#define _Addr int
++#define _Addr long
+ #define _Int64 long long
+ #define _Reg int
+ 
