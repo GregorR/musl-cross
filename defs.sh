@@ -28,7 +28,7 @@ then
 fi
 
 # Versions of things (do this before config.sh so they can be config'd)
-BINUTILS_VERSION=2.23.2
+BINUTILS_VERSION=2.24
 GCC_VERSION=4.8.1
 GDB_VERSION=7.4.1
 GMP_VERSION=4.3.2
