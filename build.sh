@@ -57,12 +57,27 @@ buildinstall 1 binutils-$BINUTILS_VERSION --target=$TRIPLE --disable-werror \
 # gcc 1
 fetchextract http://ftp.gnu.org/gnu/gcc/gcc-$GCC_VERSION/ gcc-$GCC_VERSION .tar.bz2
 [ "$GCC_BUILTIN_PREREQS" = "yes" ] && gccprereqs
+
+# gcc 1 is only used to bootstrap musl and gcc 2, so it is pointless to
+# optimize it.
+# If GCC_STAGE1_NOOPT is set, we build it without optimization and debug info,
+# which reduces overall build time considerably.
+SAVE_CFLAGS="$CFLAGS"
+SAVE_CXXFLAGS="$CXXFLAGS"
+if [ -n "$GCC_STAGE1_NOOPT" ] ; then
+export CFLAGS="-O0 -g0"
+export CXXFLAGS="-O0 -g0"
+fi
+
 buildinstall 1 gcc-$GCC_VERSION --target=$TRIPLE \
     --with-sysroot="$PREFIX"/"$TRIPLE" \
     --enable-languages=c --with-newlib --disable-multilib --disable-libssp \
     --disable-libquadmath --disable-threads --disable-decimal-float \
     --disable-shared --disable-libmudflap --disable-libgomp --disable-libatomic \
     $GCC_BOOTSTRAP_CONFFLAGS
+
+export CFLAGS="$SAVE_CFLAGS"
+export CXXFLAGS="$SAVE_CXXFLAGS"
 
 # linux headers
 fetchextract http://www.kernel.org/pub/linux/kernel/v3.0/ linux-$LINUX_HEADERS_VERSION .tar.xz
