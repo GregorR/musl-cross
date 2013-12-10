@@ -201,9 +201,11 @@ patch_source() {
     (
     cd "$BD" || die "Failed to cd $BD"
 
-    if [ -e "$MUSL_CC_BASE/patches/$BD"-musl.diff -a ! -e patched ]
+    if [ ! -e patched ]
     then
-        patch -p1 < "$MUSL_CC_BASE/patches/$BD"-musl.diff || die "Failed to patch $BD"
+        for f in "$MUSL_CC_BASE/patches/$BD"-*.diff ; do
+            if [ -e "$f" ] ; then patch -p1 < "$f" || die "Failed to apply patch $f to $BD" ; fi
+        done
         touch patched
     fi
     )
