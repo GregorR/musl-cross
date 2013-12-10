@@ -21,3 +21,6 @@ CC_BASE_PREFIX=/opt/cross
 #GCC_CONFFLAGS="--with-arch=armv7-a --with-float=softfp"
 
 MAKEFLAGS=-j8
+
+# enable this if you want the throw-away stage1 gcc to build without optimization and debug info
+#GCC_STAGE1_NOOPT=1
