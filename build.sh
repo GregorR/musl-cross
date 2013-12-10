@@ -65,7 +65,7 @@ buildinstall 1 gcc-$GCC_VERSION --target=$TRIPLE \
     $GCC_BOOTSTRAP_CONFFLAGS
 
 # linux headers
-fetchextract http://www.kernel.org/pub/linux/kernel/v3.0/ linux-$LINUX_HEADERS_VERSION .tar.bz2
+fetchextract http://www.kernel.org/pub/linux/kernel/v3.0/ linux-$LINUX_HEADERS_VERSION .tar.xz
 if [ ! -e linux-$LINUX_HEADERS_VERSION/configured ]
 then
     (
