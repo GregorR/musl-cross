@@ -57,12 +57,24 @@ buildinstall 1 binutils-$BINUTILS_VERSION --target=$TRIPLE --disable-werror \
 # gcc 1
 fetchextract http://ftp.gnu.org/gnu/gcc/gcc-$GCC_VERSION/ gcc-$GCC_VERSION .tar.bz2
 [ "$GCC_BUILTIN_PREREQS" = "yes" ] && gccprereqs
+
+# gcc1 is only used to bootstrap musl and gcc2, so it is pointless to spend a lot
+# of time optimizing it. we build it without optimization and debug info, which
+# reduces overall buildtime of musl-cross from 13.5 to 7.5 minutes on an 8core box.
+SAVE_CFLAGS="$CFLAGS"
+SAVE_CXXFLAGS="$CXXFLAGS"
+export CFLAGS="-O0 -g0"
+export CXXFLAGS="-O0 -g0"
+
 buildinstall 1 gcc-$GCC_VERSION --target=$TRIPLE \
     --with-sysroot="$PREFIX"/"$TRIPLE" \
     --enable-languages=c --with-newlib --disable-multilib --disable-libssp \
     --disable-libquadmath --disable-threads --disable-decimal-float \
     --disable-shared --disable-libmudflap --disable-libgomp --disable-libatomic \
     $GCC_BOOTSTRAP_CONFFLAGS
+
+export CFLAGS="$SAVE_CFLAGS"
+export CXXFLAGS="$SAVE_CXXFLAGS"
 
 # linux headers
 fetchextract http://www.kernel.org/pub/linux/kernel/v3.0/ linux-$LINUX_HEADERS_VERSION .tar.bz2
