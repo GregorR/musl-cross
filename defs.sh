@@ -28,8 +28,8 @@ then
 fi
 
 # Versions of things (do this before config.sh so they can be config'd)
-BINUTILS_VERSION=2.23.2
-GCC_VERSION=4.8.1
+BINUTILS_VERSION=2.24
+GCC_VERSION=4.8.2
 GDB_VERSION=7.4.1
 GMP_VERSION=4.3.2
 LIBELF_VERSION=71bf774909fd654d8167a475333fa8f37fbbcb5d
@@ -201,9 +201,11 @@ patch_source() {
     (
     cd "$BD" || die "Failed to cd $BD"
 
-    if [ -e "$MUSL_CC_BASE/patches/$BD"-musl.diff -a ! -e patched ]
+    if [ ! -e patched ]
     then
-        patch -p1 < "$MUSL_CC_BASE/patches/$BD"-musl.diff || die "Failed to patch $BD"
+        for f in "$MUSL_CC_BASE/patches/$BD"-*.diff ; do
+            if [ -e "$f" ] ; then patch -p1 < "$f" || die "Failed to apply patch $f to $BD" ; fi
+        done
         touch patched
     fi
     )
