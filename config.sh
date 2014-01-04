@@ -9,13 +9,13 @@
 
 CC_BASE_PREFIX=/opt/cross
 
-# if you use arm, you may need more fine-tuning:
+# If you use arm, you may need more fine-tuning:
 # arm hardfloat v7
 #TRIPLE=arm-linux-musleabihf
 #GCC_BOOTSTRAP_CONFFLAGS="--with-arch=armv7-a --with-float=hard --with-fpu=vfpv3-d16"
 #GCC_CONFFLAGS="--with-arch=armv7-a --with-float=hard --with-fpu=vfpv3-d16"
 
-#arm softfp
+# arm softfp
 #TRIPLE=arm-linux-musleabi
 #GCC_BOOTSTRAP_CONFFLAGS="--with-arch=armv7-a --with-float=softfp"
 #GCC_CONFFLAGS="--with-arch=armv7-a --with-float=softfp"
