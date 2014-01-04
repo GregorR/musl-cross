@@ -64,9 +64,11 @@ fetchextract http://ftp.gnu.org/gnu/gcc/gcc-$GCC_VERSION/ gcc-$GCC_VERSION .tar.
 # which reduces overall build time considerably.
 SAVE_CFLAGS="$CFLAGS"
 SAVE_CXXFLAGS="$CXXFLAGS"
-if [ -n "$GCC_STAGE1_NOOPT" ] ; then
-export CFLAGS="-O0 -g0"
-export CXXFLAGS="-O0 -g0"
+if [ -z "$GCC_STAGE1_NOOPT" ]; then GCC_STAGE1_NOOPT=0; fi
+if [ "$GCC_STAGE1_NOOPT" -ne 0 ]
+then
+    export CFLAGS="-O0 -g0"
+    export CXXFLAGS="-O0 -g0"
 fi
 
 buildinstall 1 gcc-$GCC_VERSION --target=$TRIPLE \
