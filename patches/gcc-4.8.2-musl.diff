@@ -653,3 +653,46 @@ diff -r f2601e4063d0 -r 0736dfe1aa0d gcc/config/microblaze/linux.h
  #undef  SUBTARGET_EXTRA_SPECS
  #define SUBTARGET_EXTRA_SPECS \
    { "dynamic_linker", DYNAMIC_LINKER }
+From 478ee0c03a08e2ef9371fd88d516738936943e78 Mon Sep 17 00:00:00 2001
+From: David Holsgrove <david.holsgrove@xilinx.com>
+Date: Fri, 28 Sep 2012 16:32:03 +1000
+Subject: [PATCH 06/11] [Patch, microblaze]: Add SIZE_TYPE and PTRDIFF_TYPE to
+ microblaze.h
+
+Fixes warnings like;
+
+warning: format '%zX' expects argument of type 'size_t',
+but argument 3 has type 'unsigned int' [-Wformat]
+
+Changelog
+
+2013-03-18  David Holsgrove <david.holsgrove@xilinx.com>
+
+ * gcc/config/microblaze/microblaze.h: Define SIZE_TYPE
+   and PTRDIFF_TYPE.
+
+Signed-off-by: David Holsgrove <david.holsgrove@xilinx.com>
+---
+ gcc/config/microblaze/microblaze.h |    6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/gcc/config/microblaze/microblaze.h b/gcc/config/microblaze/microblaze.h
+index 19cdfed..e772a3f 100644
+--- a/gcc/config/microblaze/microblaze.h
++++ b/gcc/config/microblaze/microblaze.h
+@@ -213,6 +213,12 @@ extern enum pipeline_type microblaze_pipe;
+ #define STRICT_ALIGNMENT        1
+ #define PCC_BITFIELD_TYPE_MATTERS 1
+ 
++#undef SIZE_TYPE
++#define SIZE_TYPE "unsigned int"
++
++#undef PTRDIFF_TYPE
++#define PTRDIFF_TYPE "int"
++
+ #define CONSTANT_ALIGNMENT(EXP, ALIGN)					\
+   ((TREE_CODE (EXP) == STRING_CST  || TREE_CODE (EXP) == CONSTRUCTOR)	\
+    && (ALIGN) < BITS_PER_WORD						\
+-- 
+1.7.9.5
+
