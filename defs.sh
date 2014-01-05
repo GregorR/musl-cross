@@ -116,6 +116,10 @@ case "$LINUX_ARCH" in
         LINUX_ARCH=powerpc
         LINUX_DEFCONFIG=g5_defconfig
         ;;
+
+    microblaze)
+        LINUX_DEFCONFIG=mmu_defconfig
+        ;;
 esac
 export LINUX_ARCH
 
