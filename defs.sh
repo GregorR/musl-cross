@@ -78,6 +78,11 @@ then
         arm*)
             TRIPLE="$ARCH-linux-musleabi"
             ;;
+
+        x32)
+            TRIPLE="x86_64-x32-linux-musl"
+            ;;
+
         *)
             TRIPLE="$ARCH-linux-musl"
             ;;
@@ -105,12 +110,14 @@ fi
 PATH="$CC_PREFIX/bin:$PATH"
 export PATH
 
+# Get our Linux arch and defconfig
 LINUX_ARCH=`echo "$ARCH" | sed 's/-.*//'`
 LINUX_DEFCONFIG=defconfig
 case "$LINUX_ARCH" in
     i*86) LINUX_ARCH=i386 ;;
     arm*) LINUX_ARCH=arm ;;
     mips*) LINUX_ARCH=mips ;;
+    x32) LINUX_ARCH=x86_64 ;;
 
     powerpc* | ppc*)
         LINUX_ARCH=powerpc
@@ -122,6 +129,13 @@ case "$LINUX_ARCH" in
         ;;
 esac
 export LINUX_ARCH
+
+# Get the target-specific multilib option, if applicable
+GCC_MULTILIB_CONFFLAGS="--disable-multilib"
+if [ "$ARCH" = "x32" ]
+then
+    GCC_MULTILIB_CONFFLAGS="--with-multilib-list=mx32"
+fi
 
 die() {
     echo "$@"

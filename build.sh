@@ -73,9 +73,10 @@ fi
 
 buildinstall 1 gcc-$GCC_VERSION --target=$TRIPLE \
     --with-sysroot="$PREFIX"/"$TRIPLE" \
-    --enable-languages=c --with-newlib --disable-multilib --disable-libssp \
+    --enable-languages=c --with-newlib --disable-libssp \
     --disable-libquadmath --disable-threads --disable-decimal-float \
     --disable-shared --disable-libmudflap --disable-libgomp --disable-libatomic \
+    $GCC_MULTILIB_CONFFLAGS \
     $GCC_BOOTSTRAP_CONFFLAGS
 
 export CFLAGS="$SAVE_CFLAGS"
@@ -119,8 +120,9 @@ then
     # gcc 2
     buildinstall 2 gcc-$GCC_VERSION --target=$TRIPLE \
         --with-sysroot="$PREFIX"/"$TRIPLE" \
-        --enable-languages=$LANGUAGES --disable-multilib --disable-libmudflap \
+        --enable-languages=$LANGUAGES --disable-libmudflap \
         --disable-libsanitizer \
+        $GCC_MULTILIB_CONFFLAGS \
         $GCC_CONFFLAGS
 fi
 
