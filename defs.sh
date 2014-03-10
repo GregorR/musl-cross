@@ -79,6 +79,10 @@ then
             TRIPLE="$ARCH-linux-musleabi"
             ;;
 
+	aarch64)
+	    TRIPLE="aarch64-linux-musl"
+	    ;;
+
         x32)
             TRIPLE="x86_64-x32-linux-musl"
             ;;
@@ -116,6 +120,7 @@ LINUX_DEFCONFIG=defconfig
 case "$LINUX_ARCH" in
     i*86) LINUX_ARCH=i386 ;;
     arm*) LINUX_ARCH=arm ;;
+    aarch64*) LINUX_ARCH=arm64 ;;
     mips*) LINUX_ARCH=mips ;;
     x32) LINUX_ARCH=x86_64 ;;
 
