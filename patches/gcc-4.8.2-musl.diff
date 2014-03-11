@@ -293,7 +293,7 @@ diff -r 809c85574bfe libgcc/unwind-dw2-fde-dip.c
 -    && defined(__sun__) && defined(__svr4__)
 -# define USE_PT_GNU_EH_FRAME
 +# ifdef __OpenBSD__
-+#  define ElfW(type) Elf_##typ
++#  define ElfW(type) Elf_##type
 +# elif defined(__FreeBSD__) && __FreeBSD__ >= 7
 +#  define ElfW __ElfN
 +# endif
@@ -696,3 +696,52 @@ index 19cdfed..e772a3f 100644
 -- 
 1.7.9.5
 
+--- gcc-4.8.2.org/gcc/config/sh/linux.h
++++ gcc-4.8.2/gcc/config/sh/linux.h
+@@ -43,7 +43,14 @@
+ 
+ #define TARGET_ASM_FILE_END file_end_indicate_exec_stack
+ 
++#if TARGET_BIG_ENDIAN_DEFAULT /* BE */
++#define MUSL_DYNAMIC_LINKER_E "eb"
++#else
++#define MUSL_DYNAMIC_LINKER_E
++#endif
++
+ #define GLIBC_DYNAMIC_LINKER "/lib/ld-linux.so.2"
++#define MUSL_DYNAMIC_LINKER "/lib/ld-musl-sh" MUSL_DYNAMIC_LINKER_E ".so.1"
+ 
+ #undef SUBTARGET_LINK_EMUL_SUFFIX
+ #define SUBTARGET_LINK_EMUL_SUFFIX "_linux"
+--- gcc-4.8.2.org/gcc/config/sh/sh.c
++++ gcc-4.8.2/gcc/config/sh/sh.c
+@@ -22,8 +22,17 @@
+ /* FIXME: This is a temporary hack, so that we can include <algorithm>
+    below.  <algorithm> will try to include <cstdlib> which will reference
+    malloc & co, which are poisoned by "system.h".  The proper solution is
+-   to include <cstdlib> in "system.h" instead of <stdlib.h>.  */
++   to include <cstdlib> in "system.h" instead of <stdlib.h>.
++   It's also a temporary hack as the inclusion of sstream will cause inclusion
++   of libc's pthread.h (istream->ios->ios_base->atomicity->gth->gthr-default)
++   which in turn includes sched.h, which defines the CPU_ALLOC, which uses
++   the poisoned calloc. the proper fix would be to shield the poison pragmas
++   with some define that is only set when gcc developers do testing.
++*/
+ #include <cstdlib>
++#include <sstream>
++#include <vector>
++#include <algorithm>
+ 
+ #include "config.h"
+ #include "system.h"
+@@ -59,10 +68,6 @@
+ #include "alloc-pool.h"
+ #include "tm-constrs.h"
+ #include "opts.h"
+-
+-#include <sstream>
+-#include <vector>
+-#include <algorithm>
+ 
+ int code_for_indirect_jump_scratch = CODE_FOR_indirect_jump_scratch;
+ 
