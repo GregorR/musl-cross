@@ -29,7 +29,7 @@ fi
 
 # Versions of things (do this before config.sh so they can be config'd)
 BINUTILS_VERSION=2.24
-GCC_VERSION=4.9.0
+GCC_VERSION=4.8.3
 GDB_VERSION=7.4.1
 GMP_VERSION=4.3.2
 LIBELF_VERSION=71bf774909fd654d8167a475333fa8f37fbbcb5d
@@ -39,8 +39,8 @@ MPFR_VERSION=2.4.2
 
 # musl can optionally be checked out from GIT, in which case MUSL_VERSION must
 # be set to a git tag and MUSL_GIT set to yes in config.sh
-MUSL_DEFAULT_VERSION=1.1.0
-MUSL_GIT_VERSION=b1ef8067863c52c6af03f623dbecda47204101b1
+MUSL_DEFAULT_VERSION=1.1.1
+MUSL_GIT_VERSION=0b4e0732db5e6ed0cca78d787cbd764248fcbaac
 MUSL_GIT_REPO='git://repo.or.cz/musl.git'
 MUSL_VERSION="$MUSL_DEFAULT_VERSION"
 MUSL_GIT=no
