@@ -83,19 +83,21 @@ export CFLAGS="$SAVE_CFLAGS"
 export CXXFLAGS="$SAVE_CXXFLAGS"
 
 # linux headers
-fetchextract http://www.kernel.org/pub/linux/kernel/v3.0/ linux-$LINUX_HEADERS_VERSION .tar.xz
-if [ ! -e linux-$LINUX_HEADERS_VERSION/configured ]
+fetchextract $LINUX_HEADERS_URL
+LINUX_HEADERS_DIR=$(stripfileext $(basename $LINUX_HEADERS_URL))
+
+if [ ! -e $LINUX_HEADERS_DIR/configured ]
 then
     (
-    cd linux-$LINUX_HEADERS_VERSION
+    cd $LINUX_HEADERS_DIR
     make $LINUX_DEFCONFIG ARCH=$LINUX_ARCH
     touch configured
     )
 fi
-if [ ! -e linux-$LINUX_HEADERS_VERSION/installedheaders ]
+if [ ! -e $LINUX_HEADERS_DIR/installedheaders ]
 then
     (
-    cd linux-$LINUX_HEADERS_VERSION
+    cd $LINUX_HEADERS_DIR
     make headers_install ARCH=$LINUX_ARCH INSTALL_HDR_PATH="$CC_PREFIX/$TRIPLE"
     touch installedheaders
     )

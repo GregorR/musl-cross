@@ -32,10 +32,14 @@ BINUTILS_VERSION=2.24
 GCC_VERSION=4.8.3
 GDB_VERSION=7.4.1
 GMP_VERSION=4.3.2
-LIBELF_VERSION=71bf774909fd654d8167a475333fa8f37fbbcb5d
-LINUX_HEADERS_VERSION=3.12.6
 MPC_VERSION=0.8.1
 MPFR_VERSION=2.4.2
+LIBELF_VERSION=71bf774909fd654d8167a475333fa8f37fbbcb5d
+# use kernel headers from vanilla linux kernel - may be necessary for porting to a bleeding-edge arch
+# LINUX_HEADERS_URL=http://www.kernel.org/pub/linux/kernel/v3.0/linux-3.12.6.tar.xz
+# use patched sabotage-linux kernel-headers package (fixes userspace clashes of some kernel structs)
+# from upstream repo https://github.com/sabotage-linux/kernel-headers
+LINUX_HEADERS_URL=http://ftp.barfooze.de/pub/sabotage/tarballs/kernel-headers-3.12.6-4.tar.xz
 
 # musl can optionally be checked out from GIT, in which case MUSL_VERSION must
 # be set to a git tag and MUSL_GIT set to yes in config.sh
@@ -168,9 +172,23 @@ extract() {
     fi
 }
 
+stripfileext() {
+	case "$1" in
+		*.tar.*) printf "%s" "$1"| sed 's/\.tar\.[0-9a-z]*$//' ;;
+		*) basename "$1" | sed 's/\..*//' ;;
+	esac
+}
+
 fetchextract() {
-    fetch "$1" "$2""$3"
-    extract "$2""$3" "$2"
+    baseurl="$1"
+    [ -z "$2" ] && baseurl=$(printf "%s" "$1" | sed 's/\(.*\/\).*/\1/')
+    dir="$2"
+    [ -z "$dir" ] && dir=$(stripfileext $(basename "$1"))
+    fn="$2""$3"
+    [ -z "$fn" ] && fn=$(basename "$1")
+
+    fetch "$baseurl" "$fn"
+    extract "$fn" "$dir"
 }
 
 gitfetchextract() {
