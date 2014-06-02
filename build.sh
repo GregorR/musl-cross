@@ -140,3 +140,5 @@ rm -rf "$CC_PREFIX/lib/gcc/$TRIPLE"/*/include-fixed/ "$CC_PREFIX/lib/gcc/$TRIPLE
         [ "$tool" != "$btool" -a ! -e "$btool" ] && ln -s $tool $btool
     done
 )
+
+exit 0
