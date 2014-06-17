@@ -27,7 +27,7 @@ BINUTILS_CONFFLAGS=
 GCC_BOOTSTRAP_CONFFLAGS=
 MUSL_CONFFLAGS=
 GCC_CONFFLAGS=
-WITH_SYSROOT=1
+WITH_SYSROOT=no
 . "$MUSL_CC_BASE"/defs.sh
 
 # Switch to the CC prefix for all of this
@@ -39,8 +39,9 @@ then
     mkdir -p "$PREFIX"/"$TRIPLE"
     ln -sf . "$PREFIX"/"$TRIPLE"/usr
 fi
-if [ x$WITH_SYSROOT != x0 ] ; then
-	SYSROOT_FLAGS="--with-sysroot ""$PREFIX"/"$TRIPLE"
+if [ "$WITH_SYSROOT" = "yes" ]
+then
+    SYSROOT_FLAGS="--with-sysroot ""$PREFIX"/"$TRIPLE"
 fi
 
 # binutils
