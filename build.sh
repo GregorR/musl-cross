@@ -27,6 +27,7 @@ BINUTILS_CONFFLAGS=
 GCC_BOOTSTRAP_CONFFLAGS=
 MUSL_CONFFLAGS=
 GCC_CONFFLAGS=
+WITH_SYSROOT=1
 . "$MUSL_CC_BASE"/defs.sh
 
 # Switch to the CC prefix for all of this
@@ -38,6 +39,9 @@ then
     mkdir -p "$PREFIX"/"$TRIPLE"
     ln -sf . "$PREFIX"/"$TRIPLE"/usr
 fi
+if [ x$WITH_SYSROOT != x0 ] ; then
+	SYSROOT_FLAGS="--with-sysroot ""$PREFIX"/"$TRIPLE"
+fi
 
 # binutils
 fetchextract "$BINUTILS_URL"
@@ -45,8 +49,7 @@ BINUTILS_DIR=$(stripfileext $(basename $BINUTILS_URL))
 
 sed -i -e 's,MAKEINFO="$MISSING makeinfo",MAKEINFO=true,g' \
     $BINUTILS_DIR/configure
-buildinstall 1 $BINUTILS_DIR --target=$TRIPLE --disable-werror \
-    --with-sysroot="$PREFIX"/"$TRIPLE" \
+buildinstall 1 $BINUTILS_DIR --target=$TRIPLE --disable-werror $SYSROOT_FLAGS \
     $BINUTILS_CONFFLAGS
 
 # gcc 1
@@ -66,8 +69,7 @@ then
     export CXXFLAGS="-O0 -g0"
 fi
 
-buildinstall 1 gcc-$GCC_VERSION --target=$TRIPLE \
-    --with-sysroot="$PREFIX"/"$TRIPLE" \
+buildinstall 1 gcc-$GCC_VERSION --target=$TRIPLE $SYSROOT_FLAGS \
     --enable-languages=c --with-newlib --disable-libssp --disable-nls \
     --disable-libquadmath --disable-threads --disable-decimal-float \
     --disable-shared --disable-libmudflap --disable-libgomp --disable-libatomic \
@@ -115,8 +117,7 @@ then
     fi
 
     # gcc 2
-    buildinstall 2 gcc-$GCC_VERSION --target=$TRIPLE \
-        --with-sysroot="$PREFIX"/"$TRIPLE" \
+    buildinstall 2 gcc-$GCC_VERSION --target=$TRIPLE $SYSROOT_FLAGS \
         --enable-languages=$LANGUAGES --disable-libmudflap \
         --disable-libsanitizer --disable-nls \
         $GCC_MULTILIB_CONFFLAGS \
