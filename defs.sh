@@ -28,7 +28,11 @@ then
 fi
 
 # Versions of things (do this before config.sh so they can be config'd)
-BINUTILS_VERSION=2.24
+BINUTILS_URL=http://ftp.gnu.org/gnu/binutils/binutils-2.24.tar.bz2
+#BINUTILS_URL=http://ftp.gnu.org/gnu/binutils/binutils-2.22.tar.bz2
+#last GPL2 release is 2.17, with backported  -Bsymbolic support
+#BINUTILS_URL=http://landley.net/aboriginal/mirror/ binutils-2.17.tar.bz2
+#BINUTILS_URL=ftp://sourceware.org/pub/binutils/snapshots/binutils-2.24.51.tar.bz2
 GCC_VERSION=4.8.3
 GDB_VERSION=7.4.1
 GMP_VERSION=4.3.2

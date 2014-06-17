@@ -40,17 +40,12 @@ then
 fi
 
 # binutils
-if [ "$BINUTILS_VERSION" = "2.17" ]
-then
-    # The version of the latest GPLv2 binutils on gnu.org is a lie...
-    fetchextract http://landley.net/aboriginal/mirror/ binutils-$BINUTILS_VERSION .tar.bz2
-else
-    fetchextract http://ftp.gnu.org/gnu/binutils/ binutils-$BINUTILS_VERSION .tar.bz2
-fi
+fetchextract "$BINUTILS_URL"
+BINUTILS_DIR=$(stripfileext $(basename $BINUTILS_URL))
 
 sed -i -e 's,MAKEINFO="$MISSING makeinfo",MAKEINFO=true,g' \
-    binutils-$BINUTILS_VERSION/configure
-buildinstall 1 binutils-$BINUTILS_VERSION --target=$TRIPLE --disable-werror \
+    $BINUTILS_DIR/configure
+buildinstall 1 $BINUTILS_DIR --target=$TRIPLE --disable-werror \
     --with-sysroot="$PREFIX"/"$TRIPLE" \
     $BINUTILS_CONFFLAGS
 
@@ -73,7 +68,7 @@ fi
 
 buildinstall 1 gcc-$GCC_VERSION --target=$TRIPLE \
     --with-sysroot="$PREFIX"/"$TRIPLE" \
-    --enable-languages=c --with-newlib --disable-libssp \
+    --enable-languages=c --with-newlib --disable-libssp --disable-nls \
     --disable-libquadmath --disable-threads --disable-decimal-float \
     --disable-shared --disable-libmudflap --disable-libgomp --disable-libatomic \
     $GCC_MULTILIB_CONFFLAGS \
@@ -123,7 +118,7 @@ then
     buildinstall 2 gcc-$GCC_VERSION --target=$TRIPLE \
         --with-sysroot="$PREFIX"/"$TRIPLE" \
         --enable-languages=$LANGUAGES --disable-libmudflap \
-        --disable-libsanitizer \
+        --disable-libsanitizer --disable-nls \
         $GCC_MULTILIB_CONFFLAGS \
         $GCC_CONFFLAGS
 fi
