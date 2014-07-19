@@ -54,7 +54,16 @@ buildinstall 1 $BINUTILS_DIR --target=$TRIPLE --disable-werror $SYSROOT_FLAGS \
     $BINUTILS_CONFFLAGS
 
 # gcc 1
-fetchextract http://ftp.gnu.org/gnu/gcc/gcc-$GCC_VERSION/ gcc-$GCC_VERSION .tar.bz2
+if [ -z $GCC_URL ];
+then
+    fetchextract http://ftp.gnu.org/gnu/gcc/gcc-$GCC_VERSION/ gcc-$GCC_VERSION .tar.bz2
+else
+    fetchextract "$GCC_URL"
+    if [ -e $GCC_EXTRACT_DIR ]; then
+	mv $GCC_EXTRACT_DIR gcc-$GCC_VERSION
+    fi
+fi
+
 [ "$GCC_BUILTIN_PREREQS" = "yes" ] && gccprereqs
 
 # gcc 1 is only used to bootstrap musl and gcc 2, so it is pointless to
