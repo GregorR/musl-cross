@@ -139,6 +139,10 @@ case "$LINUX_ARCH" in
 
     microblaze)
         LINUX_DEFCONFIG=mmu_defconfig
+	;;
+
+    or1k)
+	LINUX_ARCH=openrisc
         ;;
 esac
 export LINUX_ARCH
