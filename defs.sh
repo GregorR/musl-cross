@@ -43,7 +43,7 @@ LIBELF_VERSION=71bf774909fd654d8167a475333fa8f37fbbcb5d
 # LINUX_HEADERS_URL=http://www.kernel.org/pub/linux/kernel/v3.0/linux-3.12.6.tar.xz
 # use patched sabotage-linux kernel-headers package (fixes userspace clashes of some kernel structs)
 # from upstream repo https://github.com/sabotage-linux/kernel-headers
-LINUX_HEADERS_URL=http://ftp.barfooze.de/pub/sabotage/tarballs/kernel-headers-3.12.6-4.tar.xz
+LINUX_HEADERS_URL=http://ftp.barfooze.de/pub/sabotage/tarballs/kernel-headers-3.12.6-5.tar.xz
 
 # musl can optionally be checked out from GIT, in which case MUSL_VERSION must
 # be set to a git tag and MUSL_GIT set to yes in config.sh
