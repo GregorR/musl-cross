@@ -1,3 +1,23 @@
+About this fork
+===============
+
+musl-cross' author @GregorR went M.I.A. mid 2014.
+As it is a crucial piece of infrastructure for the musl community,
+the sabotage-linux team has decided to maintain it at least until GregorR's
+back.
+
+Warning about GCC 4.9
+=====================
+compilers of the GCC 4.9.x series, including 4.9.1, are full of codegen bugs
+and currently not officially supported.
+Please stick with the latest of the 4.8.x series (default setting) for the
+time being.
+https://gcc.gnu.org/bugzilla/show_bug.cgi?id=61144
+https://gcc.gnu.org/bugzilla/show_bug.cgi?id=61801
+
+About musl-cross
+================
+
 This is a small suite of scripts and patches to build a musl libc
 cross-compiler. Prebuilt cross and native compilers are available at
 http://musl.codu.org/
