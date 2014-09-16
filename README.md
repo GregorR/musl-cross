@@ -1,10 +1,9 @@
-About this fork
-===============
+About this branch
+=================
 
-musl-cross' author @GregorR went M.I.A. mid 2014.
-As it is a crucial piece of infrastructure for the musl community,
-the sabotage-linux team has decided to maintain it at least until GregorR's
-back.
+GregorR is the original author of musl-cross, but is sometimes busy with life
+and may vanish from time to time. If the repo GregorR/musl-cross seems out of
+date, you may want to check github.com/sabotage-linux/musl-cross .
 
 Warning about GCC 4.9
 =====================
