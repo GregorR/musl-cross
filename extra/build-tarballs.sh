@@ -74,7 +74,6 @@ for ARCH in "$@"
 do
     case "$ARCH" in
         armhf)
-            ARCH="arm"
             TRIPLE="arm-linux-musleabihf"
             ;;
         arm*)
