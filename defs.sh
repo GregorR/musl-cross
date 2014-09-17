@@ -148,7 +148,7 @@ esac
 export LINUX_ARCH
 
 # Get the target-specific multilib option, if applicable
-GCC_MULTILIB_CONFFLAGS="--disable-multilib"
+GCC_MULTILIB_CONFFLAGS="--disable-multilib --with-multilib-list="
 if [ "$ARCH" = "x32" ]
 then
     GCC_MULTILIB_CONFFLAGS="--with-multilib-list=mx32"
