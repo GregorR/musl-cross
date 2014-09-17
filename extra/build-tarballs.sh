@@ -1,7 +1,11 @@
 #!/bin/sh
 # Build tarballs of various musl cross-compilers
+#
+# Example invocation:
+#   build-tarballs.sh /opt/cross/musl crossx86- -1.1 i486 x86_64 x32 arm \
+#   armeb armhf microblaze mips mipsel mips-sf mipsel-sf powerpc sh
 # 
-# Copyright (C) 2012 Gregor Richards
+# Copyright (C) 2012-2014 Gregor Richards
 # 
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
