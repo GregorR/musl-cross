@@ -80,6 +80,9 @@ do
         arm*)
             TRIPLE="$ARCH-linux-musleabi"
             ;;
+        x32)
+            TRIPLE="x86_64-x32-linux-musl"
+            ;;
         *)
             TRIPLE="$ARCH-linux-musl"
             ;;
