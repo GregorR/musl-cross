@@ -3,7 +3,7 @@
 #
 # Example invocation:
 #   build-tarballs.sh /opt/cross/musl crossx86- -1.1 i486 x86_64 x32 arm \
-#   armeb armhf microblaze mips mipsel mips-sf mipsel-sf powerpc sh
+#   armeb armhf microblaze mips mipsel mips-sf mipsel-sf powerpc sh4 sh4eb
 # 
 # Copyright (C) 2012-2014 Gregor Richards
 # 

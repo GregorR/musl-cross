@@ -1,6 +1,6 @@
 # Definitions for build scripts
 # 
-# Copyright (C) 2012 Gregor Richards
+# Copyright (C) 2012-2014 Gregor Richards
 # 
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -87,10 +87,6 @@ then
             TRIPLE="$ARCH-linux-musleabi"
             ;;
 
-	aarch64)
-	    TRIPLE="aarch64-linux-musl"
-	    ;;
-
         x32)
             TRIPLE="x86_64-x32-linux-musl"
             ;;
@@ -127,10 +123,12 @@ LINUX_ARCH=`echo "$ARCH" | sed 's/-.*//'`
 LINUX_DEFCONFIG=defconfig
 case "$LINUX_ARCH" in
     i*86) LINUX_ARCH=i386 ;;
+    x32) LINUX_ARCH=x86_64 ;;
     arm*) LINUX_ARCH=arm ;;
     aarch64*) LINUX_ARCH=arm64 ;;
     mips*) LINUX_ARCH=mips ;;
-    x32) LINUX_ARCH=x86_64 ;;
+    or1k*) LINUX_ARCH=openrisc ;;
+    sh*) LINUX_ARCH=sh ;;
 
     powerpc* | ppc*)
         LINUX_ARCH=powerpc
@@ -140,10 +138,6 @@ case "$LINUX_ARCH" in
     microblaze)
         LINUX_DEFCONFIG=mmu_defconfig
 	;;
-
-    or1k)
-	LINUX_ARCH=openrisc
-        ;;
 esac
 export LINUX_ARCH
 
