@@ -115,8 +115,10 @@ then
     # musl in CC prefix
     PREFIX="$CC_PREFIX/$TRIPLE"
     muslfetchextract
+    # We set both CROSS_COMPILE and CC because CC in the environment overrides
+    # and CROSS_COMPILE setting
     buildinstall '' musl-$MUSL_VERSION \
-        --enable-debug --enable-optimize CROSS_COMPILE="$TRIPLE-" $MUSL_CONFFLAGS
+        --enable-debug --enable-optimize CROSS_COMPILE="$TRIPLE-" CC="$TRIPLE-gcc" $MUSL_CONFFLAGS
     unset PREFIX
     PREFIX="$CC_PREFIX"
 
