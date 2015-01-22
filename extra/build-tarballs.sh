@@ -30,7 +30,7 @@ set -ex
 HG_ID=`cd "$MUSL_CC_BASE" ; hg id | sed 's/ .*//'`
 
 cleanup() {
-    for pkg in binutils gcc linux musl gmp mpfr mpc
+    for pkg in binutils gcc linux kernel-headers musl gmp mpfr mpc
     do
         for bf in configured build built installed
         do
