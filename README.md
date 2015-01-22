@@ -118,7 +118,7 @@ musl-cross depends on:
 
 * shell and core utils (busybox is fine)
 * mercurial or git (for checkout only)
-* wget (GNU, not busybox)
+* wget (busybox is fine)
 * patch
 * gcc
 * make
