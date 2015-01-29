@@ -41,7 +41,7 @@ then
 fi
 if [ "$WITH_SYSROOT" = "yes" ]
 then
-    SYSROOT_FLAGS="--with-sysroot ""$PREFIX"/"$TRIPLE"
+    SYSROOT_FLAGS="--with-sysroot=""$PREFIX"/"$TRIPLE"
 fi
 
 # binutils
