@@ -30,3 +30,5 @@ case "$ARCH" in
         GCC_CONFFLAGS="$GCC_CONFFLAGS --with-float=soft"
         ;;
 esac
+
+WITH_SYSROOT=yes
