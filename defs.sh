@@ -28,13 +28,11 @@ then
 fi
 
 # Versions of things (do this before config.sh so they can be config'd)
-BINUTILS_URL=ftp://sourceware.org/pub/binutils/snapshots/binutils-2.24.90.tar.bz2
-#BINUTILS_URL=http://ftp.gnu.org/gnu/binutils/binutils-2.24.tar.bz2
-#BINUTILS_URL=http://ftp.gnu.org/gnu/binutils/binutils-2.22.tar.bz2
+BINUTILS_URL=http://ftp.gnu.org/gnu/binutils/binutils-2.25.tar.bz2
+#BINUTILS_URL=ftp://sourceware.org/pub/binutils/snapshots/binutils-2.24.90.tar.bz2
 #last GPL2 release is 2.17, with backported  -Bsymbolic support
 #BINUTILS_URL=http://landley.net/aboriginal/mirror/binutils-2.17.tar.bz2
-#BINUTILS_URL=ftp://sourceware.org/pub/binutils/snapshots/binutils-2.24.51.tar.bz2
-GCC_VERSION=4.8.3
+GCC_VERSION=4.9.2
 GDB_VERSION=7.4.1
 GMP_VERSION=4.3.2
 MPC_VERSION=0.8.1
@@ -48,8 +46,8 @@ LINUX_HEADERS_URL=http://ftp.barfooze.de/pub/sabotage/tarballs/kernel-headers-3.
 
 # musl can optionally be checked out from GIT, in which case MUSL_VERSION must
 # be set to a git tag and MUSL_GIT set to yes in config.sh
-MUSL_DEFAULT_VERSION=1.1.5
-MUSL_GIT_VERSION=60a4783ed4bd0496f7eb31f9b7eb2ad10df46677
+MUSL_DEFAULT_VERSION=1.1.6
+MUSL_GIT_VERSION=996d148bf14b477b07fa3691bffeb930c67b2b62
 MUSL_GIT_REPO='git://repo.or.cz/musl.git'
 MUSL_VERSION="$MUSL_DEFAULT_VERSION"
 MUSL_GIT=no
@@ -223,7 +221,7 @@ muslfetchextract() {
 gccprereqs() {
     if [ ! -e gcc-$GCC_VERSION/gmp ]
     then
-        fetchextract ftp://ftp.gmplib.org/pub/gmp-$GMP_VERSION/ gmp-$GMP_VERSION .tar.bz2
+        fetchextract http://gmplib.org/download/gmp/ gmp-$GMP_VERSION .tar.bz2
         mv gmp-$GMP_VERSION gcc-$GCC_VERSION/gmp
     fi
 
