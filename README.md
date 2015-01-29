@@ -5,15 +5,6 @@ GregorR is the original author of musl-cross, but is sometimes busy with life
 and may vanish from time to time. If the repo GregorR/musl-cross seems out of
 date, you may want to check github.com/sabotage-linux/musl-cross .
 
-Warning about GCC 4.9
-=====================
-compilers of the GCC 4.9.x series, including 4.9.1, are full of codegen bugs
-and currently not officially supported.
-Please stick with the latest of the 4.8.x series (default setting) for the
-time being.
-https://gcc.gnu.org/bugzilla/show_bug.cgi?id=61144
-https://gcc.gnu.org/bugzilla/show_bug.cgi?id=61801
-
 About musl-cross
 ================
 
