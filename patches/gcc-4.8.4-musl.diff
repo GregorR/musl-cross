@@ -813,3 +813,19 @@ diff -r be309b9bafc4 gcc/c/c-typeck.c
    /* Handle superfluous braces around string cst as in
       char x[] = {"foo"}; */
    if (string_flag
+Do not use weak references on any targets for gthread. Necessary on musl, safe elsewhere.
+
+diff -r d6371c4d8f65 libgcc/gthr.h
+--- a/libgcc/gthr.h	Thu Jan 29 19:10:06 2015 -0500
++++ b/libgcc/gthr.h	Thu Jan 29 19:10:12 2015 -0500
+@@ -136,10 +136,8 @@
+ /* The pe-coff weak support isn't fully compatible to ELF's weak.
+    For static libraries it might would work, but as we need to deal
+    with shared versions too, we disable it for mingw-targets.  */
+-#ifdef __MINGW32__
+ #undef GTHREAD_USE_WEAK
+ #define GTHREAD_USE_WEAK 0
+-#endif
+ 
+ #ifndef GTHREAD_USE_WEAK
+ #define GTHREAD_USE_WEAK 1
