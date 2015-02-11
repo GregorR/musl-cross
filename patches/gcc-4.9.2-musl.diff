@@ -1,4 +1,4 @@
-919de9733076 tip
+096393443722
 # HG changeset patch
 # Parent 1f830bec5a3f04b2718ce1395743d8e35c26341c
 Use the generic implementation of libstdc++ primitives when we're on musl, not the glibc one.
@@ -702,25 +702,3 @@ diff -r 94ebb0799454 gcc/config/sh/linux.h
  
  #undef SUBTARGET_LINK_EMUL_SUFFIX
  #define SUBTARGET_LINK_EMUL_SUFFIX "_linux"
-Author: Timo Teräs <timo.teras@iki.fi>
-
-Alpine musl package provides libssp_nonshared.a. We link to it unconditionally,
-as otherwise we get link failures if some objects are -fstack-protector built
-and final link happens with -fno-stack-protector. This seems to be the common
-case when bootstrapping gcc, the piepatches do not seem to fully fix the
-crosstoolchain and  bootstrap sequence wrt. stack-protector flag usage.
-
-diff -r b414920edcbd gcc/gcc.c
---- a/gcc/gcc.c	Wed Feb 11 13:15:31 2015 -0500
-+++ b/gcc/gcc.c	Wed Feb 11 13:15:46 2015 -0500
-@@ -669,7 +669,9 @@
- #endif
- 
- #ifndef LINK_SSP_SPEC
--#ifdef TARGET_LIBC_PROVIDES_SSP
-+#if DEFAULT_LIBC == LIBC_MUSL
-+#define LINK_SSP_SPEC "-lssp_nonshared"
-+#elif defined(TARGET_LIBC_PROVIDES_SSP)
- #define LINK_SSP_SPEC "%{fstack-protector:}"
- #else
- #define LINK_SSP_SPEC "%{fstack-protector|fstack-protector-strong|fstack-protector-all:-lssp_nonshared -lssp}"
