@@ -37,7 +37,7 @@ GDB_VERSION=7.4.1
 GMP_VERSION=4.3.2
 MPC_VERSION=0.8.1
 MPFR_VERSION=2.4.2
-LIBELF_VERSION=71bf774909fd654d8167a475333fa8f37fbbcb5d
+LIBELF_VERSION=master
 # use kernel headers from vanilla linux kernel - may be necessary for porting to a bleeding-edge arch
 # LINUX_HEADERS_URL=http://www.kernel.org/pub/linux/kernel/v3.0/linux-3.12.6.tar.xz
 # use patched sabotage-linux kernel-headers package (fixes userspace clashes of some kernel structs)
