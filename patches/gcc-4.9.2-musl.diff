@@ -1,4 +1,3 @@
-820c77b17a4a
 # HG changeset patch
 # Parent 1f830bec5a3f04b2718ce1395743d8e35c26341c
 Use the generic implementation of libstdc++ primitives when we're on musl, not the glibc one.
@@ -477,12 +476,12 @@ diff -r 4802c181abe0 libitm/config/arm/hwcap.cc
  
  static void __attribute__((constructor))
 # HG changeset patch
-# Parent f34ce414667f8513979b8a0507f3d6b934f1ebeb
+# Parent 36fe3b8d56ad81ff3ad84d850e83f3771b80b570
 Support for mips-linux-musl.
 
-diff -r f34ce414667f gcc/config/mips/linux.h
---- a/gcc/config/mips/linux.h	Thu Jan 29 14:06:27 2015 -0500
-+++ b/gcc/config/mips/linux.h	Thu Jan 29 14:06:29 2015 -0500
+diff -r 36fe3b8d56ad gcc/config/mips/linux.h
+--- a/gcc/config/mips/linux.h	Sat Jul 25 16:28:01 2015 -0400
++++ b/gcc/config/mips/linux.h	Sat Jul 25 16:29:23 2015 -0400
 @@ -23,3 +23,10 @@
  #undef UCLIBC_DYNAMIC_LINKER
  #define UCLIBC_DYNAMIC_LINKER \
@@ -493,7 +492,7 @@ diff -r f34ce414667f gcc/config/mips/linux.h
 +#else
 +#define MUSL_DYNAMIC_LINKER_E "%{EL:el}"
 +#endif
-+#define MUSL_DYNAMIC_LINKER "/lib/ld-musl-mips" MUSL_DYNAMIC_LINKER_E ".so.1"
++#define MUSL_DYNAMIC_LINKER "/lib/ld-musl-mips" MUSL_DYNAMIC_LINKER_E "%{msoft-float:-sf}.so.1"
 # HG changeset patch
 # Parent d4bad9a6572b0e8eacc08d2b1c40d03a6608bee5
 Support for powerpc-linux-musl.
