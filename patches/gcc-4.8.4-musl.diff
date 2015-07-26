@@ -814,3 +814,14 @@ diff -r be309b9bafc4 gcc/c/c-typeck.c
    /* Handle superfluous braces around string cst as in
       char x[] = {"foo"}; */
    if (string_flag
+--- a/gcc/gcc.c.orig	2013-09-24 06:27:32.133894539 +0000
++++ b/gcc/gcc.c	2013-09-24 06:29:35.790562854 +0000
+@@ -601,7 +601,7 @@
+ 
+ #ifndef LINK_SSP_SPEC
+ #ifdef TARGET_LIBC_PROVIDES_SSP
+-#define LINK_SSP_SPEC "%{fstack-protector:}"
++#define LINK_SSP_SPEC "%{fstack-protector|fstack-protector-all:-lssp_nonshared}"
+ #else
+ #define LINK_SSP_SPEC "%{fstack-protector|fstack-protector-all:-lssp_nonshared -lssp}"
+ #endif
