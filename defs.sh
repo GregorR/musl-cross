@@ -46,8 +46,8 @@ LINUX_HEADERS_URL=http://ftp.barfooze.de/pub/sabotage/tarballs/kernel-headers-3.
 
 # musl can optionally be checked out from GIT, in which case MUSL_VERSION must
 # be set to a git tag and MUSL_GIT set to yes in config.sh
-MUSL_DEFAULT_VERSION=1.1.10
-MUSL_GIT_VERSION=e6f09004af4d3ffc4e4ad5b5d33cf45891c25f25
+MUSL_DEFAULT_VERSION=1.1.12
+MUSL_GIT_VERSION=615629bd6fcd6ddb69ad762e679f088c7bd878e2
 MUSL_GIT_REPO='git://repo.or.cz/musl.git'
 MUSL_VERSION="$MUSL_DEFAULT_VERSION"
 MUSL_GIT=no
