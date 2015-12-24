@@ -459,26 +459,32 @@ diff -r 214669757bc7 libitm/config/arm/hwcap.cc
  
  static void __attribute__((constructor))
 # HG changeset patch
-# Parent dba79de517c5c94376a8ee105b0661cba1484617
+# Parent 23dcf3fd5965c339fd12202b74d049580db9375f
 Support for mips-linux-musl.
 
-diff -r dba79de517c5 gcc/config/mips/linux.h
---- a/gcc/config/mips/linux.h	Sun Jul 26 15:46:25 2015 -0400
-+++ b/gcc/config/mips/linux.h	Sun Jul 26 15:46:27 2015 -0400
+diff -r 23dcf3fd5965 gcc/config/mips/linux.h
+--- a/gcc/config/mips/linux.h	Thu Dec 24 10:52:59 2015 -0500
++++ b/gcc/config/mips/linux.h	Thu Dec 24 10:54:31 2015 -0500
 @@ -31,6 +31,13 @@
  #undef UCLIBC_DYNAMIC_LINKER32
  #define UCLIBC_DYNAMIC_LINKER32 \
    "%{mnan=2008:/lib/ld-uClibc-mipsn8.so.0;:/lib/ld-uClibc.so.0}"
 +
-+#if TARGET_ENDIAN_DEFAULT == 0 /* LE */
-+#define MUSL_DYNAMIC_LINKER_E "%{EB:;:el}"
-+#else
-+#define MUSL_DYNAMIC_LINKER_E "%{EL:el}"
-+#endif
-+#define MUSL_DYNAMIC_LINKER "/lib/ld-musl-mips" MUSL_DYNAMIC_LINKER_E "%{msoft-float:-sf}.so.1"
++#undef MUSL_DYNAMIC_LINKER32
++#define MUSL_DYNAMIC_LINKER32 "/lib/ld-musl-mips%{EL:el}%{msoft-float:-sf}.so.1"
++#undef MUSL_DYNAMIC_LINKER64
++#define MUSL_DYNAMIC_LINKER64 "/lib/ld-musl-mips64%{EL:el}%{msoft-float:-sf}.so.1"
++#define MUSL_DYNAMIC_LINKERN32 "/lib/ld-musl-mipsn32%{EL:el}%{msoft-float:-sf}.so.1"
++
  #undef UCLIBC_DYNAMIC_LINKER64
  #define UCLIBC_DYNAMIC_LINKER64 \
    "%{mnan=2008:/lib/ld64-uClibc-mipsn8.so.0;:/lib/ld64-uClibc.so.0}"
+@@ -40,4 +47,4 @@
+ #define BIONIC_DYNAMIC_LINKERN32 "/system/bin/linker32"
+ #define GNU_USER_DYNAMIC_LINKERN32 \
+   CHOOSE_DYNAMIC_LINKER (GLIBC_DYNAMIC_LINKERN32, UCLIBC_DYNAMIC_LINKERN32, \
+-                         BIONIC_DYNAMIC_LINKERN32)
++                         BIONIC_DYNAMIC_LINKERN32, MUSL_DYNAMIC_LINKERN32)
 # HG changeset patch
 # Parent 6becd1fa75bd2bef8af8ca711b089083d6d1192f
 Support for powerpc-linux-musl.
