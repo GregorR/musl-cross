@@ -713,3 +713,19 @@ diff -r c5b39ce7672b gcc/config/sh/linux.h
  
  #undef SUBTARGET_LINK_EMUL_SUFFIX
  #define SUBTARGET_LINK_EMUL_SUFFIX "_linux"
+Do not use weak references on any targets for gthread. Necessary on musl, safe elsewhere.
+
+diff -r d2b373a6ad39 libgcc/gthr.h
+--- a/libgcc/gthr.h	Thu Jan 29 18:59:33 2015 -0500
++++ b/libgcc/gthr.h	Thu Jan 29 19:00:03 2015 -0500
+@@ -136,10 +136,8 @@
+ /* The pe-coff weak support isn't fully compatible to ELF's weak.
+    For static libraries it might would work, but as we need to deal
+    with shared versions too, we disable it for mingw-targets.  */
+-#ifdef __MINGW32__
+ #undef GTHREAD_USE_WEAK
+ #define GTHREAD_USE_WEAK 0
+-#endif
+ 
+ #ifndef GTHREAD_USE_WEAK
+ #define GTHREAD_USE_WEAK 1
