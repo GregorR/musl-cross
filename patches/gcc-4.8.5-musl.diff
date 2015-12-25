@@ -1,11 +1,10 @@
-7e0eccba7c48 (gcc-4.8.4) tip
 # HG changeset patch
-# Parent ec1984833740e9cb3223001a8fa26c03b5dcc93c
+# Parent a486e19894520b80db43d63b0538e53c7dd87554
 Use the generic implementation of libstdc++ primitives when we're on musl, not the glibc one.
 
-diff -r ec1984833740 libstdc++-v3/configure.host
---- a/libstdc++-v3/configure.host	Thu Jan 29 13:38:28 2015 -0500
-+++ b/libstdc++-v3/configure.host	Thu Jan 29 13:41:38 2015 -0500
+diff -r a486e1989452 libstdc++-v3/configure.host
+--- a/libstdc++-v3/configure.host	Fri Dec 25 15:12:57 2015 -0500
++++ b/libstdc++-v3/configure.host	Fri Dec 25 15:16:08 2015 -0500
 @@ -263,6 +263,13 @@
      os_include_dir="os/bsd/freebsd"
      ;;
@@ -31,12 +30,12 @@ diff -r ec1984833740 libstdc++-v3/configure.host
      os_include_dir="os/hpux"
      ;;
 # HG changeset patch
-# Parent 5bf31f896f61f266585ff2c7f6bf0a3b4b1eb05b
+# Parent bf2a3ca778408e1d93b9d51d2dde7f7f4e195dbd
 Adding -mmusl as a musl libc specifier, and the necessary hacks for it to know how to find musl's dynamic linker.
 
-diff -r 5bf31f896f61 gcc/config.gcc
---- a/gcc/config.gcc	Thu Jan 29 13:41:37 2015 -0500
-+++ b/gcc/config.gcc	Thu Jan 29 13:41:40 2015 -0500
+diff -r bf2a3ca77840 gcc/config.gcc
+--- a/gcc/config.gcc	Fri Dec 25 15:16:08 2015 -0500
++++ b/gcc/config.gcc	Fri Dec 25 15:16:12 2015 -0500
 @@ -550,7 +550,7 @@
  esac
  
@@ -56,9 +55,9 @@ diff -r 5bf31f896f61 gcc/config.gcc
      *)
        tm_defines="$tm_defines DEFAULT_LIBC=LIBC_GLIBC"
        ;;
-diff -r 5bf31f896f61 gcc/config/linux.h
---- a/gcc/config/linux.h	Thu Jan 29 13:41:37 2015 -0500
-+++ b/gcc/config/linux.h	Thu Jan 29 13:41:40 2015 -0500
+diff -r bf2a3ca77840 gcc/config/linux.h
+--- a/gcc/config/linux.h	Fri Dec 25 15:16:08 2015 -0500
++++ b/gcc/config/linux.h	Fri Dec 25 15:16:12 2015 -0500
 @@ -32,10 +32,12 @@
  #define OPTION_GLIBC  (DEFAULT_LIBC == LIBC_GLIBC)
  #define OPTION_UCLIBC (DEFAULT_LIBC == LIBC_UCLIBC)
@@ -204,9 +203,9 @@ diff -r 5bf31f896f61 gcc/config/linux.h
 +    { 0, 0, 0, 0, 0, 0 }				\
 +  }
 +#endif
-diff -r 5bf31f896f61 gcc/config/linux.opt
---- a/gcc/config/linux.opt	Thu Jan 29 13:41:37 2015 -0500
-+++ b/gcc/config/linux.opt	Thu Jan 29 13:41:40 2015 -0500
+diff -r bf2a3ca77840 gcc/config/linux.opt
+--- a/gcc/config/linux.opt	Fri Dec 25 15:16:08 2015 -0500
++++ b/gcc/config/linux.opt	Fri Dec 25 15:16:12 2015 -0500
 @@ -30,3 +30,7 @@
  muclibc
  Target Report RejectNegative Var(linux_libc,LIBC_UCLIBC) Negative(mbionic)
@@ -215,9 +214,9 @@ diff -r 5bf31f896f61 gcc/config/linux.opt
 +mmusl
 +Target Report RejectNegative Var(linux_libc,LIBC_MUSL) Negative(mglibc)
 +Use musl C library
-diff -r 5bf31f896f61 gcc/ginclude/stddef.h
---- a/gcc/ginclude/stddef.h	Thu Jan 29 13:41:37 2015 -0500
-+++ b/gcc/ginclude/stddef.h	Thu Jan 29 13:41:40 2015 -0500
+diff -r bf2a3ca77840 gcc/ginclude/stddef.h
+--- a/gcc/ginclude/stddef.h	Fri Dec 25 15:16:08 2015 -0500
++++ b/gcc/ginclude/stddef.h	Fri Dec 25 15:16:12 2015 -0500
 @@ -181,6 +181,7 @@
  #ifndef _GCC_SIZE_T
  #ifndef _SIZET_
@@ -243,12 +242,12 @@ diff -r 5bf31f896f61 gcc/ginclude/stddef.h
  #endif /* _SIZET_ */
  #endif /* _GCC_SIZE_T */
 # HG changeset patch
-# Parent 4445b9b84fe64451e022a77b1e8ac480210a31da
+# Parent 1809f3990fa4d35d0dd694cc17d118dfcfd4e543
 A fix for libgomp to correctly request a POSIX version for time support.
 
-diff -r 4445b9b84fe6 libgomp/config/posix/time.c
---- a/libgomp/config/posix/time.c	Thu Jan 29 13:41:40 2015 -0500
-+++ b/libgomp/config/posix/time.c	Thu Jan 29 13:41:42 2015 -0500
+diff -r 1809f3990fa4 libgomp/config/posix/time.c
+--- a/libgomp/config/posix/time.c	Fri Dec 25 15:16:12 2015 -0500
++++ b/libgomp/config/posix/time.c	Fri Dec 25 15:16:15 2015 -0500
 @@ -28,6 +28,8 @@
     The following implementation uses the most simple POSIX routines.
     If present, POSIX 4 clocks should be used instead.  */
@@ -258,9 +257,9 @@ diff -r 4445b9b84fe6 libgomp/config/posix/time.c
  #include "libgomp.h"
  #include <unistd.h>
  #if TIME_WITH_SYS_TIME
-diff -r 96e24a32862b libgcc/unwind-dw2-fde-dip.c
---- a/libgcc/unwind-dw2-fde-dip.c	Thu Jan 29 13:41:42 2015 -0500
-+++ b/libgcc/unwind-dw2-fde-dip.c	Thu Jan 29 13:41:44 2015 -0500
+diff -r c258e8904d94 libgcc/unwind-dw2-fde-dip.c
+--- a/libgcc/unwind-dw2-fde-dip.c	Fri Dec 25 15:16:15 2015 -0500
++++ b/libgcc/unwind-dw2-fde-dip.c	Fri Dec 25 15:16:18 2015 -0500
 @@ -46,33 +46,13 @@
  #include "unwind-compat.h"
  #include "gthr.h"
@@ -301,9 +300,9 @@ diff -r 96e24a32862b libgcc/unwind-dw2-fde-dip.c
  #endif
  
  #if defined(USE_PT_GNU_EH_FRAME)
-diff -r 552906ada59b gcc/configure
---- a/gcc/configure	Thu Jan 29 13:41:44 2015 -0500
-+++ b/gcc/configure	Thu Jan 29 13:41:46 2015 -0500
+diff -r cd50df2475e3 gcc/configure
+--- a/gcc/configure	Fri Dec 25 15:16:18 2015 -0500
++++ b/gcc/configure	Fri Dec 25 15:16:22 2015 -0500
 @@ -26852,6 +26852,9 @@
  else
    gcc_cv_libc_provides_ssp=no
@@ -332,9 +331,9 @@ diff -r 552906ada59b gcc/configure
  esac
  
  if test x$gcc_cv_target_dl_iterate_phdr = xyes; then
-diff -r 552906ada59b gcc/configure.ac
---- a/gcc/configure.ac	Thu Jan 29 13:41:44 2015 -0500
-+++ b/gcc/configure.ac	Thu Jan 29 13:41:46 2015 -0500
+diff -r cd50df2475e3 gcc/configure.ac
+--- a/gcc/configure.ac	Fri Dec 25 15:16:18 2015 -0500
++++ b/gcc/configure.ac	Fri Dec 25 15:16:22 2015 -0500
 @@ -4776,6 +4776,9 @@
        gcc_cv_libc_provides_ssp,
        [gcc_cv_libc_provides_ssp=no
@@ -364,12 +363,12 @@ diff -r 552906ada59b gcc/configure.ac
  GCC_TARGET_TEMPLATE([TARGET_DL_ITERATE_PHDR])
  if test x$gcc_cv_target_dl_iterate_phdr = xyes; then
 # HG changeset patch
-# Parent 3428eef84c75b837b884abf7344fbd0261d5a646
+# Parent 18e0b8706ee6caafebec9fb79bd66005c1e32d6e
 Get rid of ever-broken fixincludes on musl.
 
-diff -r 3428eef84c75 fixincludes/mkfixinc.sh
---- a/fixincludes/mkfixinc.sh	Thu Jan 29 13:41:46 2015 -0500
-+++ b/fixincludes/mkfixinc.sh	Thu Jan 29 13:41:48 2015 -0500
+diff -r 18e0b8706ee6 fixincludes/mkfixinc.sh
+--- a/fixincludes/mkfixinc.sh	Fri Dec 25 15:16:22 2015 -0500
++++ b/fixincludes/mkfixinc.sh	Fri Dec 25 15:16:25 2015 -0500
 @@ -19,7 +19,8 @@
      powerpc-*-eabi*    | \
      powerpc-*-rtems*   | \
@@ -381,20 +380,20 @@ diff -r 3428eef84c75 fixincludes/mkfixinc.sh
  	#  THEN create a no-op fixer and exit
  	(echo "#! /bin/sh" ; echo "exit 0" ) > ${target}
 # HG changeset patch
-# Parent e2d9d64d6835b26cc5cb052112cfebce6280b00a
+# Parent 5debdd6659c1374a8e49bc84960aef53ab9b07da
 Support for i386-linux-musl and x86_64-linux-musl.
 
-diff -r e2d9d64d6835 gcc/config/i386/linux.h
---- a/gcc/config/i386/linux.h	Thu Jan 29 13:41:48 2015 -0500
-+++ b/gcc/config/i386/linux.h	Thu Jan 29 13:41:51 2015 -0500
+diff -r 5debdd6659c1 gcc/config/i386/linux.h
+--- a/gcc/config/i386/linux.h	Fri Dec 25 15:16:25 2015 -0500
++++ b/gcc/config/i386/linux.h	Fri Dec 25 15:16:28 2015 -0500
 @@ -21,3 +21,4 @@
  
  #define GNU_USER_LINK_EMULATION "elf_i386"
  #define GLIBC_DYNAMIC_LINKER "/lib/ld-linux.so.2"
 +#define MUSL_DYNAMIC_LINKER "/lib/ld-musl-i386.so.1"
-diff -r e2d9d64d6835 gcc/config/i386/linux64.h
---- a/gcc/config/i386/linux64.h	Thu Jan 29 13:41:48 2015 -0500
-+++ b/gcc/config/i386/linux64.h	Thu Jan 29 13:41:51 2015 -0500
+diff -r 5debdd6659c1 gcc/config/i386/linux64.h
+--- a/gcc/config/i386/linux64.h	Fri Dec 25 15:16:25 2015 -0500
++++ b/gcc/config/i386/linux64.h	Fri Dec 25 15:16:28 2015 -0500
 @@ -30,3 +30,7 @@
  #define GLIBC_DYNAMIC_LINKER32 "/lib/ld-linux.so.2"
  #define GLIBC_DYNAMIC_LINKER64 "/lib64/ld-linux-x86-64.so.2"
@@ -403,9 +402,9 @@ diff -r e2d9d64d6835 gcc/config/i386/linux64.h
 +#define MUSL_DYNAMIC_LINKER32 "/lib/ld-musl-i386.so.1"
 +#define MUSL_DYNAMIC_LINKER64 "/lib/ld-musl-x86_64.so.1"
 +#define MUSL_DYNAMIC_LINKERX32 "/lib/ld-musl-x32.so.1"
-diff -r e2d9d64d6835 libitm/config/linux/x86/tls.h
---- a/libitm/config/linux/x86/tls.h	Thu Jan 29 13:41:48 2015 -0500
-+++ b/libitm/config/linux/x86/tls.h	Thu Jan 29 13:41:51 2015 -0500
+diff -r 5debdd6659c1 libitm/config/linux/x86/tls.h
+--- a/libitm/config/linux/x86/tls.h	Fri Dec 25 15:16:25 2015 -0500
++++ b/libitm/config/linux/x86/tls.h	Fri Dec 25 15:16:28 2015 -0500
 @@ -25,16 +25,19 @@
  #ifndef LIBITM_X86_TLS_H
  #define LIBITM_X86_TLS_H 1
@@ -436,12 +435,12 @@ diff -r e2d9d64d6835 libitm/config/linux/x86/tls.h
  
  #endif // LIBITM_X86_TLS_H
 # HG changeset patch
-# Parent f7c8746386c494e1c21dd4e6ae3697c371fbe661
+# Parent 61fde47d5a9289fa4e92d236113d8143f4f5dad9
 Support for arm-linux-musl.
 
-diff -r f7c8746386c4 gcc/config/arm/linux-eabi.h
---- a/gcc/config/arm/linux-eabi.h	Thu Jan 29 13:41:50 2015 -0500
-+++ b/gcc/config/arm/linux-eabi.h	Thu Jan 29 13:41:53 2015 -0500
+diff -r 61fde47d5a92 gcc/config/arm/linux-eabi.h
+--- a/gcc/config/arm/linux-eabi.h	Fri Dec 25 15:16:28 2015 -0500
++++ b/gcc/config/arm/linux-eabi.h	Fri Dec 25 15:16:32 2015 -0500
 @@ -77,6 +77,23 @@
      %{mfloat-abi=soft*:" GLIBC_DYNAMIC_LINKER_SOFT_FLOAT "} \
      %{!mfloat-abi=*:" GLIBC_DYNAMIC_LINKER_DEFAULT "}"
@@ -466,9 +465,9 @@ diff -r f7c8746386c4 gcc/config/arm/linux-eabi.h
  /* At this point, bpabi.h will have clobbered LINK_SPEC.  We want to
     use the GNU/Linux version, not the generic BPABI version.  */
  #undef  LINK_SPEC
-diff -r f7c8746386c4 libitm/config/arm/hwcap.cc
---- a/libitm/config/arm/hwcap.cc	Thu Jan 29 13:41:50 2015 -0500
-+++ b/libitm/config/arm/hwcap.cc	Thu Jan 29 13:41:53 2015 -0500
+diff -r 61fde47d5a92 libitm/config/arm/hwcap.cc
+--- a/libitm/config/arm/hwcap.cc	Fri Dec 25 15:16:28 2015 -0500
++++ b/libitm/config/arm/hwcap.cc	Fri Dec 25 15:16:32 2015 -0500
 @@ -40,7 +40,11 @@
  
  #ifdef __linux__
@@ -482,12 +481,12 @@ diff -r f7c8746386c4 libitm/config/arm/hwcap.cc
  
  static void __attribute__((constructor))
 # HG changeset patch
-# Parent 2951aeba3ac9a3f39653cbd56dff41c8f1569b2f
+# Parent 07e20048931c7f84160dfdab3a6a8a1b08d3207e
 Support for mips-linux-musl.
 
-diff -r 2951aeba3ac9 gcc/config/mips/linux.h
---- a/gcc/config/mips/linux.h	Thu Jan 29 13:41:53 2015 -0500
-+++ b/gcc/config/mips/linux.h	Thu Jan 29 13:41:55 2015 -0500
+diff -r 07e20048931c gcc/config/mips/linux.h
+--- a/gcc/config/mips/linux.h	Fri Dec 25 15:16:32 2015 -0500
++++ b/gcc/config/mips/linux.h	Fri Dec 25 15:16:35 2015 -0500
 @@ -18,3 +18,10 @@
  <http://www.gnu.org/licenses/>.  */
  
@@ -500,13 +499,13 @@ diff -r 2951aeba3ac9 gcc/config/mips/linux.h
 +#endif
 +#define MUSL_DYNAMIC_LINKER "/lib/ld-musl-mips" MUSL_DYNAMIC_LINKER_E ".so.1"
 # HG changeset patch
-# Parent 7626e1f2b51fb2ee53358cab627ef4d3206cd75a
+# Parent c68dba2c24146bc3fc8dabf6a05e1663b7b4159a
 Support for powerpc-linux-musl.
 
-diff -r 7626e1f2b51f gcc/config.gcc
---- a/gcc/config.gcc	Thu Jan 29 13:41:55 2015 -0500
-+++ b/gcc/config.gcc	Thu Jan 29 13:41:57 2015 -0500
-@@ -2138,6 +2138,10 @@
+diff -r c68dba2c2414 gcc/config.gcc
+--- a/gcc/config.gcc	Fri Dec 25 15:16:35 2015 -0500
++++ b/gcc/config.gcc	Fri Dec 25 15:16:38 2015 -0500
+@@ -2148,6 +2148,10 @@
  	    powerpc*-*-linux*paired*)
  		tm_file="${tm_file} rs6000/750cl.h" ;;
  	esac
@@ -517,10 +516,10 @@ diff -r 7626e1f2b51f gcc/config.gcc
  	if test x${enable_secureplt} = xyes; then
  		tm_file="rs6000/secureplt.h ${tm_file}"
  	fi
-diff -r 7626e1f2b51f gcc/config/rs6000/linux64.h
---- a/gcc/config/rs6000/linux64.h	Thu Jan 29 13:41:55 2015 -0500
-+++ b/gcc/config/rs6000/linux64.h	Thu Jan 29 13:41:57 2015 -0500
-@@ -374,17 +374,21 @@
+diff -r c68dba2c2414 gcc/config/rs6000/linux64.h
+--- a/gcc/config/rs6000/linux64.h	Fri Dec 25 15:16:35 2015 -0500
++++ b/gcc/config/rs6000/linux64.h	Fri Dec 25 15:16:38 2015 -0500
+@@ -370,17 +370,21 @@
  #endif
  #define UCLIBC_DYNAMIC_LINKER32 "/lib/ld-uClibc.so.0"
  #define UCLIBC_DYNAMIC_LINKER64 "/lib/ld64-uClibc.so.0"
@@ -546,17 +545,17 @@ diff -r 7626e1f2b51f gcc/config/rs6000/linux64.h
  
  #undef  DEFAULT_ASM_ENDIAN
  #if (TARGET_DEFAULT & MASK_LITTLE_ENDIAN)
-diff -r 7626e1f2b51f gcc/config/rs6000/secureplt.h
---- a/gcc/config/rs6000/secureplt.h	Thu Jan 29 13:41:55 2015 -0500
-+++ b/gcc/config/rs6000/secureplt.h	Thu Jan 29 13:41:57 2015 -0500
+diff -r c68dba2c2414 gcc/config/rs6000/secureplt.h
+--- a/gcc/config/rs6000/secureplt.h	Fri Dec 25 15:16:35 2015 -0500
++++ b/gcc/config/rs6000/secureplt.h	Fri Dec 25 15:16:38 2015 -0500
 @@ -18,3 +18,4 @@
  <http://www.gnu.org/licenses/>.  */
  
  #define CC1_SECURE_PLT_DEFAULT_SPEC "-msecure-plt"
 +#define LINK_SECURE_PLT_DEFAULT_SPEC "--secure-plt"
-diff -r 7626e1f2b51f gcc/config/rs6000/sysv4.h
---- a/gcc/config/rs6000/sysv4.h	Thu Jan 29 13:41:55 2015 -0500
-+++ b/gcc/config/rs6000/sysv4.h	Thu Jan 29 13:41:57 2015 -0500
+diff -r c68dba2c2414 gcc/config/rs6000/sysv4.h
+--- a/gcc/config/rs6000/sysv4.h	Fri Dec 25 15:16:35 2015 -0500
++++ b/gcc/config/rs6000/sysv4.h	Fri Dec 25 15:16:38 2015 -0500
 @@ -537,6 +537,9 @@
  #ifndef CC1_SECURE_PLT_DEFAULT_SPEC
  #define CC1_SECURE_PLT_DEFAULT_SPEC ""
@@ -607,9 +606,9 @@ diff -r 7626e1f2b51f gcc/config/rs6000/sysv4.h
    { "cpp_os_ads",		CPP_OS_ADS_SPEC },			\
    { "cpp_os_yellowknife",	CPP_OS_YELLOWKNIFE_SPEC },		\
    { "cpp_os_mvme",		CPP_OS_MVME_SPEC },			\
-diff -r 2fdeb2c3a347 gcc/config/aarch64/aarch64-linux.h
---- a/gcc/config/aarch64/aarch64-linux.h	Thu Jan 29 13:41:57 2015 -0500
-+++ b/gcc/config/aarch64/aarch64-linux.h	Thu Jan 29 13:41:59 2015 -0500
+diff -r b949cf6ae064 gcc/config/aarch64/aarch64-linux.h
+--- a/gcc/config/aarch64/aarch64-linux.h	Fri Dec 25 15:16:38 2015 -0500
++++ b/gcc/config/aarch64/aarch64-linux.h	Fri Dec 25 15:16:42 2015 -0500
 @@ -21,7 +21,11 @@
  #ifndef GCC_AARCH64_LINUX_H
  #define GCC_AARCH64_LINUX_H
@@ -623,13 +622,13 @@ diff -r 2fdeb2c3a347 gcc/config/aarch64/aarch64-linux.h
  #define CPP_SPEC "%{pthread:-D_REENTRANT}"
  
 # HG changeset patch
-# Parent eb020f66032d779cbaeda8acb97a73d3108189f5
+# Parent c0ba776169de0165fd173f289e4e3855ea4d8b56
 Microblaze support (again).
 
-diff -r eb020f66032d gcc/config/microblaze/linux.h
---- a/gcc/config/microblaze/linux.h	Thu Jan 29 13:41:59 2015 -0500
-+++ b/gcc/config/microblaze/linux.h	Thu Jan 29 13:42:01 2015 -0500
-@@ -25,7 +25,22 @@
+diff -r c0ba776169de gcc/config/microblaze/linux.h
+--- a/gcc/config/microblaze/linux.h	Fri Dec 25 15:16:42 2015 -0500
++++ b/gcc/config/microblaze/linux.h	Fri Dec 25 15:16:45 2015 -0500
+@@ -28,7 +28,22 @@
  #undef TLS_NEEDS_GOT
  #define TLS_NEEDS_GOT 1
  
@@ -676,9 +675,9 @@ Signed-off-by: David Holsgrove <david.holsgrove@xilinx.com>
  gcc/config/microblaze/microblaze.h |    6 ++++++
  1 file changed, 6 insertions(+)
 
-diff -r d9fb78d89e6f gcc/config/microblaze/microblaze.h
---- a/gcc/config/microblaze/microblaze.h	Thu Jan 29 13:42:01 2015 -0500
-+++ b/gcc/config/microblaze/microblaze.h	Thu Jan 29 13:42:04 2015 -0500
+diff -r accbbad13ee4 gcc/config/microblaze/microblaze.h
+--- a/gcc/config/microblaze/microblaze.h	Fri Dec 25 15:16:45 2015 -0500
++++ b/gcc/config/microblaze/microblaze.h	Fri Dec 25 15:16:49 2015 -0500
 @@ -219,6 +219,12 @@
  #undef PTRDIFF_TYPE
  #define PTRDIFF_TYPE "int"
@@ -692,9 +691,9 @@ diff -r d9fb78d89e6f gcc/config/microblaze/microblaze.h
  #define CONSTANT_ALIGNMENT(EXP, ALIGN)					\
    ((TREE_CODE (EXP) == STRING_CST  || TREE_CODE (EXP) == CONSTRUCTOR)	\
     && (ALIGN) < BITS_PER_WORD						\
-diff -r c7fbc78957f6 gcc/config/sh/linux.h
+diff -r 5fcbcd84671f gcc/config/sh/linux.h
 --- a/gcc/config/sh/linux.h	Fri Sep 28 16:32:03 2012 +1000
-+++ b/gcc/config/sh/linux.h	Thu Jan 29 13:42:06 2015 -0500
++++ b/gcc/config/sh/linux.h	Fri Dec 25 15:16:52 2015 -0500
 @@ -43,7 +43,14 @@
  
  #define TARGET_ASM_FILE_END file_end_indicate_exec_stack
@@ -719,9 +718,9 @@ Subject: 2014-06-05  S. Gilles  <sgilles@terpmail.umd.edu>
 X-Git-Url: http://repo.or.cz/w/official-gcc.git/commitdiff_plain/95cdf3fdf2d440eb7775def8e35ab970651c33d9?hp=14a3093e9943937cbc63dfbf4d51ca60f8325b29
 git-svn-id: svn+ssh://gcc.gnu.org/svn/gcc/trunk@211289 138bc75d-0d04-0410-961f-82ee72b054a4
 
-diff -r be309b9bafc4 gcc/c/c-typeck.c
---- a/gcc/c/c-typeck.c	Thu Jan 29 13:42:06 2015 -0500
-+++ b/gcc/c/c-typeck.c	Thu Jan 29 13:42:08 2015 -0500
+diff -r d5d2910a3b6e gcc/c/c-typeck.c
+--- a/gcc/c/c-typeck.c	Fri Dec 25 15:16:52 2015 -0500
++++ b/gcc/c/c-typeck.c	Fri Dec 25 15:16:56 2015 -0500
 @@ -62,9 +62,9 @@
     if expr.original_code == SIZEOF_EXPR.  */
  tree c_last_sizeof_arg;
@@ -735,7 +734,7 @@ diff -r be309b9bafc4 gcc/c/c-typeck.c
  
  static int require_constant_value;
  static int require_constant_elements;
-@@ -6379,6 +6379,9 @@
+@@ -6380,6 +6380,9 @@
  /* 1 if this constructor is erroneous so far.  */
  static int constructor_erroneous;
  
@@ -745,7 +744,7 @@ diff -r be309b9bafc4 gcc/c/c-typeck.c
  /* Structure for managing pending initializer elements, organized as an
     AVL tree.  */
  
-@@ -6540,7 +6543,7 @@
+@@ -6541,7 +6544,7 @@
    constructor_stack = 0;
    constructor_range_stack = 0;
  
@@ -754,7 +753,7 @@ diff -r be309b9bafc4 gcc/c/c-typeck.c
  
    spelling_base = 0;
    spelling_size = 0;
-@@ -6635,6 +6638,7 @@
+@@ -6636,6 +6639,7 @@
    constructor_type = type;
    constructor_incremental = 1;
    constructor_designated = 0;
@@ -762,7 +761,7 @@ diff -r be309b9bafc4 gcc/c/c-typeck.c
    designator_depth = 0;
    designator_erroneous = 0;
  
-@@ -6832,11 +6836,8 @@
+@@ -6833,11 +6837,8 @@
  	set_nonincremental_init (braced_init_obstack);
      }
  
@@ -776,7 +775,7 @@ diff -r be309b9bafc4 gcc/c/c-typeck.c
  
    if (TREE_CODE (constructor_type) == RECORD_TYPE
  	   || TREE_CODE (constructor_type) == UNION_TYPE)
-@@ -6969,16 +6970,23 @@
+@@ -6970,16 +6971,23 @@
  	}
      }
  
@@ -804,7 +803,7 @@ diff -r be309b9bafc4 gcc/c/c-typeck.c
  	/* Do not warn for flexible array members or zero-length arrays.  */
  	while (constructor_unfilled_fields
  	       && (!DECL_SIZE (constructor_unfilled_fields)
-@@ -8093,6 +8101,9 @@
+@@ -8094,6 +8102,9 @@
    designator_depth = 0;
    designator_erroneous = 0;
  
@@ -814,3 +813,15 @@ diff -r be309b9bafc4 gcc/c/c-typeck.c
    /* Handle superfluous braces around string cst as in
       char x[] = {"foo"}; */
    if (string_flag
+diff -r a5e074ee9347 gcc/gcc.c
+--- a/gcc/gcc.c	Fri Dec 25 15:16:56 2015 -0500
++++ b/gcc/gcc.c	Fri Dec 25 15:16:59 2015 -0500
+@@ -653,7 +653,7 @@
+ 
+ #ifndef LINK_SSP_SPEC
+ #ifdef TARGET_LIBC_PROVIDES_SSP
+-#define LINK_SSP_SPEC "%{fstack-protector:}"
++#define LINK_SSP_SPEC "%{fstack-protector|fstack-protector-all:-lssp_nonshared}"
+ #else
+ #define LINK_SSP_SPEC "%{fstack-protector|fstack-protector-all:-lssp_nonshared -lssp}"
+ #endif
