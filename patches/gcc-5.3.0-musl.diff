@@ -486,12 +486,12 @@ diff -r 76b553fabcf1 gcc/config/mips/linux.h
 -                         BIONIC_DYNAMIC_LINKERN32)
 +                         BIONIC_DYNAMIC_LINKERN32, MUSL_DYNAMIC_LINKERN32)
 # HG changeset patch
-# Parent c23001ce16a8b07e09e4fb3e060e9fbd270b055c
+# Parent 971d410411735f0b04eb07236659097986926213
 Support for powerpc-linux-musl.
 
-diff -r c23001ce16a8 gcc/config.gcc
---- a/gcc/config.gcc	Thu Dec 24 11:25:04 2015 -0500
-+++ b/gcc/config.gcc	Thu Dec 24 11:25:06 2015 -0500
+diff -r 971d41041173 gcc/config.gcc
+--- a/gcc/config.gcc	Fri Dec 25 08:44:09 2015 -0500
++++ b/gcc/config.gcc	Fri Dec 25 09:42:16 2015 -0500
 @@ -2416,6 +2416,10 @@
  	    powerpc*-*-linux*paired*)
  		tm_file="${tm_file} rs6000/750cl.h" ;;
@@ -503,9 +503,9 @@ diff -r c23001ce16a8 gcc/config.gcc
  	if test x${enable_secureplt} = xyes; then
  		tm_file="rs6000/secureplt.h ${tm_file}"
  	fi
-diff -r c23001ce16a8 gcc/config/rs6000/linux64.h
---- a/gcc/config/rs6000/linux64.h	Thu Dec 24 11:25:04 2015 -0500
-+++ b/gcc/config/rs6000/linux64.h	Thu Dec 24 11:25:06 2015 -0500
+diff -r 971d41041173 gcc/config/rs6000/linux64.h
+--- a/gcc/config/rs6000/linux64.h	Fri Dec 25 08:44:09 2015 -0500
++++ b/gcc/config/rs6000/linux64.h	Fri Dec 25 09:42:16 2015 -0500
 @@ -365,17 +365,21 @@
  #endif
  #define UCLIBC_DYNAMIC_LINKER32 "/lib/ld-uClibc.so.0"
@@ -532,28 +532,18 @@ diff -r c23001ce16a8 gcc/config/rs6000/linux64.h
  
  #undef  DEFAULT_ASM_ENDIAN
  #if (TARGET_DEFAULT & MASK_LITTLE_ENDIAN)
-diff -r c23001ce16a8 gcc/config/rs6000/secureplt.h
---- a/gcc/config/rs6000/secureplt.h	Thu Dec 24 11:25:04 2015 -0500
-+++ b/gcc/config/rs6000/secureplt.h	Thu Dec 24 11:25:06 2015 -0500
+diff -r 971d41041173 gcc/config/rs6000/secureplt.h
+--- a/gcc/config/rs6000/secureplt.h	Fri Dec 25 08:44:09 2015 -0500
++++ b/gcc/config/rs6000/secureplt.h	Fri Dec 25 09:42:16 2015 -0500
 @@ -18,3 +18,4 @@
  <http://www.gnu.org/licenses/>.  */
  
  #define CC1_SECURE_PLT_DEFAULT_SPEC "-msecure-plt"
 +#define LINK_SECURE_PLT_DEFAULT_SPEC "--secure-plt"
-diff -r c23001ce16a8 gcc/config/rs6000/sysv4.h
---- a/gcc/config/rs6000/sysv4.h	Thu Dec 24 11:25:04 2015 -0500
-+++ b/gcc/config/rs6000/sysv4.h	Thu Dec 24 11:25:06 2015 -0500
-@@ -523,7 +523,8 @@
- "%{mlittle|mlittle-endian:"	LITTLE_OPT ";"	\
-   "mbig|mbig-endian:"		BIG_OPT    ";"	\
-   "mcall-i960-old:"		LITTLE_OPT ";"	\
--  ":"				DEFAULT_OPT "}"
-+  ":"				DEFAULT_OPT "}" \
-+  "%{!mbss-plt: %{!msecure-plt: %(link_secure_plt_default)}}"
- 
- #define DEFAULT_ASM_ENDIAN " -mbig"
- 
-@@ -537,6 +538,9 @@
+diff -r 971d41041173 gcc/config/rs6000/sysv4.h
+--- a/gcc/config/rs6000/sysv4.h	Fri Dec 25 08:44:09 2015 -0500
++++ b/gcc/config/rs6000/sysv4.h	Fri Dec 25 09:42:16 2015 -0500
+@@ -537,6 +537,9 @@
  #ifndef CC1_SECURE_PLT_DEFAULT_SPEC
  #define CC1_SECURE_PLT_DEFAULT_SPEC ""
  #endif
@@ -563,6 +553,16 @@ diff -r c23001ce16a8 gcc/config/rs6000/sysv4.h
  
  /* Pass -G xxx to the compiler.  */
  #undef CC1_SPEC
+@@ -574,7 +577,8 @@
+ %{R*} \
+ %(link_shlib) \
+ %{!T*: %(link_start) } \
+-%(link_os)"
++%(link_os)" \
++"%{!mbss-plt: %{!msecure-plt: %(link_secure_plt_default)}}"
+ 
+ /* Shared libraries are not default.  */
+ #define LINK_SHLIB_SPEC "\
 @@ -759,15 +763,18 @@
  
  #define GLIBC_DYNAMIC_LINKER "/lib/ld.so.1"
