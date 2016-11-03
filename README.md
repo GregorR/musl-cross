@@ -11,6 +11,10 @@ config.sh to make cross-compilers to other architectures, and even copy
 config.sh to another directory then run build.sh from there to avoid polluting
 the source dir.
 
+Project Scope
+=============
+Supported are GCC 4.0.3 until 5.3.0.
+for newer GCCs check out the [musl-cross-make project][0].
 
 Notes on building normal cross compilers
 ========================================
@@ -124,3 +128,17 @@ Other sources
 The patches for GCC are maintained in a separate repository,
 http://bitbucket.org/GregorR/musl-gcc-patches/ (mirrored to git at
 http://github.com/GregorR/musl-gcc-patches ).
+
+Compiler/Arch Compatibility Matrix
+==================================
+
+|       | i?86 | x86_64 | x32 | mips | powerpc | armv7 | microblaze | sh4 | or1k
+|:------------------------------------------------------------------------------
+| 4.7.4 | yes  | yes    |     | yes  | yes     | yes   |            |     |
+| 4.8.5 | yes  | yes    | yes | yes  | yes     | yes   | yes        | yes |
+| 4.9.3 | yes  | yes    | yes | yes  | yes     | yes   | yes        | yes |
+| 5.3.0 | yes  | yes    | yes | yes  | yes     | yes   | yes        | yes | *
+
+* or1k requires integration of a patch (issue #61)
+
+[0]:https://github.com/richfelker/musl-cross-make
