@@ -131,13 +131,12 @@ http://github.com/GregorR/musl-gcc-patches ).
 
 Compiler/Arch Compatibility Matrix
 ==================================
-
-|       | i?86 | x86_64 | x32 | mips | powerpc | armv7 | microblaze | sh4 | or1k
-|:------------------------------------------------------------------------------
-| 4.7.4 | yes  | yes    |     | yes  | yes     | yes   |            |     |
-| 4.8.5 | yes  | yes    | yes | yes  | yes     | yes   | yes        | yes |
-| 4.9.3 | yes  | yes    | yes | yes  | yes     | yes   | yes        | yes |
-| 5.3.0 | yes  | yes    | yes | yes  | yes     | yes   | yes        | yes | *
+|       | i?86 | x86_64 | x32 | mips | powerpc | armv7 | microblaze | sh4 | or1k|
+|:------|:-----|:-------|:----|:-----|:--------|:------|:-----------|:----|:---:|
+| 4.7.4 | yes  | yes    |     | yes  | yes     | yes   |            |     |     |
+| 4.8.5 | yes  | yes    | yes | yes  | yes     | yes   | yes        | yes |     |
+| 4.9.3 | yes  | yes    | yes | yes  | yes     | yes   | yes        | yes |     |
+| 5.3.0 | yes  | yes    | yes | yes  | yes     | yes   | yes        | yes | *   |
 
 * or1k requires integration of a patch (issue #61)
 
