@@ -1,10 +1,3 @@
-About this branch
-=================
-
-GregorR is the original author of musl-cross, but is sometimes busy with life
-and may vanish from time to time. If the repo GregorR/musl-cross seems out of
-date, you may want to check github.com/sabotage-linux/musl-cross .
-
 About musl-cross
 ================
 
