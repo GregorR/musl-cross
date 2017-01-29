@@ -47,6 +47,9 @@ fi
 # binutils
 fetchextract "$BINUTILS_URL"
 BINUTILS_DIR=$(stripfileext $(basename $BINUTILS_URL))
+if printf "%s" "$BINUTILS_URL" | grep "2\.[2-9][0-9]" >/dev/null 2>&1 ; then
+    BINUTILS_CONFFLAGS="$BINUTILS_CONFFLAGS --enable-deterministic-archives"
+fi
 
 sed -i -e 's,MAKEINFO="$MISSING makeinfo",MAKEINFO=true,g' \
     $BINUTILS_DIR/configure
