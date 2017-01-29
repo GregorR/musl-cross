@@ -1,0 +1,31 @@
+fixes build error when compiled with GCC 6.3.0:
+In file included from ../../gcc/cp/except.c:990:0:
+cfns.gperf: At top level:
+cfns.gperf:101:1: error: 'gnu_inline' attribute present on 'libc_name_p'
+cfns.gperf:26:14: error: but not here
+
+--- gcc-4.7.4.org/gcc/cp/cfns.h	2009-04-21 20:03:23.000000000 +0000
++++ gcc-4.7.4/gcc/cp/cfns.h	2017-01-29 02:12:54.225436646 +0000
+@@ -51,9 +51,6 @@
+ __inline
+ #endif
+ static unsigned int hash (const char *, unsigned int);
+-#ifdef __GNUC__
+-__inline
+-#endif
+ const char * libc_name_p (const char *, unsigned int);
+ /* maximum key range = 391, duplicates = 0 */
+ 
+@@ -122,12 +119,6 @@
+   return hval + asso_values[(unsigned char)str[len - 1]];
+ }
+ 
+-#ifdef __GNUC__
+-__inline
+-#ifdef __GNUC_STDC_INLINE__
+-__attribute__ ((__gnu_inline__))
+-#endif
+-#endif
+ const char *
+ libc_name_p (register const char *str, register unsigned int len)
+ {
