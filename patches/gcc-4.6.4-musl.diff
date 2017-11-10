@@ -283,16 +283,15 @@ Support for mips-linux-musl.
 diff -r 0a4e297edad6 -r 78025c74c5c1 gcc/config/mips/linux.h
 --- a/gcc/config/mips/linux.h	Wed Nov 21 21:21:54 2012 -0500
 +++ b/gcc/config/mips/linux.h	Wed Nov 21 21:23:49 2012 -0500
-@@ -19,3 +19,5 @@
- <http://www.gnu.org/licenses/>.  */
+@@ -63,6 +63,8 @@
  
  #define GLIBC_DYNAMIC_LINKER "/lib/ld.so.1"
-+
+ 
 +#define MUSL_DYNAMIC_LINKER "/lib/ld-musl-mips.so.1"
-# HG changeset patch
-# Parent 73dc8eee5c529480e355e0cc308b53cf6c347ce9
-Support for powerpc-linux-musl.
-
++
+ /* Borrowed from sparc/linux.h */
+ #undef LINK_SPEC
+ #define LINK_SPEC \
 diff -r 73dc8eee5c52 gcc/config.gcc
 --- a/gcc/config.gcc	Sun Jul 28 12:34:51 2013 -0400
 +++ b/gcc/config.gcc	Sun Jul 28 12:39:11 2013 -0400
