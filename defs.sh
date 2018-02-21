@@ -233,7 +233,7 @@ gccprereqs() {
 
     if [ ! -e gcc-$GCC_VERSION/mpc ]
     then
-        fetchextract http://www.multiprecision.org/mpc/download/ mpc-$MPC_VERSION .tar.gz
+        fetchextract https://ftp.gnu.org/gnu/mpc/ mpc-$MPC_VERSION .tar.gz
         mv mpc-$MPC_VERSION gcc-$GCC_VERSION/mpc
     fi
 }
