@@ -28,7 +28,7 @@ then
 fi
 
 # Versions of things (do this before config.sh so they can be config'd)
-BINUTILS_URL=http://ftp.gnu.org/gnu/binutils/binutils-2.25.1.tar.bz2
+BINUTILS_URL=https://ftp.gnu.org/gnu/binutils/binutils-2.25.1.tar.bz2
 #BINUTILS_URL=ftp://sourceware.org/pub/binutils/snapshots/binutils-2.24.90.tar.bz2
 #last GPL2 release is 2.17, with backported  -Bsymbolic support
 #BINUTILS_URL=http://landley.net/aboriginal/mirror/binutils-2.17.tar.bz2
@@ -42,7 +42,7 @@ LIBELF_VERSION=master
 # LINUX_HEADERS_URL=http://www.kernel.org/pub/linux/kernel/v3.0/linux-3.12.6.tar.xz
 # use patched sabotage-linux kernel-headers package (fixes userspace clashes of some kernel structs)
 # from upstream repo https://github.com/sabotage-linux/kernel-headers
-LINUX_HEADERS_URL=http://ftp.barfooze.de/pub/sabotage/tarballs/kernel-headers-3.12.6-5.tar.xz
+LINUX_HEADERS_URL=https://ftp.barfooze.de/pub/sabotage/tarballs/kernel-headers-3.12.6-5.tar.xz
 
 # musl can optionally be checked out from GIT, in which case MUSL_VERSION must
 # be set to a git tag and MUSL_GIT set to yes in config.sh
@@ -214,20 +214,20 @@ muslfetchextract() {
     then
         gitfetchextract "$MUSL_GIT_REPO" $MUSL_VERSION musl-$MUSL_VERSION
     else
-        fetchextract http://www.musl-libc.org/releases/ musl-$MUSL_VERSION .tar.gz
+        fetchextract https://www.musl-libc.org/releases/ musl-$MUSL_VERSION .tar.gz
     fi
 }
 
 gccprereqs() {
     if [ ! -e gcc-$GCC_VERSION/gmp ]
     then
-        fetchextract http://gmplib.org/download/gmp/ gmp-$GMP_VERSION .tar.bz2
+        fetchextract https://gmplib.org/download/gmp/ gmp-$GMP_VERSION .tar.bz2
         mv gmp-$GMP_VERSION gcc-$GCC_VERSION/gmp
     fi
 
     if [ ! -e gcc-$GCC_VERSION/mpfr ]
     then
-        fetchextract http://ftp.gnu.org/gnu/mpfr/ mpfr-$MPFR_VERSION .tar.bz2
+        fetchextract https://ftp.gnu.org/gnu/mpfr/ mpfr-$MPFR_VERSION .tar.bz2
         mv mpfr-$MPFR_VERSION gcc-$GCC_VERSION/mpfr
     fi
 
