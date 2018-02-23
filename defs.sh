@@ -48,7 +48,7 @@ LINUX_HEADERS_URL=http://ftp.barfooze.de/pub/sabotage/tarballs/kernel-headers-3.
 # be set to a git tag and MUSL_GIT set to yes in config.sh
 MUSL_DEFAULT_VERSION=1.1.19
 MUSL_GIT_VERSION=55df09bfccbfe21fc9dd7d8f94550c0ff25ace04
-MUSL_GIT_REPO='git://repo.or.cz/musl.git'
+MUSL_GIT_REPO='git://git.musl-libc.org/musl'
 MUSL_VERSION="$MUSL_DEFAULT_VERSION"
 MUSL_GIT=no
 
