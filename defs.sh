@@ -221,7 +221,7 @@ muslfetchextract() {
 gccprereqs() {
     if [ ! -e gcc-$GCC_VERSION/gmp ]
     then
-        fetchextract http://gmplib.org/download/gmp/ gmp-$GMP_VERSION .tar.bz2
+        fetchextract http://ftp.gnu.org/pub/gnu/gmp/ gmp-$GMP_VERSION .tar.bz2
         mv gmp-$GMP_VERSION gcc-$GCC_VERSION/gmp
     fi
 
