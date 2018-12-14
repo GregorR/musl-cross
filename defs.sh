@@ -28,7 +28,7 @@ then
 fi
 
 # Versions of things (do this before config.sh so they can be config'd)
-BINUTILS_URL=http://ftp.gnu.org/gnu/binutils/binutils-2.25.1.tar.bz2
+BINUTILS_URL=http://ftpmirror.gnu.org/gnu/binutils/binutils-2.25.1.tar.bz2
 #BINUTILS_URL=http://mirrors.kernel.org/sourceware/binutils/snapshots/binutils-2.24.90.tar.bz2
 #last GPL2 release is 2.17, with backported  -Bsymbolic support
 #BINUTILS_URL=http://landley.net/aboriginal/mirror/binutils-2.17.tar.bz2
@@ -221,19 +221,19 @@ muslfetchextract() {
 gccprereqs() {
     if [ ! -e gcc-$GCC_VERSION/gmp ]
     then
-        fetchextract http://ftp.gnu.org/pub/gnu/gmp/ gmp-$GMP_VERSION .tar.bz2
+        fetchextract http://ftpmirror.gnu.org/pub/gnu/gmp/ gmp-$GMP_VERSION .tar.bz2
         mv gmp-$GMP_VERSION gcc-$GCC_VERSION/gmp
     fi
 
     if [ ! -e gcc-$GCC_VERSION/mpfr ]
     then
-        fetchextract http://ftp.gnu.org/gnu/mpfr/ mpfr-$MPFR_VERSION .tar.bz2
+        fetchextract http://ftpmirror.gnu.org/gnu/mpfr/ mpfr-$MPFR_VERSION .tar.bz2
         mv mpfr-$MPFR_VERSION gcc-$GCC_VERSION/mpfr
     fi
 
     if [ ! -e gcc-$GCC_VERSION/mpc ]
     then
-        fetchextract https://ftp.gnu.org/gnu/mpc/ mpc-$MPC_VERSION .tar.gz
+        fetchextract https://ftpmirror.gnu.org/gnu/mpc/ mpc-$MPC_VERSION .tar.gz
         mv mpc-$MPC_VERSION gcc-$GCC_VERSION/mpc
     fi
 }
