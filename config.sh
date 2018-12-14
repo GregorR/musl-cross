@@ -24,3 +24,6 @@ MAKEFLAGS=-j8
 
 # Enable this to build the bootstrap gcc (thrown away) without optimization, to reduce build time
 GCC_STAGE1_NOOPT=1
+
+# Uncomment this if your wget does not support HTTPS
+#HTTP_PROTO=http
