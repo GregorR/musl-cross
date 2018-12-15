@@ -152,10 +152,16 @@ die() {
     exit 1
 }
 
+https_url() {
+	printf "%s\n" "$1" | sed 's/^http:/https:/'
+}
+
 fetch() {
     if [ ! -e "$MUSL_CC_BASE/tarballs/$2" ]
     then
+        wget -O "$MUSL_CC_BASE/tarballs/$2.part" -c "$(https_url "$1""$2")" || \
         wget -O "$MUSL_CC_BASE/tarballs/$2.part" -c "$1""$2"
+        test $? = 0 || { echo "error downloading $1$2" >&2 ; exit 1 ; }
         mv "$MUSL_CC_BASE/tarballs/$2.part" "$MUSL_CC_BASE/tarballs/$2"
     fi
     return 0
