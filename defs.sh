@@ -271,6 +271,8 @@ build() {
     then
         patch_source "$BD"
 
+        SAVED_PREFIX="$PREFIX"
+
         (
         cd "$BD" || die "Failed to cd $BD"
 
@@ -280,12 +282,16 @@ build() {
             cd build"$BP" || die "Failed to cd to build dir for $BD $BP"
             CF="../configure"
         fi
-        ( $CF --prefix="$PREFIX" "$@" &&
+        test "$USE_DESTDIR" = 1 && PREFIX=
+        (   $CF --prefix="$PREFIX" "$@" &&
             $MAKE $MAKEFLAGS &&
             touch "$BUILT" ) ||
             die "Failed to build $BD"
 
         )
+
+        PREFIX="$SAVED_PREFIX"
+
     fi
 }
 
@@ -325,7 +331,8 @@ doinstall() {
             cd build"$BP" || die "Failed to cd build$BP"
         fi
 
-        ( $MAKE install "$@" $MAKEINSTALLFLAGS &&
+        test "$USE_DESTDIR" = 1 && DD="DESTDIR=$PREFIX" || DD=
+        ( $MAKE install "$@" $MAKEINSTALLFLAGS $DD &&
             touch "$INSTALLED" ) ||
             die "Failed to install $BP"
 

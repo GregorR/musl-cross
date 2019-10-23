@@ -32,6 +32,7 @@ WITH_SYSROOT=no
 
 # Switch to the CC prefix for all of this
 PREFIX="$CC_PREFIX"
+USE_DESTDIR=0
 
 # make the sysroot usr directory
 if [ ! -e "$PREFIX"/"$TRIPLE"/usr ]
@@ -120,10 +121,12 @@ then
     muslfetchextract
     # We set both CROSS_COMPILE and CC because CC in the environment overrides
     # and CROSS_COMPILE setting
+    USE_DESTDIR=1
     buildinstall '' musl-$MUSL_VERSION \
         --enable-debug --enable-optimize CROSS_COMPILE="$TRIPLE-" CC="$TRIPLE-gcc" $MUSL_CONFFLAGS
     unset PREFIX
     PREFIX="$CC_PREFIX"
+    USE_DESTDIR=0
 
     # if it didn't build libc.so, disable dynamic linking
     if [ ! -e "$CC_PREFIX/$TRIPLE/lib/libc.so" ]
