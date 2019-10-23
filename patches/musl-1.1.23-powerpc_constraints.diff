@@ -1,0 +1,22 @@
+--- musl-1.1.22/src/math/powerpc/fabs.c
++++ musl-1.1.22.org/src/math/powerpc/fabs.c
+@@ -8,7 +8,7 @@
+ 
+ double fabs(double x)
+ {
+-	__asm__ ("fabs %0, %1" : "=d"(x) : "d"(x));
++	__asm__ ("fabs %0, %1" : "=f"(x) : "f"(x));
+ 	return x;
+ }
+ 
+--- musl-1.1.22.org/src/math/powerpc/fma.c
++++ musl-1.1.22/src/math/powerpc/fma.c
+@@ -8,7 +8,7 @@
+ 
+ double fma(double x, double y, double z)
+ {
+-	__asm__("fmadd %0, %1, %2, %3" : "=d"(x) : "d"(x), "d"(y), "d"(z));
++	__asm__("fmadd %0, %1, %2, %3" : "=f"(x) : "f"(x), "f"(y), "f"(z));
+ 	return x;
+ }
+ 
