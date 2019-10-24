@@ -46,6 +46,28 @@
        ;;
    esac
    # Assume that glibc or uClibc are being used and so __cxa_atexit is provided.
+@@ -1754,6 +1757,10 @@
+ 	test x$with_cpu != x || cpu_is_64bit=yes
+ 	test x$cpu_is_64bit != xyes || tm_file="${tm_file} rs6000/default64.h"
+ 	tm_file="rs6000/biarch64.h ${tm_file} rs6000/linux64.h"
++	case ${target} in
++		*-linux*-musl*)
++			enable_secureplt=yes ;;
++	esac
+ 	if test x${enable_secureplt} = xyes; then
+ 		tm_file="rs6000/secureplt.h ${tm_file}"
+ 	fi
+@@ -1870,6 +1877,10 @@
+ 		;;
+ 	esac
+ 	tmake_file="${tmake_file} rs6000/t-fprules-softfp soft-fp/t-softfp"
++	case ${target} in
++		*-linux*-musl*)
++			enable_secureplt=yes ;;
++	esac
+ 	if test x${enable_secureplt} = xyes; then
+ 		tm_file="rs6000/secureplt.h ${tm_file}"
+ 	fi
 --- gcc-4.4.7.org/gcc/config/arm/linux-eabi.h
 +++ gcc-4.4.7/gcc/config/arm/linux-eabi.h
 @@ -63,6 +63,23 @@
@@ -269,6 +291,13 @@
  
  
  #define LINK_OS_LINUX_SPEC32 "-m elf32ppclinux %{!shared: %{!static: \
+--- gcc-4.4.7.org/gcc/config/rs6000/secureplt.h
++++ gcc-4.4.7/gcc/config/rs6000/secureplt.h
+@@ -18,3 +18,4 @@
+ <http://www.gnu.org/licenses/>.  */
+ 
+ #define CC1_SECURE_PLT_DEFAULT_SPEC "-msecure-plt"
++#define LINK_SECURE_PLT_DEFAULT_SPEC "--secure-plt"
 --- gcc-4.4.7.org/gcc/config/rs6000/sysv4.h
 +++ gcc-4.4.7/gcc/config/rs6000/sysv4.h
 @@ -616,6 +616,9 @@
