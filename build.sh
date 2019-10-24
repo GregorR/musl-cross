@@ -155,4 +155,12 @@ rm -rf "$CC_PREFIX/lib/gcc/$TRIPLE"/*/include-fixed/ "$CC_PREFIX/lib/gcc/$TRIPLE
     done
 )
 
+if test "$REMOVE_JUNK" = yes ; then
+(
+    cd "$CC_PREFIX"
+    rm -rf info man share
+    find . -name libiberty.a -delete
+)
+fi
+
 exit 0

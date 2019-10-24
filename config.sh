@@ -30,3 +30,5 @@ GCC_STAGE1_NOOPT=1
 #export CXXFLAGS="-Os -g0"
 #export LDFLAGS="-s"
 
+# uncomment if you want docs and other unneeded stuff removed
+#REMOVE_JUNK=yes
