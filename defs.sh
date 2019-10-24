@@ -28,7 +28,7 @@ then
 fi
 
 # Versions of things (do this before config.sh so they can be config'd)
-BINUTILS_URL=http://ftpmirror.gnu.org/gnu/binutils/binutils-2.25.1.tar.bz2
+BINUTILS_URL=http://ftpmirror.gnu.org/gnu/binutils/binutils-2.27.tar.bz2
 #BINUTILS_URL=http://mirrors.kernel.org/sourceware/binutils/snapshots/binutils-2.24.90.tar.bz2
 #last GPL2 release is 2.17, with backported  -Bsymbolic support
 #BINUTILS_URL=http://landley.net/aboriginal/mirror/binutils-2.17.tar.bz2
