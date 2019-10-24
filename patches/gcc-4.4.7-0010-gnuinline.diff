@@ -1,0 +1,49 @@
+--- gcc-4.4.7.org/gcc/toplev.c
++++ gcc-4.4.7/gcc/toplev.c
+@@ -529,6 +529,7 @@
+ 
+ #if GCC_VERSION < 3004 || !defined (__cplusplus)
+ 
++#if 0
+ /* Given X, an unsigned number, return the largest int Y such that 2**Y <= X.
+    If X is 0, return -1.  */
+ 
+@@ -578,6 +579,7 @@
+   return floor_log2 (x);
+ #endif
+ }
++#endif
+ 
+ #endif /*  GCC_VERSION < 3004 || !defined (__cplusplus)  */
+ 
+--- gcc-4.4.7.org/gcc/toplev.h
++++ gcc-4.4.7/gcc/toplev.h
+@@ -168,10 +168,10 @@
+ extern bool fast_math_flags_struct_set_p (struct cl_optimization *);
+ 
+ /* Return log2, or -1 if not exact.  */
+-extern int exact_log2                  (unsigned HOST_WIDE_INT);
++//extern int exact_log2                  (unsigned HOST_WIDE_INT);
+ 
+ /* Return floor of log2, with -1 for zero.  */
+-extern int floor_log2                  (unsigned HOST_WIDE_INT);
++//extern int floor_log2                  (unsigned HOST_WIDE_INT);
+ 
+ /* Inline versions of the above for speed.  */
+ #if GCC_VERSION >= 3004
+@@ -186,13 +186,13 @@
+ #  define CTZ_HWI __builtin_ctz
+ # endif
+ 
+-extern inline int
++static inline int
+ floor_log2 (unsigned HOST_WIDE_INT x)
+ {
+   return x ? HOST_BITS_PER_WIDE_INT - 1 - (int) CLZ_HWI (x) : -1;
+ }
+ 
+-extern inline int
++static inline int
+ exact_log2 (unsigned HOST_WIDE_INT x)
+ {
+   return x == (x & -x) && x ? (int) CTZ_HWI (x) : -1;
