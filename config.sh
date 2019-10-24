@@ -24,3 +24,9 @@ MAKEFLAGS=-j8
 
 # Enable this to build the bootstrap gcc (thrown away) without optimization, to reduce build time
 GCC_STAGE1_NOOPT=1
+
+# uncomment these to get smaller/stripped binaries
+#export CFLAGS="-Os -g0 -s"
+#export CXXFLAGS="-Os -g0"
+#export LDFLAGS="-s"
+
