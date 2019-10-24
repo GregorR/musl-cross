@@ -52,6 +52,8 @@ MUSL_GIT_REPO='git://git.musl-libc.org/musl'
 MUSL_VERSION="$MUSL_DEFAULT_VERSION"
 MUSL_GIT=no
 
+CONFIG_SUB_REV=3d5db9ebe860
+
 # You can choose languages
 LANG_CXX=yes
 LANG_OBJC=no
@@ -260,6 +262,15 @@ patch_source() {
     )
 }
 
+config_sub_guess() {
+for i in config.sub config.guess ; do
+    fn="$i;hb=${CONFIG_SUB_REV}"
+    fetch 'http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=' "$fn"
+    cp -f "$MUSL_CC_BASE/tarballs/$fn" "$1"/"$i" || exit 1
+    chmod +x "$1"/"$i"
+done
+}
+
 build() {
     BP="$1"
     BD="$2"
@@ -270,6 +281,7 @@ build() {
     if [ ! -e "$BUILT" ]
     then
         patch_source "$BD"
+        config_sub_guess "$BD"
 
         SAVED_PREFIX="$PREFIX"
 
