@@ -165,6 +165,19 @@ fetch() {
         wget -O "$MUSL_CC_BASE/tarballs/$2.part" -c "$1""$2"
         test $? = 0 || { echo "error downloading $1$2" >&2 ; exit 1 ; }
         mv "$MUSL_CC_BASE/tarballs/$2.part" "$MUSL_CC_BASE/tarballs/$2"
+        hashf="$MUSL_CC_BASE/hashes/$2.sha256"
+        while ! test -e "$hashf" ; do
+		echo "WARNING: no checksum file for $2 found, please report!">&2
+		echo "provide $hashf , so this can continue">&2
+		echo "(will detect presence in the next loop)">&2
+		echo >&2
+		echo "sleeping 10s...">&2
+		sleep 10
+        done
+        (
+            cd "$MUSL_CC_BASE/tarballs"
+            sha256sum -c "$hashf"
+        ) || { echo "checksum error!">&2 ; exit 1; }
     fi
     return 0
 }
