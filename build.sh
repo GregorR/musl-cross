@@ -137,7 +137,7 @@ then
     # gcc 2
     buildinstall 2 gcc-$GCC_VERSION --target=$TRIPLE $SYSROOT_FLAGS \
         --enable-languages=$LANGUAGES --disable-libmudflap \
-        --disable-libsanitizer --disable-nls \
+        --disable-libsanitizer --disable-nls --disable-libssp \
         $GCC_MULTILIB_CONFFLAGS \
         $GCC_CONFFLAGS
 fi
