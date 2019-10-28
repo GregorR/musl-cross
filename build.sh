@@ -150,7 +150,7 @@ rm -rf "$CC_PREFIX/lib/gcc/$TRIPLE"/*/include-fixed/ "$CC_PREFIX/lib/gcc/$TRIPLE
     cd "$CC_PREFIX/bin"
     for tool in $TRIPLE-*
     do
-        btool=`echo "$tool" | sed 's/-linux-musl/-musl-linux/'`
+        btool=`echo "$tool" | sed -E 's/linux-(musl.*)-/\1-linux-/'`
         if [ "$tool" != "$btool" -a ! -e "$btool" ] ; then
             ln -s $tool $btool
         fi
