@@ -134,6 +134,7 @@ Compiler/Arch Compatibility Matrix
 |       | i?86 | x86_64 | x32 | mips | powerpc | armv7 | microblaze | sh4 | or1k|
 |:------|:-----|:-------|:----|:-----|:--------|:------|:-----------|:----|:---:|
 | 4.4.7 | yes  | yes    |     | yes  | yes     | yes   |            |     |     |
+| 4.5.4 | yes  | yes    |     | yes  | yes     | yes   |            |     |     |
 | 4.7.4 | yes  | yes    |     | yes  | yes     | yes   |            |     |     |
 | 4.8.5 | yes  | yes    | yes | yes  | yes     | yes   | yes        | yes |     |
 | 4.9.3 | yes  | yes    | yes | yes  | yes     | yes   | yes        | yes |     |
