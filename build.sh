@@ -146,6 +146,7 @@ fi
 rm -rf "$CC_PREFIX/lib/gcc/$TRIPLE"/*/include-fixed/ "$CC_PREFIX/lib/gcc/$TRIPLE"/*/include/stddef.h
 
 # make backwards-named compilers for easier cross-compiling
+if test "$MAKE_BACKWARDS_LINKS" = yes ; then
 (
     cd "$CC_PREFIX/bin"
     for tool in $TRIPLE-*
@@ -156,6 +157,7 @@ rm -rf "$CC_PREFIX/lib/gcc/$TRIPLE"/*/include-fixed/ "$CC_PREFIX/lib/gcc/$TRIPLE
         fi
     done
 )
+fi
 
 if test "$REMOVE_JUNK" = yes ; then
 (
