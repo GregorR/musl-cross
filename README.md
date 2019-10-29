@@ -141,6 +141,6 @@ Compiler/Arch Compatibility Matrix
 | 4.9.3 | yes  | yes    | yes | yes  | yes     | yes  | yes   | yes | yes |     |
 | 5.3.0 | yes  | yes    | yes | yes  | yes     | yes  | yes   | yes | yes | *   |
 
-* or1k requires integration of a patch (issue #61)
+`*` or1k requires integration of a patch (issue #61)
 
 [0]:https://github.com/richfelker/musl-cross-make
