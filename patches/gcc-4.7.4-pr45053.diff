@@ -1,0 +1,37 @@
+From 47ad90e7204eb084cad1b9f9d1e41f76cf96983d Mon Sep 17 00:00:00 2001
+From: amodra <amodra@138bc75d-0d04-0410-961f-82ee72b054a4>
+Date: Fri, 7 Apr 2017 01:30:43 +0000
+Subject: [PATCH] [RS6000] Out-of-line register save functions can't be used
+ from crtend.o
+
+	PR target/45053
+	* config/rs6000/t-crtstuff (CRTSTUFF_T_CFLAGS): Add -O2.
+
+
+git-svn-id: svn+ssh://gcc.gnu.org/svn/gcc/trunk@246749 138bc75d-0d04-0410-961f-82ee72b054a4
+
+	PR85532, crtend.o built without --enable-initfini-array has bad .eh_frame
+
+	PR libgcc/85532
+	* config/rs6000/t-crtstuff (CRTSTUFF_T_CFLAGS): Add
+	-fno-asynchronous-unwind-tables.
+
+git-svn-id: svn+ssh://gcc.gnu.org/svn/gcc/trunk@259702 138bc75d-0d04-0410-961f-82ee72b054a4
+
+(see also https://github.com/openwrt/openwrt/blob/09ef028e58605d8ff574b3f0f12ec291d477ce97/toolchain/gcc/patches/6.3.0/870-ppc_no_crtsavres.patch)
+
+diff --git a/libgcc/config/rs6000/t-crtstuff b/libgcc/config/rs6000/t-crtstuff
+index 7422d383754..0b2601b05bd 100644
+--- a/libgcc/config/rs6000/t-crtstuff
++++ b/libgcc/config/rs6000/t-crtstuff
+@@ -1,3 +1,6 @@
+ # If .sdata is enabled __CTOR_{LIST,END}__ go into .sdata instead of
+ # .ctors.
+-CRTSTUFF_T_CFLAGS = -msdata=none
++# Do not build crtend.o with -Os as that can result in references to
++# out-of-line register save/restore functions, which may be unresolved
++# as crtend.o is linked after libgcc.a.  See PR45053.
++CRTSTUFF_T_CFLAGS = -msdata=none -O2 -fno-asynchronous-unwind-tables
+-- 
+2.11.1
+
