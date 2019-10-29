@@ -135,6 +135,7 @@ Compiler/Arch Compatibility Matrix
 |:------|:-----|:-------|:----|:-----|:--------|:-----|:------|:----|:----|:---:|
 | 4.4.7 | yes  | yes    |     | yes  | yes     | yes  |       |     |     |     |
 | 4.5.4 | yes  | yes    |     | yes  | yes     | yes  |       |     |     |     |
+| 4.6.4 | yes  | yes    |     | yes  | yes     | yes  |       |     |     |     |
 | 4.7.4 | yes  | yes    |     | yes  | yes     | yes  | yes   |     |     |     |
 | 4.8.5 | yes  | yes    | yes | yes  | yes     | yes  | yes   | yes | yes |     |
 | 4.9.3 | yes  | yes    | yes | yes  | yes     | yes  | yes   | yes | yes |     |
