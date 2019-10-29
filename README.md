@@ -110,7 +110,7 @@ musl-cross depends on:
 * patch
 * gcc
 * make
-* gawk
+* awk (busybox is fine)
 
 The following are GCC dependencies, which can be installed on the host system,
 or installed automatically using `GCC_BUILTIN_PREREQS=yes`:
@@ -121,13 +121,6 @@ or installed automatically using `GCC_BUILTIN_PREREQS=yes`:
 
 Building GMP additionally requires `m4`.
 
-
-Other sources
-=============
-
-The patches for GCC are maintained in a separate repository,
-http://bitbucket.org/GregorR/musl-gcc-patches/ (mirrored to git at
-http://github.com/GregorR/musl-gcc-patches ).
 
 Compiler/Arch Compatibility Matrix
 ==================================
