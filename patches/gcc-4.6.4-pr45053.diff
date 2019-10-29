@@ -1,0 +1,35 @@
+From 47ad90e7204eb084cad1b9f9d1e41f76cf96983d Mon Sep 17 00:00:00 2001
+From: amodra <amodra@138bc75d-0d04-0410-961f-82ee72b054a4>
+Date: Fri, 7 Apr 2017 01:30:43 +0000
+Subject: [PATCH] [RS6000] Out-of-line register save functions can't be used
+ from crtend.o
+
+	PR target/45053
+	* config/rs6000/t-crtstuff (CRTSTUFF_T_CFLAGS): Add -O2.
+
+
+git-svn-id: svn+ssh://gcc.gnu.org/svn/gcc/trunk@246749 138bc75d-0d04-0410-961f-82ee72b054a4
+
+	PR85532, crtend.o built without --enable-initfini-array has bad .eh_frame
+
+	PR libgcc/85532
+	* config/rs6000/t-crtstuff (CRTSTUFF_T_CFLAGS): Add
+	-fno-asynchronous-unwind-tables.
+
+git-svn-id: svn+ssh://gcc.gnu.org/svn/gcc/trunk@259702 138bc75d-0d04-0410-961f-82ee72b054a4
+
+(see also https://github.com/openwrt/openwrt/blob/09ef028e58605d8ff574b3f0f12ec291d477ce97/toolchain/gcc/patches/6.3.0/870-ppc_no_crtsavres.patch)
+
+diff --git a/gcc/config/rs6000/t-ppccomm b/gcc/config/rs6000/t-ppccomm
+index d91801e..6a1a6af 100644
+--- a/gcc/config/rs6000/t-ppccomm
++++ b/gcc/config/rs6000/t-ppccomm
+@@ -69,7 +69,7 @@ $(T)ncrtn$(objext): ncrtn.S
+ 	$(GCC_FOR_TARGET) $(GCC_CFLAGS) $(INCLUDES) $(MULTILIB_CFLAGS) -c ncrtn.S -o $(T)ncrtn$(objext)
+ 
+ # It is important that crtbegin.o, etc., aren't surprised by stuff in .sdata.
+-CRTSTUFF_T_CFLAGS = -msdata=none
++CRTSTUFF_T_CFLAGS = -msdata=none -O2 -fno-asynchronous-unwind-tables
+ # Make sure crt*.o are built with -fPIC even if configured with 
+ # --enable-shared --disable-multilib
+ CRTSTUFF_T_CFLAGS_S = -fPIC -msdata=none
