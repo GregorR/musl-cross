@@ -2,8 +2,8 @@ About musl-cross
 ================
 
 This is a small suite of scripts and patches to build a musl libc
-cross-compiler. Prebuilt cross and native compilers are available at
-http://musl.codu.org/
+cross-compiler. <strike>Prebuilt cross and native compilers are available at
+http://musl.codu.org/</strike>
 
 For the impatient, `./build.sh` should build a cross compiler to
 `/opt/cross/<arch>-linux-musl`, no muss, no fuss. Otherwise, you can edit
