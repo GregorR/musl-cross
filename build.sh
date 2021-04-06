@@ -142,9 +142,6 @@ then
         $GCC_CONFFLAGS
 fi
 
-# un"fix" headers
-rm -rf "$CC_PREFIX/lib/gcc/$TRIPLE"/*/include-fixed/ "$CC_PREFIX/lib/gcc/$TRIPLE"/*/include/stddef.h
-
 # make backwards-named compilers for easier cross-compiling
 if test "$MAKE_BACKWARDS_LINKS" = yes ; then
 (
