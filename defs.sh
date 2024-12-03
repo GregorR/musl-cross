@@ -182,13 +182,24 @@ fetch() {
     return 0
 }
 
+tar_is_gnu=unknown
+
 extract() {
     if [ ! -e "$2/extracted" ]
     then
-        tar xf "$MUSL_CC_BASE/tarballs/$1" ||
-            tar Jxf "$MUSL_CC_BASE/tarballs/$1" ||
-            tar jxf "$MUSL_CC_BASE/tarballs/$1" ||
-            tar zxf "$MUSL_CC_BASE/tarballs/$1"
+        if test "$tar_is_gnu" = unknown ; then
+            if tar --help 2>&1 | grep [-]-no-same-owner >/dev/null ; then
+                tar_is_gnu=yes
+            else
+                tar_is_gnu=no
+            fi
+        fi
+        tar_add=
+        test "$tar_is_gnu" = yes && tar_add=--no-same-owner
+        tar $tar_add -xf "$MUSL_CC_BASE/tarballs/$1" ||
+            tar $tar_add -Jxf "$MUSL_CC_BASE/tarballs/$1" ||
+            tar $tar_add -jxf "$MUSL_CC_BASE/tarballs/$1" ||
+            tar $tar_add -zxf "$MUSL_CC_BASE/tarballs/$1"
         mkdir -p "$2"
         touch "$2/extracted"
     fi
