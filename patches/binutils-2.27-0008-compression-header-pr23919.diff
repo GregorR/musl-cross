@@ -1,0 +1,518 @@
+From 88739f776b733b0b84600b283417f862a010bb5d Mon Sep 17 00:00:00 2001
+From: Nick Clifton <nickc@redhat.com>
+Date: Mon, 18 Feb 2019 15:08:57 +0000
+Subject: [PATCH] Import patch to fix PR23919 from the mainline.
+
+	PR binutils/23919
+bfd	* bfd.c (bfd_update_compression_header): Explicitly set alignment.
+	(bfd_check_compression_header): Add uncompressed_alignment_power
+	argument. Check ch_addralign is a power of 2.
+	* bfd-in2.h: Regenerated.
+	* compress.c (bfd_compress_section_contents): Get and set
+	orig_uncompressed_alignment_pow if section is decompressed.
+	(bfd_is_section_compressed_with_header): Add and get
+	uncompressed_align_pow_p argument.
+	(bfd_is_section_compressed): Add uncompressed_align_power argument
+	to bfd_is_section_compressed_with_header call.
+	(bfd_init_section_decompress_status): Get and set
+	uncompressed_alignment_power.
+	* elf.c (_bfd_elf_make_section_from_shdr): Add
+	uncompressed_align_power argument to
+	bfd_is_section_compressed_with_header call.
+
+	* compress.c (bfd_is_section_compressed_with_header): Initialize
+	* uncompressed_align_pow_p to 0.
+
+binutils* readelf.c (dump_sections_as_strings): Remove bogus addralign check.
+	(dump_sections_as_bytes): Likewise.
+	(load_specific_debug_sections): Likewise.
+	* testsuite/binutils-all/dw2-3.rS: Adjust alignment.
+	* testsuite/binutils-all/dw2-3.rt: Likewise.
+
+gold	* merge.cc (Output_merge_string<Char_type>::do_add_input_section):
+	Get addralign from decompressed_section_contents.
+	* object.cc (build_compressed_section_map): Set info.addralign.
+	(Object::decompressed_section_contents): Add a palign
+	argument and store p->second.addralign in *palign if it isn't
+	NULL.
+	* object.h (Compressed_section_info): Add addralign.
+	(section_is_compressed): Add a palign argument, default it
+	to NULL, store p->second.addralign in *palign if it isn't NULL.
+	(Object::decompressed_section_contents): Likewise.
+	* output.cc (Output_section::add_input_section): Get addralign
+	from section_is_compressed.
+---
+ bfd/bfd-in2.h                            |  6 ++++--
+ bfd/bfd.c                                | 21 +++++++++++++-----
+ bfd/compress.c                           | 37 +++++++++++++++++++++++---------
+ bfd/elf.c                                |  4 +++-
+ binutils/readelf.c                       | 18 ----------------
+ binutils/testsuite/binutils-all/dw2-3.rS |  2 +-
+ binutils/testsuite/binutils-all/dw2-3.rt |  2 +-
+ gold/merge.cc                            |  8 ++++---
+ gold/object.cc                           | 11 ++++++++--
+ gold/object.h                            |  8 +++++--
+ gold/output.cc                           | 12 ++++++-----
+ 11 files changed, 79 insertions(+), 50 deletions(-)
+
+diff --git a/bfd/bfd-in2.h b/bfd/bfd-in2.h
+index 30513c4..094ea59 100644
+--- a/bfd/bfd-in2.h
++++ b/bfd/bfd-in2.h
+@@ -7068,7 +7068,8 @@ void bfd_update_compression_header
+ 
+ bfd_boolean bfd_check_compression_header
+    (bfd *abfd, bfd_byte *contents, asection *sec,
+-    bfd_size_type *uncompressed_size);
++    bfd_size_type *uncompressed_size,
++    unsigned int *uncompressed_alignment_power);
+ 
+ int bfd_get_compression_header_size (bfd *abfd, asection *sec);
+ 
+@@ -7607,7 +7608,8 @@ void bfd_cache_section_contents
+ bfd_boolean bfd_is_section_compressed_with_header
+    (bfd *abfd, asection *section,
+     int *compression_header_size_p,
+-    bfd_size_type *uncompressed_size_p);
++    bfd_size_type *uncompressed_size_p,
++    unsigned int *uncompressed_alignment_power_p);
+ 
+ bfd_boolean bfd_is_section_compressed
+    (bfd *abfd, asection *section);
+diff --git a/bfd/bfd.c b/bfd/bfd.c
+index 806b9fb..04b05e2 100644
+--- a/bfd/bfd.c
++++ b/bfd/bfd.c
+@@ -2003,6 +2003,8 @@ bfd_update_compression_header (bfd *abfd, bfd_byte *contents,
+ 		  bfd_put_32 (abfd, sec->size, &echdr->ch_size);
+ 		  bfd_put_32 (abfd, 1 << sec->alignment_power,
+ 			      &echdr->ch_addralign);
++		  /* bfd_log2 (alignof (Elf32_Chdr)).  */
++		  bfd_set_section_alignment (abfd, sec, 2);
+ 		}
+ 	      else
+ 		{
+@@ -2013,6 +2015,8 @@ bfd_update_compression_header (bfd *abfd, bfd_byte *contents,
+ 		  bfd_put_64 (abfd, sec->size, &echdr->ch_size);
+ 		  bfd_put_64 (abfd, 1 << sec->alignment_power,
+ 			      &echdr->ch_addralign);
++		  /* bfd_log2 (alignof (Elf64_Chdr)).  */
++		  bfd_set_section_alignment (abfd, sec, 3);
+ 		}
+ 	    }
+ 	  else
+@@ -2025,6 +2029,8 @@ bfd_update_compression_header (bfd *abfd, bfd_byte *contents,
+ 		 order.  */
+ 	      memcpy (contents, "ZLIB", 4);
+ 	      bfd_putb64 (sec->size, contents + 4);
++	      /* No way to keep the original alignment, just use 1 always.  */
++	      bfd_set_section_alignment (abfd, sec, 0);
+ 	    }
+ 	}
+     }
+@@ -2039,12 +2045,15 @@ bfd_update_compression_header (bfd *abfd, bfd_byte *contents,
+    SYNOPSIS
+ 	bfd_boolean bfd_check_compression_header
+ 	  (bfd *abfd, bfd_byte *contents, asection *sec,
+-	  bfd_size_type *uncompressed_size);
++          bfd_size_type *uncompressed_size,
++          unsigned int *uncompressed_alignment_power);
++
+ 
+ DESCRIPTION
+ 	Check the compression header at CONTENTS of SEC in ABFD and
+-	store the uncompressed size in UNCOMPRESSED_SIZE if the
+-	compression header is valid.
++        store the uncompressed size in UNCOMPRESSED_SIZE and the
++        uncompressed data alignment in UNCOMPRESSED_ALIGNMENT_POWER
++        if the compression header is valid.
+ 
+ RETURNS
+ 	Return TRUE if the compression header is valid.
+@@ -2053,7 +2062,8 @@ RETURNS
+ bfd_boolean
+ bfd_check_compression_header (bfd *abfd, bfd_byte *contents,
+ 			      asection *sec,
+-			      bfd_size_type *uncompressed_size)
++			      bfd_size_type *uncompressed_size,
++			      unsigned int *uncompressed_alignment_power)
+ {
+   if (bfd_get_flavour (abfd) == bfd_target_elf_flavour
+       && (elf_section_flags (sec) & SHF_COMPRESSED) != 0)
+@@ -2075,9 +2085,10 @@ bfd_check_compression_header (bfd *abfd, bfd_byte *contents,
+ 	  chdr.ch_addralign = bfd_get_64 (abfd, &echdr->ch_addralign);
+ 	}
+       if (chdr.ch_type == ELFCOMPRESS_ZLIB
+-	  && chdr.ch_addralign == 1U << sec->alignment_power)
++	  && chdr.ch_addralign == (1U << bfd_log2 (chdr.ch_addralign)))
+ 	{
+ 	  *uncompressed_size = chdr.ch_size;
++	  *uncompressed_alignment_power = bfd_log2 (chdr.ch_addralign);
+ 	  return TRUE;
+ 	}
+     }
+diff --git a/bfd/compress.c b/bfd/compress.c
+index 0a96630..9c0170e 100644
+--- a/bfd/compress.c
++++ b/bfd/compress.c
+@@ -84,11 +84,13 @@ bfd_compress_section_contents (bfd *abfd, sec_ptr sec,
+   int zlib_size = 0;
+   int orig_compression_header_size;
+   bfd_size_type orig_uncompressed_size;
++  unsigned int orig_uncompressed_alignment_pow;
+   int header_size = bfd_get_compression_header_size (abfd, NULL);
+   bfd_boolean compressed
+     = bfd_is_section_compressed_with_header (abfd, sec,
+ 					     &orig_compression_header_size,
+-					     &orig_uncompressed_size);
++					     &orig_uncompressed_size,
++					     &orig_uncompressed_alignment_pow);
+ 
+   /* Either ELF compression header or the 12-byte, "ZLIB" + 8-byte size,
+      overhead in .zdebug* section.  */
+@@ -153,6 +155,8 @@ bfd_compress_section_contents (bfd *abfd, sec_ptr sec,
+ 	      return 0;
+ 	    }
+ 	  free (uncompressed_buffer);
++	  bfd_set_section_alignment (abfd, sec,
++				     orig_uncompressed_alignment_pow);
+ 	  sec->contents = buffer;
+ 	  sec->compress_status = COMPRESS_SECTION_DONE;
+ 	  return orig_uncompressed_size;
+@@ -356,20 +360,25 @@ SYNOPSIS
+ 	bfd_boolean bfd_is_section_compressed_with_header
+ 	  (bfd *abfd, asection *section,
+ 	  int *compression_header_size_p,
+-	  bfd_size_type *uncompressed_size_p);
++	  bfd_size_type *uncompressed_size_p,
++	  unsigned int *uncompressed_alignment_power_p);
++
+ 
+ DESCRIPTION
+ 	Return @code{TRUE} if @var{section} is compressed.  Compression
+-	header size is returned in @var{compression_header_size_p} and
+-	uncompressed size is returned in @var{uncompressed_size_p}.  If
+-	compression is unsupported, compression header size is returned
+-	with -1 and uncompressed size is returned with 0.
++	header size is returned in @var{compression_header_size_p},
++        uncompressed size is returned in @var{uncompressed_size_p}
++        and the uncompressed data alignement power is returned in
++        @var{uncompressed_align_pow_p}.  If compression is
++        unsupported, compression header size is returned with -1
++        and uncompressed size is returned with 0.
+ */
+ 
+ bfd_boolean
+ bfd_is_section_compressed_with_header (bfd *abfd, sec_ptr sec,
+ 				       int *compression_header_size_p,
+-				       bfd_size_type *uncompressed_size_p)
++				       bfd_size_type *uncompressed_size_p,
++				       unsigned int *uncompressed_align_pow_p)
+ {
+   bfd_byte header[MAX_COMPRESSION_HEADER_SIZE];
+   int compression_header_size;
+@@ -377,6 +386,8 @@ bfd_is_section_compressed_with_header (bfd *abfd, sec_ptr sec,
+   unsigned int saved = sec->compress_status;
+   bfd_boolean compressed;
+ 
++  *uncompressed_align_pow_p = 0;
++
+   compression_header_size = bfd_get_compression_header_size (abfd, sec);
+   if (compression_header_size > MAX_COMPRESSION_HEADER_SIZE)
+     abort ();
+@@ -404,7 +415,8 @@ bfd_is_section_compressed_with_header (bfd *abfd, sec_ptr sec,
+       if (compression_header_size != 0)
+ 	{
+ 	  if (!bfd_check_compression_header (abfd, header, sec,
+-					     uncompressed_size_p))
++					     uncompressed_size_p,
++					     uncompressed_align_pow_p))
+ 	    compression_header_size = -1;
+ 	}
+       /* Check for the pathalogical case of a debug string section that
+@@ -441,9 +453,11 @@ bfd_is_section_compressed (bfd *abfd, sec_ptr sec)
+ {
+   int compression_header_size;
+   bfd_size_type uncompressed_size;
++  unsigned int uncompressed_align_power;
+   return (bfd_is_section_compressed_with_header (abfd, sec,
+ 						 &compression_header_size,
+-						 &uncompressed_size)
++						 &uncompressed_size,
++						 &uncompressed_align_power)
+ 	  && compression_header_size >= 0
+ 	  && uncompressed_size > 0);
+ }
+@@ -472,6 +486,7 @@ bfd_init_section_decompress_status (bfd *abfd, sec_ptr sec)
+   int compression_header_size;
+   int header_size;
+   bfd_size_type uncompressed_size;
++  unsigned int uncompressed_alignment_power = 0;
+ 
+   compression_header_size = bfd_get_compression_header_size (abfd, sec);
+   if (compression_header_size > MAX_COMPRESSION_HEADER_SIZE)
+@@ -500,7 +515,8 @@ bfd_init_section_decompress_status (bfd *abfd, sec_ptr sec)
+       uncompressed_size = bfd_getb64 (header + 4);
+     }
+   else if (!bfd_check_compression_header (abfd, header, sec,
+-					 &uncompressed_size))
++					  &uncompressed_size,
++					  &uncompressed_alignment_power))
+     {
+       bfd_set_error (bfd_error_wrong_format);
+       return FALSE;
+@@ -508,6 +524,7 @@ bfd_init_section_decompress_status (bfd *abfd, sec_ptr sec)
+ 
+   sec->compressed_size = sec->size;
+   sec->size = uncompressed_size;
++  bfd_set_section_alignment (abfd, sec, uncompressed_alignment_power);
+   sec->compress_status = DECOMPRESS_SECTION_SIZED;
+ 
+   return TRUE;
+diff --git a/bfd/elf.c b/bfd/elf.c
+index cb4de50..d2eff56 100644
+--- a/bfd/elf.c
++++ b/bfd/elf.c
+@@ -1107,10 +1107,12 @@ _bfd_elf_make_section_from_shdr (bfd *abfd,
+       enum { nothing, compress, decompress } action = nothing;
+       int compression_header_size;
+       bfd_size_type uncompressed_size;
++      unsigned int uncompressed_align_power;
+       bfd_boolean compressed
+ 	= bfd_is_section_compressed_with_header (abfd, newsect,
+ 						 &compression_header_size,
+-						 &uncompressed_size);
++						 &uncompressed_size,
++						 &uncompressed_align_power);
+ 
+       if (compressed)
+ 	{
+diff --git a/binutils/readelf.c b/binutils/readelf.c
+index 274ddd1..ed000cb 100644
+--- a/binutils/readelf.c
++++ b/binutils/readelf.c
+@@ -12305,12 +12305,6 @@ dump_section_as_strings (Elf_Internal_Shdr * section, FILE * file)
+ 		    printable_section_name (section), chdr.ch_type);
+ 	      return;
+ 	    }
+-	  else if (chdr.ch_addralign != section->sh_addralign)
+-	    {
+-	      warn (_("compressed section '%s' is corrupted\n"),
+-		    printable_section_name (section));
+-	      return;
+-	    }
+ 	  uncompressed_size = chdr.ch_size;
+ 	  start += compression_header_size;
+ 	  new_size -= compression_header_size;
+@@ -12439,12 +12433,6 @@ dump_section_as_bytes (Elf_Internal_Shdr * section,
+ 		    printable_section_name (section), chdr.ch_type);
+ 	      return;
+ 	    }
+-	  else if (chdr.ch_addralign != section->sh_addralign)
+-	    {
+-	      warn (_("compressed section '%s' is corrupted\n"),
+-		    printable_section_name (section));
+-	      return;
+-	    }
+ 	  uncompressed_size = chdr.ch_size;
+ 	  start += compression_header_size;
+ 	  new_size -= compression_header_size;
+@@ -12581,12 +12569,6 @@ load_specific_debug_section (enum dwarf_section_display_enum debug,
+ 		    section->name, chdr.ch_type);
+ 	      return 0;
+ 	    }
+-	  else if (chdr.ch_addralign != sec->sh_addralign)
+-	    {
+-	      warn (_("compressed section '%s' is corrupted\n"),
+-		    section->name);
+-	      return 0;
+-	    }
+ 	  uncompressed_size = chdr.ch_size;
+ 	  start += compression_header_size;
+ 	  size -= compression_header_size;
+diff --git a/binutils/testsuite/binutils-all/dw2-3.rS b/binutils/testsuite/binutils-all/dw2-3.rS
+index f1637e9..86bc73d 100644
+--- a/binutils/testsuite/binutils-all/dw2-3.rS
++++ b/binutils/testsuite/binutils-all/dw2-3.rS
+@@ -1,3 +1,3 @@
+ #...
+- +\[[ 0-9]+\] .debug_info +(PROGBITS|MIPS_DWARF) +0+ +[0-9a-f]+ +[0-9a-f]+ [0-9a-f]+ +C +0 +0 +1
++ +\[[ 0-9]+\] .debug_info +(PROGBITS|MIPS_DWARF) +0+ +[0-9a-f]+ +[0-9a-f]+ [0-9a-f]+ +C +0 +0 +(4|8)
+ #pass
+diff --git a/binutils/testsuite/binutils-all/dw2-3.rt b/binutils/testsuite/binutils-all/dw2-3.rt
+index f59cbaa..74e7f8d 100644
+--- a/binutils/testsuite/binutils-all/dw2-3.rt
++++ b/binutils/testsuite/binutils-all/dw2-3.rt
+@@ -1,6 +1,6 @@
+ #...
+  +\[[ 0-9]+\] .debug_info
+- +(PROGBITS|MIPS_DWARF) +0+ +[0-9a-f]+ +[0-9a-f]+ +[0-9a-f]+ +0 +0 +1
++ +(PROGBITS|MIPS_DWARF) +0+ +[0-9a-f]+ +[0-9a-f]+ +[0-9a-f]+ +0 +0 +(4|8)
+  +\[0+800\]: COMPRESSED
+  +ZLIB, 0+9d, 1
+ #pass
+diff --git a/gold/merge.cc b/gold/merge.cc
+index ad02c19..64cae60 100644
+--- a/gold/merge.cc
++++ b/gold/merge.cc
+@@ -440,9 +440,11 @@ Output_merge_string<Char_type>::do_add_input_section(Relobj* object,
+ {
+   section_size_type sec_len;
+   bool is_new;
++  uint64_t addralign = this->addralign();
+   const unsigned char* pdata = object->decompressed_section_contents(shndx,
+ 								     &sec_len,
+-								     &is_new);
++								     &is_new,
++								     &addralign);
+ 
+   const Char_type* p = reinterpret_cast<const Char_type*>(pdata);
+   const Char_type* pend = p + sec_len / sizeof(Char_type);
+@@ -494,7 +496,7 @@ Output_merge_string<Char_type>::do_add_input_section(Relobj* object,
+   // aligned, so each string within the section must retain the same
+   // modulo.
+   uintptr_t init_align_modulo = (reinterpret_cast<uintptr_t>(pdata)
+-				 & (this->addralign() - 1));
++				 & (addralign - 1));
+   bool has_misaligned_strings = false;
+ 
+   while (p < pend)
+@@ -503,7 +505,7 @@ Output_merge_string<Char_type>::do_add_input_section(Relobj* object,
+ 
+       // Within merge input section each string must be aligned.
+       if (len != 0
+-	  && ((reinterpret_cast<uintptr_t>(p) & (this->addralign() - 1))
++	  && ((reinterpret_cast<uintptr_t>(p) & (addralign - 1))
+ 	      != init_align_modulo))
+ 	  has_misaligned_strings = true;
+ 
+diff --git a/gold/object.cc b/gold/object.cc
+index a631c99..a218246 100644
+--- a/gold/object.cc
++++ b/gold/object.cc
+@@ -752,11 +752,13 @@ build_compressed_section_map(
+ 	      const unsigned char* contents =
+ 		  obj->section_contents(i, &len, false);
+ 	      uint64_t uncompressed_size;
++	      Compressed_section_info info;
+ 	      if (is_zcompressed)
+ 		{
+ 		  // Skip over the ".zdebug" prefix.
+ 		  name += 7;
+ 		  uncompressed_size = get_uncompressed_size(contents, len);
++		  info.addralign = shdr.get_sh_addralign();
+ 		}
+ 	      else
+ 		{
+@@ -764,8 +766,8 @@ build_compressed_section_map(
+ 		  name += 6;
+ 		  elfcpp::Chdr<size, big_endian> chdr(contents);
+ 		  uncompressed_size = chdr.get_ch_size();
++		  info.addralign = chdr.get_ch_addralign();
+ 		}
+-	      Compressed_section_info info;
+ 	      info.size = convert_to_section_size_type(uncompressed_size);
+ 	      info.flag = shdr.get_sh_flags();
+ 	      info.contents = NULL;
+@@ -2887,7 +2889,8 @@ const unsigned char*
+ Object::decompressed_section_contents(
+     unsigned int shndx,
+     section_size_type* plen,
+-    bool* is_new)
++    bool* is_new,
++    uint64_t* palign)
+ {
+   section_size_type buffer_size;
+   const unsigned char* buffer = this->do_section_contents(shndx, &buffer_size,
+@@ -2914,6 +2917,8 @@ Object::decompressed_section_contents(
+     {
+       *plen = uncompressed_size;
+       *is_new = false;
++      if (palign != NULL)
++	*palign = p->second.addralign;
+       return p->second.contents;
+     }
+ 
+@@ -2935,6 +2940,8 @@ Object::decompressed_section_contents(
+   // once in this pass.
+   *plen = uncompressed_size;
+   *is_new = true;
++  if (palign != NULL)
++    *palign = p->second.addralign;
+   return uncompressed_data;
+ }
+ 
+diff --git a/gold/object.h b/gold/object.h
+index 95f6d56..e7cf193 100644
+--- a/gold/object.h
++++ b/gold/object.h
+@@ -372,6 +372,7 @@ struct Compressed_section_info
+ {
+   section_size_type size;
+   elfcpp::Elf_Xword flag;
++  uint64_t addralign;
+   const unsigned char* contents;
+ };
+ typedef std::map<unsigned int, Compressed_section_info> Compressed_section_map;
+@@ -807,7 +808,8 @@ class Object
+ 
+   bool
+   section_is_compressed(unsigned int shndx,
+-			section_size_type* uncompressed_size) const
++			section_size_type* uncompressed_size,
++			elfcpp::Elf_Xword* palign = NULL) const
+   {
+     if (this->compressed_sections_ == NULL)
+       return false;
+@@ -817,6 +819,8 @@ class Object
+       {
+ 	if (uncompressed_size != NULL)
+ 	  *uncompressed_size = p->second.size;
++	if (palign != NULL)
++	  *palign = p->second.addralign;
+ 	return true;
+       }
+     return false;
+@@ -827,7 +831,7 @@ class Object
+   // by the caller.
+   const unsigned char*
+   decompressed_section_contents(unsigned int shndx, section_size_type* plen,
+-				bool* is_cached);
++				bool* is_cached, uint64_t* palign = NULL);
+ 
+   // Discard any buffers of decompressed sections.  This is done
+   // at the end of the Add_symbols task.
+diff --git a/gold/output.cc b/gold/output.cc
+index 0a9e58f..322c07e 100644
+--- a/gold/output.cc
++++ b/gold/output.cc
+@@ -2435,7 +2435,14 @@ Output_section::add_input_section(Layout* layout,
+ 				  unsigned int reloc_shndx,
+ 				  bool have_sections_script)
+ {
++  section_size_type input_section_size = shdr.get_sh_size();
++  section_size_type uncompressed_size;
+   elfcpp::Elf_Xword addralign = shdr.get_sh_addralign();
++
++  if (object->section_is_compressed(shndx, &uncompressed_size,
++                                   &addralign))
++    input_section_size = uncompressed_size;
++
+   if ((addralign & (addralign - 1)) != 0)
+     {
+       object->error(_("invalid alignment %lu for section \"%s\""),
+@@ -2485,11 +2492,6 @@ Output_section::add_input_section(Layout* layout,
+ 	}
+     }
+ 
+-  section_size_type input_section_size = shdr.get_sh_size();
+-  section_size_type uncompressed_size;
+-  if (object->section_is_compressed(shndx, &uncompressed_size))
+-    input_section_size = uncompressed_size;
+-
+   off_t offset_in_section;
+ 
+   if (this->has_fixed_layout())
+-- 
+2.11.1
+
